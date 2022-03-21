@@ -1,12 +1,8 @@
----
-typora-root-url: ./
----
-
-HTML5 + CSS3
+# HTML5 + CSS3
 
 ## 一、HTML
 
-### 1、实体
+### 1.实体
 
 在网页中编写的多个空格默认情况会自动被浏览器解析为一个空格
 
@@ -34,3 +30,52 @@ HTML5 + CSS3
 
 ![image-20220321200356034](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212122915.png)
 
+### 2.meta标签
+
+meta主要用于设置网页中的一些元数据，元数据不是给用户看
+    charset 指定网页的字符集
+    name 指定的数据的名称
+    content 指定的数据的内容
+
+-  keywords 表示网站的关键字，可以同时指定多个关键字，关键字间使用,隔开
+
+```
+<meta name="Keywords" content="网上购物,网上商城,手机,笔记本,电脑,MP3,CD,VCD,DV,相机,数码,配件,手表,存储卡,京东"/>
+<meta name="keywords" content="网购,网上购物,在线购物,网购网站,网购商城,购物网站,网购中心,购物中心,卓越,亚马逊,卓越亚马逊,亚马逊中国,joyo,amazon">
+```
+
+通过keywords中配置的content进行seo
+
+![image-20220321215236335](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212152810.png)
+
+- description 用于指定网站的描述
+
+  网站的描述会显示在搜索引擎的搜索的结果中
+
+```
+<meta name="description" content="京东JD.COM-专业的综合网上购物商城，为您提供正品低价的购物选择、优质便捷的服务体验。商品来自全球数十万品牌商家，囊括家电、手机、电脑、服装、居家、母婴、美妆、个护、食品、生鲜等丰富品类，满足各种购物需求。">
+```
+
+![image-20220321220620695](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212206818.png)
+
+- title标签的内容会作为搜索结果的超链接上的文字显示
+
+```
+<title>京东(JD.COM)-正品低价、品质保障、配送及时、轻松购物！</title>
+```
+
+![image-20220321220703870](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212207717.png)
+
+- http-equiv="refresh"
+
+​	content中的数字代表跳转时间，分号后的url代表跳转的地址：
+
+```
+<meta http-equiv="refresh" content="3;url=https://www.mozilla.org">
+```
+
+​	3秒后跳转到百度页面：
+
+```
+<meta http-equiv="refresh" content="3;url=https://www.baidu.com">
+```
