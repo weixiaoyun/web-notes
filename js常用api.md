@@ -93,6 +93,16 @@ console.log(a); //7(a为返回的数组的新长度)
 console.log(arr)//[3, 4, 4, 5, 4, 6, 5]
 ```
 
+### fill()
+
+fill() 方法用于将一个固定值替换数组的元素。语法：array.fill(value, start, end)
+
+```
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+fruits.fill("Runoob", 2, 4);
+console.log(fruits)  //["Banana", "Orange", "Runoob", "Runoob"]
+```
+
 ### toString()
 
 可把值转换为字符串
