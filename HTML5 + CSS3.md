@@ -28,7 +28,7 @@
 </p>
 ```
 
-![image-20220321200356034](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212122915.png)
+![实体](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%AE%9E%E4%BD%93.png)
 
 ### 2.meta标签
 
@@ -46,7 +46,7 @@ meta主要用于设置网页中的一些元数据，元数据不是给用户看
 
 通过keywords中配置的content进行seo
 
-![image-20220321215236335](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212152810.png)
+![关键字content](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%85%B3%E9%94%AE%E5%AD%97content.png)
 
 - description 用于指定网站的描述
 
@@ -56,7 +56,7 @@ meta主要用于设置网页中的一些元数据，元数据不是给用户看
 <meta name="description" content="京东JD.COM-专业的综合网上购物商城，为您提供正品低价的购物选择、优质便捷的服务体验。商品来自全球数十万品牌商家，囊括家电、手机、电脑、服装、居家、母婴、美妆、个护、食品、生鲜等丰富品类，满足各种购物需求。">
 ```
 
-![image-20220321220620695](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212206818.png)
+![关键字description](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%85%B3%E9%94%AE%E5%AD%97description.png)
 
 - title标签的内容会作为搜索结果的超链接上的文字显示
 
@@ -64,7 +64,7 @@ meta主要用于设置网页中的一些元数据，元数据不是给用户看
 <title>京东(JD.COM)-正品低价、品质保障、配送及时、轻松购物！</title>
 ```
 
-![image-20220321220703870](https://raw.githubusercontent.com/weixiaoyun/Images/main/202203212207717.png)
+![title标签](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/title%E6%A0%87%E7%AD%BE.png)
 
 - http-equiv="refresh"
 
