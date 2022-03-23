@@ -800,7 +800,63 @@ me.printIntroduction();
   - 如果确定函数可接收多少个参数，并且想一目了然表达形参和实参的对应关系，用 call()
   - 如果想要将来再调用方法，不需立即得到函数返回结果，则使用 bind()
 
-## 五、Math相关
+## 五、Set()相关
+
+set本质上是一个object
+
+### Set.add()
+
+向 Set 添加新元素
+
+```
+const a = "a";
+const b = "b";
+const c = "c";
+// 创建 Set
+const letters = new Set();
+const newletters = new Set(["d","e","f"]);
+
+console.log(newletters) //{'d', 'e', 'f'}
+// Add the values to the Set
+letters.add(a);
+letters.add(b);
+letters.add(c);
+console.log(letters)/*可以理解为{a, b, c}*/
+console.log(typeof letters); //object
+console.log(letters instanceof Set) //true
+```
+
+### Set.has()
+
+如果值存在则返回 true
+
+```
+console.log(letters.has('a')) //true
+```
+
+### Set.keys()
+
+返回 Set 对象中值的数组
+
+```
+console.log(letters.keys()) /*{'a', 'b', 'c'}*/
+console.log(typeof letters.keys()) //object
+console.log(letters.keys() instanceof Array) //false
+```
+
+### Set.size()
+
+ 返回元素计数
+
+```
+console.log(letters.size) //3
+```
+
+### Set.forEach()
+
+ 为每个元素调用回调
+
+## 六、Math相关
 
 - Math.ceil (): 对数进行上舍入（天花板函数）
 
@@ -851,7 +907,7 @@ me.printIntroduction();
 
 - Math.valueOf (): 返回 Math 对象的原始值
 
-## 六、数据转换
+## 七、数据转换
 
 ### 1.转换函数
 
