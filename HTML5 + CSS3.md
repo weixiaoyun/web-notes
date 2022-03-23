@@ -1,5 +1,13 @@
 # HTML5 + CSS3
 
+网页分成三个部分：
+
+- 结构(HTML)
+
+- 表现(CSS)
+
+-  行为(JavaScript)
+
 ## 一、HTML
 
 ### 1.标签和注释
@@ -683,3 +691,619 @@ audio 标签用来向页面中引入一个外部的音频文件，音视频文�
 ```
 
 ![ifvideo](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/ifvideo.png)
+
+## 二、CSS
+
+### 1.CSS简介
+
+层叠样式表，网页实际上是一个多层的结构，通过CSS可以分别为网页的每一个层来设置样式，而最终我们能看到只是网页的最上边一层，总之一句话，CSS用来设置网页中元素的样式   
+
+使用CSS来修改元素的样式：
+
+#### 第一种方式(内联样式，行内样式)
+
+   - 在标签内部通过style属性来设置元素的样式
+
+   - 问题：
+       使用内联样式，样式只能对一个标签生效，
+           如果希望影响到多个元素必须在每一个元素中都复制一遍
+           并且当样式发生变化时，我们必须要一个一个的修改，非常的不方便
+
+
+   - 注意：开发时尽量不要使用内联样式
+
+```
+<p style="color:red; font-size: 60px;">少小离家老大回，乡音无改鬓毛衰</p>
+
+<p style="color: red; font-size: 60px;">今天天气真不错！</p>
+```
+
+![内联样式](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%86%85%E8%81%94%E6%A0%B7%E5%BC%8F.png)
+
+#### 第二种方式（内部样式表）
+
+- 将样式编写到head中的style标签里，然后通过CSS的选择器来选中元素并为其设置各种样式，可以同时为多个标签设置样式，并且修改时只需要修改一处即可全部应用
+- 内部样式表更加方便对样式进行复用
+- 问题：
+  我们的内部样式表只能对一个网页起作用，它里边的样式不能跨页面进行复用
+
+```
+ <style>
+
+    p{
+        color: green;
+        font-size: 50px;
+    }
+
+</style> 
+```
+
+![内部样式表](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%86%85%E9%83%A8%E6%A0%B7%E5%BC%8F%E8%A1%A8.png)
+
+#### 第三种方式 （外部样式表） 最佳实践
+
+- 可以将CSS样式编写到一个外部的CSS文件中,然后通过link标签来引入外部的CSS文件
+- 外部样式表需要通过link标签进行引入，意味着只要想使用这些样式的网页都可以对其进行引用，使样式可以在不同页面之间进行复用
+- 将样式编写到外部的CSS文件中，可以使用到浏览器的缓存机制，从而加快网页的加载速度，提高用户的体验。
+
+```
+<link rel="stylesheet" href="./style.css">
+```
+
+![外部样式表](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%A4%96%E9%83%A8%E6%A0%B7%E5%BC%8F%E8%A1%A8.png)
+
+![外部样式表1](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%A4%96%E9%83%A8%E6%A0%B7%E5%BC%8F%E8%A1%A81.png)
+
+### 2.CSS语法
+
+CSS的基本语法:选择器 声明块
+
+- 选择器，通过选择器可以选中页面中的指定元素，比如 p 的作用就是选中页面中所有的p元素
+
+- 声明块，通过声明块来指定要为元素设置的样式，声明块由一个一个的声明组成，声明是一个名值对结构，一个样式名对应一个样式值，名和值之间以:连接，以;结尾
+
+```
+p{
+    color: red;
+    font-size: 40px;
+}
+
+h1{
+    color: green;
+}
+```
+
+### 3.常用选择器
+
+```
+<h1 class="blue abc">我是标题</h1>
+<p>少小离家老大回</p>
+<p>乡音无改鬓毛衰</p>
+<p id="red">儿童相见不相识</p>
+<p>笑问客从何处来</p>
+<!--
+    class 是一个标签的属性，它和id类似，不同的是class可以重复使用
+        可以通过class属性来为元素分组
+        可以同时为一个元素指定多个class属性
+-->
+<p class="blue">秋水共长天一色</p>
+<p class="blue">落霞与孤鹜齐飞</p>
+```
+
+#### 元素选择器
+
+- 作用：根据标签名来选中指定的元素
+- 语法：标签名{}
+- 例子：p{}  h1{}  div{}
+
+```
+ p{
+    color: red;
+}
+
+h1{
+    color: green;
+} 
+```
+
+#### id选择器
+
+- 作用：根据元素的id属性值选中一个元素
+- 语法：#id属性值{}
+- 例子：#box{} #red{}
+
+```
+#red{
+    color: red;
+}
+```
+
+#### 类选择器
+
+- 作用：根据元素的class属性值选中一组元素
+- 语法：.class属性值
+
+```
+.blue{
+    color: blue;
+}
+
+.abc{
+    font-size: 20px;
+}
+```
+
+#### 通配选择器
+
+- 作用：选中页面中的所有元素
+- 语法: *
+
+```
+*{
+    color: red;
+}
+```
+
+### 4.复合选择器
+
+#### 交集选择器
+
+- 作用：选中同时复合多个条件的元素
+- 语法：选择器1选择器2选择器3选择器n{}
+- 注意点： 交集选择器中如果有元素选择器，必须使用元素选择器开头
+
+```
+div.red{
+    font-size: 30px;
+}
+
+.a.b.c{
+    color: blue
+}
+```
+
+#### 选择器分组（并集选择器）
+
+- 作用：同时选择多个选择器对应的元素
+
+- 语法：选择器1,选择器2,选择器3,选择器n{}
+
+  #b1,.p1,h1,span,div.red{}
+
+```
+h1, span{
+    color: green
+}
+```
+
+### 5.关系选择器
+
+```
+<div class="box">
+    我是一个div
+    <p>
+        我是div中的p元素
+        <span>我是p元素中的span</span>
+    </p>
+    <div></div>
+    <span>我是div中的span元素</span>
+    <span>我是div中的span元素</span>
+    <span>我是div中的span元素</span>
+    <span>我是div中的span元素</span>
+
+</div>
+
+<span>
+    我是div外的span
+</span>
+```
+
+#### 子元素选择器
+
+- 作用：选中指定父元素的指定子元素
+- 语法：父元素 > 子元素
+
+```
+div.box > span{
+    color: orange;
+} 
+```
+
+#### 后代元素选择器
+
+- 作用：选中指定元素内的指定后代元素
+- 语法：祖先 后代
+
+```
+div span{
+    color: skyblue
+}
+```
+
+等价于：
+
+```
+div > p > span{
+    color: skyblue;
+} 
+```
+
+#### 兄弟元素选择器
+
+- 选择下一个兄弟
+
+  ​    语法：前一个 + 下一个
+
+- 选择下边所有的兄弟
+
+  ​    语法：兄 ~ 弟
+
+```
+p + span{
+    color: red;
+}
+
+
+p ~ span{
+    color: red;
+}
+```
+
+#### 备注
+
+- 父元素：直接包含子元素的元素叫做父元素
+
+- 子元素：直接被父元素包含的元素是子元素
+
+- 祖先元素
+
+  - 直接或间接包含后代元素的元素叫做祖先元素
+
+  - 一个元素的父元素也是它的祖先元素
+
+- 后代元素
+
+    - 直接或间接被祖先元素包含的元素叫做后代元素
+
+  - 子元素也是后代元素
+
+- 兄弟元素：拥有相同父元素的元素是兄弟元素
+
+### 6.属性选择器
+
+- [属性名] 选择含有指定属性的元素
+- [属性名=属性值] 选择含有指定属性和属性值的元素
+- [属性名^=属性值] 选择属性值以指定值开头的元素
+- [属性名$=属性值] 选择属性值以指定值结尾的元素
+- [属性名*=属性值] 选择属性值中含有某值的元素的元素
+
+```
+/* p[title]{ */
+/* p[title=abc]{ */
+/* p[title^=abc]{ */
+/* p[title$=abc]{ */
+p[title*=e]{
+    color: orange;
+}
+```
+
+### 7.伪类选择器
+
+```
+<ul>
+<!--        <span>我是一个span</span>-->
+        <li>第〇个</li>
+        <li>第一个</li>
+        <li>第二个</li>
+        <li>第三个</li>
+        <li>第四个</li>
+        <li>第五个</li>
+    </ul>
+```
+
+伪类（不存在的类，特殊的类）
+
+- 伪类用来描述一个元素的特殊状态，比如：第一个子元素、被点击的元素、鼠标移入的元素...
+
+- 伪类一般情况下都是使用:开头
+
+  - :first-child 第一个子元素
+
+  - :last-child 最后一个子元素
+
+    ```
+    ul > li:first-child{
+        color: red;
+    }
+    
+     ul > li:last-child{
+        color: red;
+    }
+    ```
+
+    ![伪类](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E4%BC%AA%E7%B1%BB.png)
+
+    但是如果第一个li前为<span>，则无效，可以理解为第一个被span占位了：
+
+    ```
+    <ul>
+        <span>我是一个span</span>//这是第一个
+        <li>第〇个</li>//这是第二个
+        <li>第一个</li>//这是第三个
+        <li>第二个</li>
+        <li>第三个</li>
+        <li>第四个</li>
+        <li>第五个</li>
+    </ul>
+    ```
+
+    ![第一个为span](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%AC%AC%E4%B8%80%E4%B8%AA%E4%B8%BAspan.png)
+
+  - :nth-child() 选中第n个子元素
+
+  - 特殊值：
+       n ：第n个（ n的范围0到正无穷）
+
+       2n 或 even 表示选中偶数位的元素
+
+       2n+1 或 odd 表示选中奇数位的元素
+
+       ```
+       ul > li:nth-child(2n+1){
+           color: red;
+       } 
+       ```
+
+       ![选择奇数个子元素](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E9%80%89%E6%8B%A9%E5%A5%87%E6%95%B0%E4%B8%AA%E5%AD%90%E5%85%83%E7%B4%A0.png)
+
+  - 以上这些伪类都是根据所有的子元素进行排序
+
+  :first-of-type
+  :last-of-type
+  :nth-of-type()
+
+  这几个伪类的功能和上述的类似，不同点是他们是在同类型元素中进行排序
+
+  ```
+  ul > li:first-of-type{
+      color: red;
+  } //第0个也能生效：如图
+  ```
+
+  ![伪类type](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E4%BC%AA%E7%B1%BBtype.png)
+
+- :not() 否定伪类：将符合条件的元素从选择器中去除
+
+     ```
+     ul > li:not(:nth-of-type(3)){
+         color: yellowgreen;
+     }
+     ```
+
+![伪类not-type](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E4%BC%AA%E7%B1%BBnot-type.png)
+
+### 8.a元素的伪类
+
+#### :link 
+
+用来表示没访问过的链接（正常的链接）
+
+```
+a:link{
+    color: red;
+    
+}
+```
+
+#### :visited 
+
+用来表示访问过的链接，由于隐私的原因，所以visited这个伪类只能修改链接的**颜色**
+
+```
+a:visited{
+    color: orange; 
+    /* font-size: 50px;   */
+}
+```
+
+#### :hover 
+
+用来表示鼠标移入的状态
+
+```
+a:hover{
+    color: aqua;
+    font-size: 50px;
+}
+```
+
+#### :active 
+
+用来表示鼠标点击
+
+```
+a:active{
+    color: yellowgreen;
+    
+}
+```
+
+### 9.伪元素选择器
+
+伪元素，表示页面中一些特殊的并不真实的存在的元素（特殊的位置）
+    伪元素使用 :: 开头
+
+- ::first-letter 表示第一个字母
+- ::first-line 表示第一行
+- ::selection 表示选中的内容
+- ::before 元素的开始 
+- ::after 元素的最后
+
+**before 和 after 必须结合content属性来使用**
+
+```
+p::first-letter{
+    font-size: 50px;
+}
+
+p::first-line{
+    background-color: yellow; 
+}
+
+p::selection{
+    background-color: greenyellow;
+}
+
+div::before{
+    content: '『';
+ }
+
+div::after{
+    content: '』';
+}
+```
+
+```
+<div>Hello Hello How are you</div>
+
+<p>
+    Lorem ipsum dolor sit amet consectetur adipisicing elit. Atque velit modi veniam nisi veritatis tempore laborum nemo ipsa itaque optio. Id odit consequatur mollitia excepturi, minus saepe nostrum vel porro.
+</p>
+```
+
+![伪元素选择器](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E4%BC%AA%E5%85%83%E7%B4%A0%E9%80%89%E6%8B%A9%E5%99%A8.png)
+
+### 10.样式的继承
+
+样式的继承，我们为一个元素设置的样式同时也会应用到它的后代元素上
+
+- 继承是发生在祖先后后代之间的
+
+
+- 继承的设计是为了方便我们的开发， 利用继承我们可以将一些通用的样式统一设置到共同的祖先元素上， 这样只需设置一次即可让所有的元素都具有该样式
+
+
+**注意**：并不是所有的样式都会被继承：
+    比如 背景相关的，布局相关等的这些样式都不会被继承。
+
+```
+p{
+    color: red;
+    background-color: orange;
+}
+
+div{
+    color: yellowgreen
+}
+```
+
+```
+<p>
+    我是一个p元素
+    <span>我是p元素中的span</span>
+</p>
+
+<span>我是p元素外的span</span>
+
+<div>
+    我是div
+    <span>
+        我是div中的span
+        <em>我是span中的em</em>
+    </span>
+</div>
+```
+
+![样式的继承](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E6%A0%B7%E5%BC%8F%E7%9A%84%E7%BB%A7%E6%89%BF.png)
+
+### 11.选择器的权重
+
+样式的冲突：
+
+当我们通过不同的选择器，选中相同的元素，并且为相同的样式设置不同的值时，此时就发生了样式的冲突。
+
+发生样式冲突时，应用哪个样式由选择器的权重（优先级）决定
+
+选择器的权重：
+
+- 内联样式        1,0,0,0
+- id选择器        0,1,0,0
+- 类和伪类选择器   0,0,1,0
+- 元素和伪元素选择器       0,0,0,1
+- 通配选择器       0,0,0,0
+- 继承的样式       没有优先级
+
+比较优先级时，需要将所有的选择器的优先级进行相加计算，最后优先级越高，则越优先显示（分组选择器是单独计算的。
+
+选择器的累加不会超过其最大的数量级，类选择器在高也不会超过id选择器。
+
+如果优先级计算后相同，此时则优先使用靠下的样式
+
+**注意**：
+
+- 如果是两种相同优先级 为同一个元素 同一个属性设置 的话，是哪个写在代码靠后 最终就按那个的样式
+
+- 交集选择器的优先级 所有优先级 加起来 运算 然后比较
+
+- 并集的话 就是各算各的。
+
+可以在某一个样式的后边添加 !important ，则此时该样式会获取到最高的优先级，甚至超过内联样式，
+    **注意**：在开发中这个玩意一定要慎用！
+
+### 12.单位
+
+#### 像素
+
+- 屏幕（显示器）实际上是由一个一个的小点点构成的
+
+- 不同屏幕的像素大小是不同的，像素越小的屏幕显示的效果越清晰
+- 所以同样的200px在不同的设备下显示效果不一样
+
+#### 百分比
+
+- 也可以将属性值设置为相对于其父元素属性的百分比
+
+- 设置百分比可以使子元素跟随父元素的改变而改变
+
+#### em
+
+em是相对于元素的字体大小来计算的
+- 1em = 1font-size
+- em会根据字体大小的改变而改变
+
+#### rem
+
+rem是相对于根元素的字体大小来计算
+
+### 13.颜色
+
+在CSS中可以直接使用颜色名来设置各种颜色：
+    比如：red、orange、yellow、blue、green ... ...
+    但是在css中直接使用颜色名是非常的不方便
+
+#### RGB值
+
+ RGB通过三种颜色的不同浓度来调配出不同的颜色
+- R red，G green ，B blue
+- 每一种颜色的范围在 0 - 255 (0% - 100%) 之间
+- 语法：RGB(红色,绿色,蓝色)
+
+#### RGBA
+
+就是在rgb的基础上增加了一个a表示不透明度
+
+需要四个值，前三个和rgb一样，第四个表示不透明度：
+1表示完全不透明   0表示完全透明  .5半透明
+
+#### 十六进制的RGB值
+
+- 语法：#红色绿色蓝色
+- 颜色浓度通过 00-ff
+- 如果颜色两位两位重复可以进行简写  
+    #aabbcc --> #abc
+
+#### HSL值&HSLA值
+
+- H 色相(0 - 360)
+- S 饱和度，颜色的浓度 0% - 100%
+- L 亮度，颜色的亮度 0% - 100%
