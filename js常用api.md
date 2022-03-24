@@ -999,3 +999,17 @@ var oNull = null;
 console.log(oNull.toString());   //won't   work,   causes   an   error
 ```
 
+### 八、其他
+
+#### isNaN()
+
+isNaN(value)：value,必须要检测的值。检查其参数是否是非数字值
+
+```
+console.log(isNaN(123));//false
+console.log(isNaN(-1.23));//false
+console.log(isNaN(5-2));//false
+console.log(isNaN(0));//false
+console.log(isNaN("Hello"));//true
+console.log(isNaN("2005/12/12"));//true
+```
