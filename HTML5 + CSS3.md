@@ -1512,7 +1512,7 @@ padding: 10px ;
 - 但是外边距会影响盒子的位置
 
 - 一共有四个方向的外边距：
-    
+  
     - margin-top：上外边距，设置一个正值，元素会向下移动
     - margin-right：默认情况下设置margin-right不会产生任何效果
     - margin-bottom：下外边距，设置一个正值，其下边的元素会向下移动
@@ -1612,10 +1612,9 @@ overflow-y:处理垂直方向的浮动
 
      - 兄弟元素之间的外边距的重叠，对于开发是有利的，所以我们不需要进行处理
 
-
-    - 父子元素
-        - 父子元素间相邻外边距，子元素的会传递给父元素（上外边距）
-        - 父子外边距的折叠会影响到页面的布局，必须要进行处理
+- 父子元素
+    - 父子元素间相邻外边距，子元素的会传递给父元素（上外边距）
+    - 父子外边距的折叠会影响到页面的布局，必须要进行处理
 
 ### 6.行内元素的盒模型
 
@@ -1732,3 +1731,596 @@ border-radius: 20px / 40px;
 /* 将元素设置为一个圆形 */
 border-radius: 50%;
 ```
+
+## 四、浮动
+
+### 1.简介
+
+通过浮动可以使一个元素向其父元素的左侧或右侧移动，使用 float 属性来设置于元素的浮动，可选值：
+
+- none 默认值 ，元素不浮动
+- left 元素向左浮动
+- right 元素向右浮动
+
+**注意**：元素设置浮动以后，水平布局的等式便不需要强制成立；元素设置浮动以后，会完全从文档流中脱离，不再占用文档流的位置；所以元素下边的还在文档流中的元素会自动向上移动
+
+浮动的特点：
+
+1. 浮动元素会完全脱离文档流，不再占据文档流中的位置
+2. 设置浮动以后元素会向父元素的左侧或右侧移动，
+3. 浮动元素默认不会从父元素中移出
+4. 浮动元素向左或向右移动时，不会超过它前边的其他浮动元素
+5. 如果浮动元素的上边是一个没有浮动的块元素，则浮动元素无法上移
+6. 浮动元素不会超过它上边的浮动的兄弟元素，最多最多就是和它一样高
+
+```
+<div class="box1"></div>
+<div class="box2"></div>
+<div class="box3"></div>
+```
+
+```
+.box1{
+    width: 400px;
+    height: 200px;
+    background-color: #bfa;
+    float: left;
+}
+
+.box2{
+    width: 400px;
+    height: 200px;
+    background-color: orange;
+    float: left;
+}
+
+.box3{
+    width: 200px;
+    height: 200px;
+    background-color: yellow;
+    float: right;
+}
+```
+
+![浮动简介](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E6%B5%AE%E5%8A%A8%E7%AE%80%E4%BB%8B.png)
+
+浮动可以让页面中的元素可以水平排列，通过浮动可以制作一些水平方向的布局   
+
+### 2.浮动的其他特点
+
+#### 浮动元素不会盖住文字
+
+文字会自动环绕在浮动元素的周围，所以我们可以利用浮动来设置文字环绕图片的效果
+
+```
+.box1{
+    width: 100px;
+    height: 100px;
+    background-color: #bfa;
+    float: left;
+}
+```
+
+```
+ <div class="box1"></div>
+<p>
+    在我的后园，可以看见墙外有两株树，一株是枣树，还有一株也是枣树。 这上面的夜的天空，奇怪而高，我生平没有见过这样奇怪而高的天空。他仿佛要离开人间而去，使人们仰面不再看见...
+</p>
+```
+
+![浮动的文字环绕](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E6%B5%AE%E5%8A%A8%E7%9A%84%E6%96%87%E5%AD%97%E7%8E%AF%E7%BB%95.png)
+
+#### 脱离文档流
+
+元素设置浮动以后，将会从文档流中脱离，从文档流中脱离后，元素的一些特点也会发生变化
+
+脱离文档流的特点： 
+
+- 块元素：
+
+  - 块元素不在独占页面的一行
+
+  - 脱离文档流以后，块元素的宽度和高度默认都被内容撑开
+
+-  行内元素：
+
+​    行内元素脱离文档流以后会变成块元素，特点和块元素一样，脱离文档流以后，不需要再区分块和行内了
+
+```
+.box2{
+    background-color: yellowgreen;
+    float: left;
+}
+
+.box3{
+    background-color: orange
+}
+
+.s1{
+    float: left;
+    width: 200px;
+    height: 200px;
+    background-color: yellow;
+}
+```
+
+```
+<span class="s1">我是一个span</span>
+ <div class="box2">helloaaaaa</div>
+ <div class="box3">hello</div>
+```
+
+![浮动的其他特点](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E6%B5%AE%E5%8A%A8%E7%9A%84%E5%85%B6%E4%BB%96%E7%89%B9%E7%82%B9.png)
+
+### 3.高度塌陷
+
+#### BFC
+
+(Block Formatting Context) 块级格式化环境
+
+- BFC是一个CSS中的一个隐含的属性，可以为一个元素开启BFC
+
+    开启BFC该元素会变成一个独立的布局区域
+
+- 元素开启BFC后的特点：
+    
+    - 开启BFC的元素不会被浮动元素所覆盖
+    - 开启BFC的元素子元素和父元素外边距不会重叠
+    - 开启BFC的元素可以包含浮动的子元素
+    
+- 可以通过一些特殊方式来开启元素的BFC：
+
+    - 设置元素的浮动（不推荐）
+
+    - 将元素设置为行内块元素（不推荐）
+
+    - 将元素的overflow设置为一个非visible的值
+
+        常用的方式 为元素设置 overflow:hidden 开启其BFC 以使其可以包含浮动元素
+
+#### 高度塌陷问题
+
+在浮动布局中，父元素的高度默认是被子元素撑开的，
+
+- 当子元素浮动后，其会完全脱离文档流，子元素从文档流中脱离
+- 将会无法撑起父元素的高度，导致父元素的高度丢失
+
+父元素高度丢失以后，其下的元素会自动上移，导致页面的布局混乱，高度塌陷是浮动布局中比较常见的一个问题
+
+```
+<div class="outer">
+
+    <div class="inner"></div>
+
+</div>
+
+<div style="width: 200px;height: 200px;background-color:yellow;"></div>
+```
+
+```
+.outer{
+    border: 10px red solid;
+
+    /* 
+        开启BFC(Block Formatting Context) 
+     */
+
+     /* float: left; */
+     /* display: inline-block; */
+     overflow: hidden;
+}
+
+.inner{
+    width: 100px;
+    height: 100px;
+    background-color: #bfa;
+
+    /* 
+        产生高度塌陷
+     */
+    float: left;
+```
+
+![高度塌陷](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E9%AB%98%E5%BA%A6%E5%A1%8C%E9%99%B7.png)
+
+### 4.BFC相关
+
+#### 通过设置开启BFC使得不被浮动元素覆盖
+
+```
+.box1{
+    width: 200px;
+    height: 200px;
+    background-color: #bfa;
+     float: left;
+}
+
+.box2{
+    width: 200px;
+    height: 200px;
+    background-color: orange;
+    overflow: hidden;
+}
+```
+
+```
+<div class="box1">
+
+</div>
+
+ <div class="box2">
+
+</div>
+```
+
+![BFC1](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/BFC1.png)
+
+#### 处理父子元素的外边距重叠
+
+由于父子元素外边距重叠，导致子元素的margin影响到了父元素
+
+```
+.box1{
+    width: 200px;
+    height: 200px;
+    background-color: #bfa;
+}
+
+.box3{
+    width: 100px;
+    height: 100px;
+    background-color: yellow;
+    margin-top: 100px;
+}
+```
+
+```
+<div class="box1">
+
+    <div class="box3"></div>
+</div>
+```
+
+![父子元素外边距重叠 (2)](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%88%B6%E5%AD%90%E5%85%83%E7%B4%A0%E5%A4%96%E8%BE%B9%E8%B7%9D%E9%87%8D%E5%8F%A0%20(2).png)
+
+给box1开启BFC
+
+```
+.box1{
+    width: 200px;
+    height: 200px;
+    background-color: #bfa;
+     /*float: left;*/
+    overflow: hidden;
+}
+```
+
+![父元素开启BFC](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%88%B6%E5%85%83%E7%B4%A0%E5%BC%80%E5%90%AFBFC.png)
+
+### 5.清除浮动
+
+如果我们不希望某个元素因为其他元素浮动的影响而改变位置，可以通过clear属性来清除浮动元素对当前元素所产生的影响。
+
+clear：
+
+- 作用：清除浮动元素对当前元素所产生的影响
+- 可选值：
+    - left 清除左侧浮动元素对当前元素的影响
+    - right 清除右侧浮动元素对当前元素的影响
+    - both 清除两侧中最大影响的那侧
+
+**原理**：设置清除浮动以后，浏览器会自动为元素添加一个上外边距，以使其位置不受其他元素的影响
+
+```
+.box1{
+    width: 200px;
+    height: 200px;
+    background-color: #bfa;
+    float: left;
+}
+
+.box2{
+    width: 400px;
+    height: 150px;
+    background-color: #ff0;
+    float: right;
+}
+
+.box3{
+    width: 200px;
+    height: 200px;
+    background-color: orange;
+    /* 
+        由于box1的浮动，导致box3位置上移
+            也就是box3收到了box1浮动的影响，位置发生了改变
+     */
+
+     clear: both;
+}
+```
+
+```
+<div class="box1">1</div>
+<div class="box2">2</div>
+<div class="box3">3</div>
+```
+
+![清除浮动](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E6%B8%85%E9%99%A4%E6%B5%AE%E5%8A%A8.png)
+
+### 6.高度塌陷的最终解决方案
+
+通过设置一个子元素，清除前面浮动元素对它的影响，然后父元素又需要适应该子元素的特点来清除浮动
+
+```
+.box1{
+    border: 10px red solid;
+
+    /* overflow: hidden; */
+}
+
+.box2{
+    width: 100px;
+    height: 100px;
+    background-color: #bfa;
+    float: left;
+}
+
+/*通过设置伪元素来减少页面中的无关元素*/
+.box1::after{
+    content: '';
+    display: block;/*伪元素默认为一个行内元素，所以要设置它的display*/
+    clear: both;
+}
+```
+
+```
+<div class="box1">
+    <div class="box2"></div>
+</div>
+```
+
+![高度塌陷的最终解决方案](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E9%AB%98%E5%BA%A6%E5%A1%8C%E9%99%B7%E7%9A%84%E6%9C%80%E7%BB%88%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88.png)
+
+### 7.clearfix
+
+clearfix 这个样式可以同时解决高度塌陷和外边距重叠的问题，当遇到这些问题时，直接使用clearfix这个类即可
+
+```
+        .box1{
+            width: 200px;
+            height: 200px;
+            background-color: #bfa;
+        }
+
+        .box2{
+            width: 100px;
+            height: 100px;
+            background-color: orange;
+            margin-top: 100px;
+        }
+
+        .clearfix::before,/*通过before伪元素解决外边距重叠问题，可以理解为父子元素之间加入了一个元素*/
+        .clearfix::after{ /*通过after伪类解决高度塌陷*/
+            content: '';
+            display: table; /*table布局隔开外边距的同时不会占位*/
+            clear: both;
+        }
+```
+
+```
+<div class="box1 clearfix">
+    <div class="box2"></div>
+</div>
+```
+
+![clearfix](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/clearfix.png)
+
+## 五、定位
+
+### 1.定位的简介
+
+- 定位是一种更加高级的布局手段
+- 通过定位可以将元素摆放到页面的任意位置
+- 使用position属性来设置定位
+    可选值：
+    -  static 默认值，元素是静止的没有开启定位    
+    - relative 开启元素的相对定位   
+    - absolute 开启元素的绝对定位
+    - fixed 开启元素的固定定位
+    - sticky 开启元素的粘滞定位
+
+### 2.相对定位
+
+- 当元素的position属性值设置为relative时则开启了元素的相对定位
+
+- 相对定位的特点：
+
+    - 元素开启相对定位以后，如果不设置偏移量元素不会发生任何的变化
+    - 相对定位是相对于元素原来的位置进行定位的
+    - 相对定位会提升元素的层级
+    - 相对定位不会使元素脱离文档流
+    - 相对定位不会改变元素的性质块还是块，行内还是行内
+
+- 偏移量（offset）
+
+    当元素开启了定位以后，可以通过偏移量来设置元素的位置
+
+    - top：定位元素和定位位置上边的距离
+
+    - bottom：
+
+      - 定位元素和定位位置下边的距离
+
+
+      - 定位元素垂直方向的位置由top和bottom两个属性来控制
+        通常情况下我们只会使用其中一
+
+      - top值越大，定位元素越向下移动
+
+      - bottom值越大，定位元素越向上移动
+
+    - left：定位元素和定位位置的左侧距离
+
+    - right：
+
+      - 定位元素和定位位置的右侧距离
+
+      - 定位元素水平方向的位置由left和right两个属性控制
+        通常情况下只会使用一个
+
+      - left越大元素越靠右
+
+      - right越大元素越靠左
+
+```
+.box1{
+    width: 200px;
+    height: 200px;
+    background-color: #bfa;
+}
+
+.box2{
+    width: 200px;
+    height: 200px;
+    background-color: orange;
+    position: relative;
+    left: 100px;
+    top: -200px;
+
+}
+
+.box3{
+    width: 200px;
+    height: 200px;
+    background-color: yellow;
+
+}
+```
+
+```
+<div class="box1">1</div>
+<div class="box2">2</div>
+<div class="box3">3</div>
+```
+
+![相对定位](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%9B%B8%E5%AF%B9%E5%AE%9A%E4%BD%8D.png)
+
+### 3.绝对定位
+
+- 当元素的position属性值设置为absolute时，则开启了元素的绝对定位
+- 绝对定位的特点：
+    - 开启绝对定位后，如果不设置偏移量元素的位置不会发生变化
+    - 开启绝对定位后，元素会从文档流中脱离
+    - 绝对定位会改变元素的性质，行内变成块，块的宽高被内容撑开
+    - 绝对定位会使元素提升一个层级
+    - 绝对定位元素是相对于其包含块进行定位的
+
+#### 包含块( containing block )
+
+- 正常情况下：
+     包含块就是离当前元素最近的祖先块元素
+
+     ```
+     <div> <div></div> </div>
+     <div><span><em>hello</em></span></div>
+     ```
+
+- 绝对定位的包含块:
+  包含块就是离它最近的**开启了定位的祖先元素**，如果所有的祖先元素都没有开启定位则根元素就是它的包含块：html（根元素、初始包含块）
+
+### 4.固定定位
+
+- 将元素的position属性设置为fixed则开启了元素的固定定位
+- 固定定位也是一种绝对定位，所以固定定位的大部分特点都和绝对定位一样，唯一不同的是固定定位永远参照于浏览器的视口进行定位，固定定位的元素不会随网页的滚动条滚动
+
+### 5.粘滞定位
+
+- 当元素的position属性设置为sticky时则开启了元素的粘滞定位
+- 粘滞定位和相对定位的特点基本一致，不同的是粘滞定位可以在元素到达某个位置时将其固定
+
+```
+.nav{
+
+    /* 设置宽度和高度 */
+    width: 1210px;
+    height: 48px;
+    /* 设置背景颜色 */
+    background-color: #E8E7E3;
+
+    margin:100px auto;
+
+     position: sticky; /*开启粘滞定位：当距离顶部为10px时位置固定*/
+     top: 10px;
+
+}
+
+/* 设置nav中li */
+.nav li{
+    /* 设置li向左浮动，已使菜单横向排列 */
+    float: left;
+    /* 设置li的高度 */
+    /* height: 48px; */
+    /* 将文字在父元素中垂直居中 */
+    line-height: 48px;
+
+}
+
+/* 设置a的样式 */
+.nav a{
+    /* 将a转换为块元素 */
+    display: block;
+    /* 去除下划线 */
+    text-decoration: none;
+    /* 设置字体颜色 */
+    color: #777777;
+    /* 修改字体大小 */
+    font-size: 18px;
+
+    padding: 0 39px;
+}
+
+.nav li:last-child a{
+    padding: 0 42px 0 41px;
+}
+
+/* 设置鼠标移入的效果 */
+.nav a:hover{
+    background-color: #3F3F3F;
+    color: #E8E7E3;
+}
+```
+
+```
+<!-- 创建导航条的结构 -->
+<ul class="nav">
+    <li>
+        <a href="#">HTML/CSS</a>
+    </li>
+    <li>
+        <a href="#">Browser Side</a>
+    </li>
+    <li>
+        <a href="#">Server Side</a>
+    </li>
+    <li>
+        <a href="#">Programming</a>
+    </li>
+    <li>
+        <a href="#">XML</a>
+    </li>
+    <li>
+        <a href="#">Web Building</a>
+    </li>
+    <li>
+        <a href="#">Reference</a>
+    </li>
+</ul>
+```
+
+刚开始距离顶部有margin-top：100px的距离：
+
+![粘滞定位开始](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%B2%98%E6%BB%9E%E5%AE%9A%E4%BD%8D%E5%BC%80%E5%A7%8B.png)
+
+随着滚动条拖动，当距离顶部只有10px时位置将会固定住，后续滚动条再怎么拖动，其位置相对于浏览器视口都不会发生变化：
+
+![粘滞定位变化](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%B2%98%E6%BB%9E%E5%AE%9A%E4%BD%8D%E5%8F%98%E5%8C%96.png)
