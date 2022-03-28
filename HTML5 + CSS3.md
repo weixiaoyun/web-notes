@@ -2511,8 +2511,8 @@ fontawesome 使用步骤：
       font-family: 'Font Awesome 5 Brands';
 
   		  fas
-   		 font-family: 'Font Awesome 5 Free';
-   		 font-weight: 900; 
+  		 font-family: 'Font Awesome 5 Free';
+  		 font-weight: 900; 
 
 ```
 <link rel="stylesheet" href="./fa/css/all.css">
@@ -2786,7 +2786,7 @@ background-image: repeating-linear-gradient(to right ,red, yellow 50px);
   - 长方形 --> 椭圆形
 
    - 也可以手动指定径向渐变的大小
-      
+     
    - circle
       - ellipse
       
@@ -2819,3 +2819,279 @@ background-image: radial-gradient(farthest-side at 100px 100px, red , #bfa)
 ```
 
 ![径向渐变](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%BE%84%E5%90%91%E6%B8%90%E5%8F%98.png)
+
+## 七、HTML5新特性
+
+### 1.表格
+
+在现实生活中，经常需要使用表格来表示一些格式化数据：
+    课程表、人名单、成绩单....
+
+同样在网页中我们也需要使用表格，通过table标签来创建一个表格：
+
+```
+<table border="1" width='50%' align="center">
+    <!-- 在table中使用tr表示表格中的一行，有几个tr就有几行 -->
+    <tr>
+        <!-- 在tr中使用td表示一个单元格，有几个td就有几个单元格 -->
+        <td>A1</td>
+        <td>B1</td>
+        <td>C1</td>
+        <td>D1</td>
+    </tr>
+    <tr>
+        <td>A2</td>
+        <td>B2</td>
+        <td>C2</td>
+        <!-- rowspan 纵向的合并单元格 -->
+        <td rowspan="2">D2</td>
+    </tr>
+    <tr>
+        <td>A3</td>
+        <td>B3</td>
+        <td>C3</td>
+    </tr>
+    <tr>
+        <td>A4</td>
+        <td>B4</td>
+        <!-- 
+            colspan 横向的合并单元格
+         -->
+        <td colspan="2">C4</td>
+    </tr>
+</table>
+```
+
+![表格](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E8%A1%A8%E6%A0%BC.png)
+
+#### 长表格
+
+可以将一个表格分成三个部分：
+
+- 头部 thead
+
+- 主体 tbody
+
+- 底部 tfoot
+
+  其中th 表示头部的单元格
+
+```
+<table border="1" width='50%' align="center">
+    <thead>
+        <tr>
+            <th>日期</th>
+            <th>收入</th>
+            <th>支出</th>
+            <th>合计</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>2000.1.1</td>
+            <td>500</td>
+            <td>200</td>
+            <td>300</td>
+        </tr>
+        <tr>
+            <td>2000.1.1</td>
+            <td>500</td>
+            <td>200</td>
+            <td>300</td>
+        </tr>
+        <tr>
+            <td>2000.1.1</td>
+            <td>500</td>
+            <td>200</td>
+            <td>300</td>
+        </tr>
+        <tr>
+            <td>2000.1.1</td>
+            <td>500</td>
+            <td>200</td>
+            <td>300</td>
+        </tr>
+    </tbody>
+    <tfoot>
+        <tr>
+            <td></td>
+            <td></td>
+            <td>合计</td>
+            <td>300</td>
+        </tr>
+    </tfoot>
+
+</table>
+```
+
+![image-20220328211256764](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/image-20220328211256764.png)
+
+#### 表格的样式
+
+- border-spacing:  指定边框之间的距离
+- border-collapse:  设置边框的合并
+- display: table-cell   将元素设置为单元格td
+
+```
+    table{
+        width: 50%;
+        border: 1px solid black;
+        margin: 0 auto;
+
+        /* border-spacing: 指定边框之间的距离 */
+        /* border-spacing: 0px; */
+
+        /* border-collapse: collapse; 设置边框的合并 */
+        border-collapse: collapse;
+    }
+
+    td{
+        border: 1px solid black;
+        height: 100px;
+        /* 默认情况下元素在td中是垂直居中的 可以通过 vertical-align 来修改*/
+        vertical-align:middle;
+        text-align: center; 
+    }
+
+    /* 
+        如果表格中没有使用tbody而是直接使用tr，
+            那么浏览器会自动创建一个tbody，并且将tr全都放到tbody中
+            tr不是table的子元素
+     */
+    tbody > tr:nth-child(odd){
+        background-color: #bfa;
+    }
+
+    .box1{
+        width: 300px;
+        height: 300px;
+        background-color: orange;
+
+        /* 将元素设置为单元格 td  */
+        display: table-cell;
+        vertical-align: middle;
+
+    }
+
+    .box2{
+        width: 100px;
+        height: 100px;
+        background-color: yellow;
+        margin: 0 auto;
+
+    }
+</style>
+```
+
+```
+   <div class="box1">
+       <div class="box2"></div>
+   </div>
+   <table>
+       <tr>
+           <td>学号</td>
+           <td>姓名</td>
+           <td>性别</td>
+           <td>年龄</td>
+           <td>地址</td>
+       </tr>
+       <tr>
+           <td>1</td>
+           <td>孙悟空</td>
+           <td>男</td>
+           <td>18</td>
+           <td>花果山</td>
+       </tr>
+       <tr>
+           <td>2</td>
+           <td>猪八戒</td>
+           <td>男</td>
+           <td>28</td>
+           <td>高老庄</td>
+       </tr>
+       <tr>
+           <td>3</td>
+           <td>沙和尚</td>
+           <td>男</td>
+           <td>38</td>
+           <td>流沙河</td>
+       </tr>
+       <tr>
+           <td>4</td>
+           <td>唐僧</td>
+           <td>男</td>
+           <td>16</td>
+           <td>女儿国</td>
+       </tr>
+   </table>
+```
+
+![表格的样式](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E8%A1%A8%E6%A0%BC%E7%9A%84%E6%A0%B7%E5%BC%8F.png)
+
+### 3.表单
+
+- 在现实生活中表单用于提交数据
+- 在网页中也可以使用表单，网页中的表单用于将本地的数据提交给远程的服务器
+- 使用form标签来创建一个表单
+
+```
+<form action="target.html">
+    <!--
+       文本框
+       注意：数据要提交到服务器中，必须要为元素指定一个name属性值
+    -->
+    文本框 <input type="text" name="username">
+    <br><br>
+    <!-- 
+        密码框
+     -->
+    密码框 <input type="password" name="password">
+    <br><br>
+
+    <!--
+         单选按钮
+            - 像这种选择框，必须要指定一个value属性，value属性最终会作为用户的填写的值传递给服务器
+            - checked 可以将单选按钮设置为默认选中
+       -->
+    单选按钮 <input type="radio" name="hello" value="a">
+    <input type="radio" name="hello" value="b" checked>
+    <br><br>
+
+    <!-- 
+        多选框
+     -->
+    多选框 <input type="checkbox" name="test" value="1">
+    <input type="checkbox" name="test" value="2">
+    <input type="checkbox" name="test" value="3" checked>
+
+    <br><br>
+
+    <!-- 下拉列表 -->
+    <select name="haha">
+        <option value="i">选项一</option>
+        <option selected value="ii">选项二</option>
+        <option value="iii">选项三</option>
+    </select>
+
+
+
+    <br><br>
+    <!-- 
+        提交按钮
+     -->
+    <input type="submit" value="注册">
+</form>
+```
+
+![表单](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E8%A1%A8%E5%8D%95.png)
+
+- autocomplete="off" 关闭自动补全
+- readonly 将表单项设置为只读，数据会提交
+- disabled 将表单项设置为禁用，数据不会提交
+- autofocus 设置表单项自动获取焦点
+
+```
+<input type="text" name="username" value="hello" readonly>
+<br><br>
+<input type="text" name="username" autofocus>
+```
