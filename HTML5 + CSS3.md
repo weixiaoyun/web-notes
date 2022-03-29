@@ -3095,3 +3095,529 @@ background-image: radial-gradient(farthest-side at 100px 100px, red , #bfa)
 <br><br>
 <input type="text" name="username" autofocus>
 ```
+
+## 八、CSS3新特性
+
+### 1.过渡
+
+- 通过过渡可以指定一个属性发生变化时的切换方式
+- 通过过渡可以创建一些非常好的效果，提升用户的体验
+
+#### transition-property
+
+指定要执行过渡的属性：
+
+多个属性间使用,隔开 ；如果所有属性都需要过渡，则使用all关键字；大部分属性都支持过渡效果，注意过渡时必须是从一个有效数值向另外一个有效数值进行过渡。
+
+```
+transition-property: height , width; 
+transition-property: all;
+```
+
+#### transition-duration
+
+指定过渡效果的持续时间：时间单位：s 和 ms  1s = 1000ms
+
+```
+transition-duration: 100ms; 
+transition-duration: 2s; 
+```
+
+#### transition-timing-function
+
+过渡的时序函数：
+
+ease 默认值，慢速开始，先加速，再减速
+
+- linear 匀速运动
+- ease-in 加速运动
+- ease-out 减速运动
+- ease-in-out 先加速 后减速
+- cubic-bezier() 来指定时序函数
+      https://cubic-bezier.com
+- steps() 分步执行过渡效果
+   可以设置一个第二个值：
+          end ， 在时间结束时执行过渡(默认值)
+          start ， 在时间开始时执行过渡
+
+```
+transition-timing-function: cubic-bezier(.24,.95,.82,-0.88); 
+transition-timing-function: steps(2, start); 
+```
+
+#### transition-delay
+
+过渡效果的延迟，等待一段时间后在执行过渡
+
+```
+transition-delay: 2s;
+```
+
+#### transition
+
+可以同时设置过渡相关的所有属性，只有一个要求，如果要写延迟，则两个时间中第一个是持续时间，第二个是延迟
+
+```
+transition:2s margin-left 1s cubic-bezier(.24,.95,.82,-0.88);
+```
+
+```
+.box1{
+    width: 800px;
+    height: 800px;
+    background-color: silver;
+    overflow: hidden;
+}
+
+.box1 div{
+    width: 100px;
+    height: 100px;
+    margin-bottom: 100px;
+    margin-left: 0;
+
+}
+
+.box2{
+    background-color: #bfa;
+     transition:2s margin-left 1s cubic-bezier(.24,.95,.82,-0.88);
+}
+
+.box3{
+    background-color: orange;
+    transition-property: all;
+    transition-duration: 2s;
+}
+
+.box1:hover div{
+    margin-left: 700px;
+}
+```
+
+```
+<div class="box1">
+    <div class="box2"></div>
+    <div class="box3"></div>
+</div>
+```
+
+
+
+![过渡](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E8%BF%87%E6%B8%A1.gif)
+
+### 2.动画
+
+- 动画和过渡类似，都是可以实现一些动态的效果
+- 不同的是过渡需要在某个属性发生变化时才会触发，动画可以自动触发动态效果   
+- 设置动画效果，必须先要设置一个关键帧，关键帧设置了动画执行每一个步骤
+
+#### animation-name
+
+要对当前元素生效的关键帧的名字
+
+```
+animation-name: test;
+```
+
+#### animation-duration
+
+动画的执行时间
+
+```
+animation-duration: 4s;
+```
+
+#### animation-delay
+
+动画的延时
+
+```
+animation-delay: 2s;
+```
+
+#### animation-timing-function
+
+动画的时序函数
+
+```
+animation-timing-function: ease-in-out;
+```
+
+#### animation-iteration-count
+
+动画执行的次数，可选值：
+
+- 次数
+- infinite 无限执行
+
+```
+animation-iteration-count: 1;
+```
+
+#### animation-direction
+
+指定动画运行的方向，可选值：
+
+- normal 默认值  从 from 向 to运行 每次都是这样 
+- reverse 从 to 向 from 运行 每次都是这样 
+- alternate 从 from 向 to运行 重复执行动画时反向执行
+- alternate-reverse 从 to 向 from运行 重复执行动画时反向执行
+
+```
+animation-direction: alternate-reverse;
+```
+
+#### animation-play-state
+
+设置动画的执行状态，可选值：
+
+- running 默认值 动画执行
+- paused 动画暂停
+
+达到通过鼠标移入来控制动画暂停的效果
+
+```
+.box1:hover div{
+    animation-play-state: paused;
+}
+```
+
+#### animation-fill-mode
+
+动画的填充模式，可选值：
+
+- none 默认值 动画执行完毕元素回到原来位置
+- forwards 动画执行完毕元素会停止在动画结束的位置
+- backwards 动画延时等待时，元素就会处于开始位置（即在延时之前就处于from的状态）
+- both 结合了forwards 和 backwards，即延时之前就处于开始的from状态，结束之后停止在动画结束的位置
+
+```
+.box1{
+    width: 800px;
+    height: 800px;
+    background-color: silver;
+    overflow: hidden;
+}
+
+.box1 div{
+    width: 100px;
+    height: 100px;
+    margin-bottom: 100px;
+    margin-left: 10px;
+    
+}
+
+.box2{
+    background-color: #bfa;
+    animation: test 2s 2 1s alternate;
+
+    
+}
+
+.box1:hover div{
+    animation-play-state: paused;
+}
+
+
+@keyframes test {
+    /* from表示动画的开始位置 也可以使用 0% */
+    from{
+        margin-left: 0;
+        background-color: orange;
+    } 
+
+    /* to动画的结束位置 也可以使用100%*/
+    to{
+        background-color: red;
+        margin-left: 700px;
+    }
+}
+```
+
+```
+<div class="box1">
+    <div class="box2"></div>
+</div>
+```
+
+![动画](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%8A%A8%E7%94%BB.gif)
+
+### 3.变形
+
+变形就是指通过CSS来改变元素的形状或位置
+
+- 变形不会影响到页面的布局
+
+- transform 用来设置元素的变形效果
+
+  平移：
+
+  - translateX() 沿着x轴方向平移
+
+  - translateY() 沿着y轴方向平移
+
+  - translateZ() 沿着z轴方向平移
+
+    当设置百分比时，平移元素的百分比是相对于自身计算的
+    
+
+```
+transform: translateX(100%);
+```
+
+#### z轴平移
+
+- 调整元素在z轴的位置，正常情况就是调整元素和人眼之间的距离，距离越大，元素离人越近
+- z轴平移属于立体效果（近大远小），默认情况下网页是不支持透视，如果需要看见效果，必须要设置网页的视距
+
+```
+html{
+    /* 设置当前网页的视距为800px，人眼距离网页的距离 */
+    perspective: 800px;
+}
+```
+
+```
+.box1{
+    width: 200px;
+    height: 200px;
+    background-color: #bfa;
+    margin: 200px auto;
+    transition:2s;
+}
+
+body:hover .box1{
+    transform: translateZ(100px);
+}
+```
+
+#### transform-origin
+
+变形的原点，默认值：center
+
+```
+transform-origin:20px 20px; 
+```
+
+### 4.旋转
+
+通过旋转可以使元素沿着x y 或 z旋转指定的角度
+
+- rotateX()
+- rotateY()
+- rotateZ()
+
+```
+transform: rotateZ(.25turn); 
+transform: rotateY(180deg) translateZ(400px); 
+transform: translateZ(400px) rotateY(180deg) ; 
+```
+
+#### backface-visibility
+
+是否显示元素的背面
+
+```
+backface-visibility: hidden;
+```
+
+### 5.缩放
+
+- scaleX() 水平方向缩放
+- scaleY() 垂直方向缩放
+- scale() 双方向的缩放
+
+```
+.box1:hover{
+    transform:scale(2)
+}
+```
+
+```
+.box1{
+    width: 100px;
+    height: 100px;
+    background-color: #bfa;
+    transition:2s;
+    margin: 100px auto;
+}
+```
+
+```
+<div class="box1"></div>
+```
+
+![缩放](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%BC%A9%E6%94%BE.gif)
+
+## 九、less
+
+- less是一个css的增强版，通过less可以编写更少的代码实现更强大的样式
+- 在less中添加了许多的新特性：像对变量的支持、对mixin的支持... ...
+- less的语法大体上和css语法一致，但是less中增添了许多对css的扩展，所以浏览器无法直接执行less代码，要执行必须向将less转换为css，然后再由浏览器执行
+
+### 1.在less中所有的数值都可以直接进行运算
+
+```
+.box1{
+    // + - * /
+    width: 100px + 100px;
+    height: 100px/2;
+    background-color: #bfa;
+    
+}
+```
+
+### 2.将选择器嵌套
+
+```
+body{
+    width: 100px;
+    height: 100px;
+    
+    div{
+        color: red;
+    }
+}
+```
+
+### 3.less中的注释
+
+css中的注释，内容会被解析到css文件中；less中的单行注释，注释中的内容不会被解析到css中
+
+### 4.变量
+
+在变量中可以存储一个任意的值，并且我们可以在需要时，任意的修改变量中的值。变量的语法： @变量名
+
+- 使用变量时，如果是直接使用则以 @变量名 的形式使用即可
+- 作为类名或者一部分值使用时必须以 @{变量名} 的形式使用
+- 变量发生重名时，会优先使用比较近的变量
+- 可以在变量声明前就使用变量
+
+```
+@a:200px;
+@b:#bfa;
+@c:box6;
+
+.box5{
+    //使用变量是，如果是直接使用则以 @变量名 的形式使用即可
+    width: @a;
+    color:@b;
+}
+
+//作为类名，或者一部分值使用时必须以 @{变量名} 的形式使用
+.@{c}{
+    width: @a;
+    background-image: url("@{c}/1.png");
+}
+
+@d:200px;
+@d:300px;
+
+div{
+    // 变量发生重名时，会优先使用比较近的变量
+    @d:115px;
+    width: @d;
+    height: @e;
+}
+
+//可以在变量声明前就使用变量
+@e:335px;
+```
+
+### 5.&
+
+& 表示外层的父元素
+
+```
+.box1{
+    .box2{
+        color: red;
+    }
+
+    >.box3{
+        color: red;
+
+        &:hover{
+            color: blue;
+        }
+    }
+
+    //为box1设置一个hover
+    &:hover{
+        color: orange;
+    }
+
+    div &{
+        width: 100px;
+    }
+}
+```
+
+### 6.mixin混合
+
+直接对指定的样式进行引用
+
+#### 创建mixin
+
+```
+.p1{
+    width: 100px;
+    height: 200px;
+}
+```
+
+```
+.p3{
+    //这里就相当于将p1的样式在这里进行了复制
+    //mixin 混合
+    .p1();
+}
+```
+
+```
+// 使用类选择器时可以在选择器后边添加一个括号，这时我们实际上就创建了一个mixins
+.p4(){
+    width: 100px;
+    height: 100px;
+}
+```
+
+```
+.p5{
+    .p4;
+}
+```
+
+#### 在混合函数中设置变量
+
+```
+//在混合函数中可以直接设置变量
+.test(@w:100px,@h:200px,@bg-color:red){
+    width: @w;
+    height: @h;
+    border: 1px solid @bg-color;
+}
+
+div{
+    //调用混合函数，按顺序传递参数
+    // .test(200px,300px,#bfa);
+    .test(300px);
+    // .test(@bg-color:red, @h:100px, @w:300px);
+}
+```
+
+### 7. :extend()
+
+对当前选择器扩展指定选择器的样式（选择器分组）
+
+```
+.p1{
+    width: 100px;
+    height: 200px;
+}
+```
+
+```
+.p2:extend(.p1){
+    color: red;
+}
+```
