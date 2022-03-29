@@ -366,6 +366,19 @@ console.log(str.charAt(3))  // 1
 ```
 const str = 'hello guys';
 console.log(str.charCodeAt(3))  // 108
+console.log('A'.charCodeAt(0))//65
+```
+
+### fromCharCode()
+
+将 Unicode 编码转为一个字符。可接受一个指定的 Unicode 值，然后返回一个字符串。
+
+String.fromCharCode(*n1*, *n2*, ..., *nX*)，参数为一个或多个 Unicode 值
+
+```
+console.log(String.fromCharCode(65)) //A
+console.log(String.fromCharCode('A'.charCodeAt(0) + 1))//B
+console.log(String.fromCharCode(72,69,76,76,79))//HELLO
 ```
 
 ### match()
