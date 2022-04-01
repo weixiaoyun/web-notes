@@ -877,6 +877,20 @@ console.log(letters.size) //3
 
 - Math.max (x,y): 返回 x,y 中的最大值
 
+  - Math.max(*n1*,*n2*,*n3*,...,nX)，在 ECMASCript v3 之前，该方法只有两个参数。
+
+  - 返回参数中最大的值。如果没有参数，则返回 -Infinity。如果有某个参数为 NaN，或是不能转换成数字的非数字值，则返回 NaN。
+
+    ```
+    var c = [1,8,10,21,14,22,51,66,32,42,11];
+    var a = Math.max(5,10);
+    var b = Math.max(0,150,30,20,38);
+    var d = Math.max(...c);
+    console.log(a); //10
+    console.log(b); //150
+    console.log(d); //66
+    ```
+
 - Math.min (x,y): 返回 x,y 中的最小值
 
 - Math.pow (x,y): 返回 x 的 y 次方
@@ -1012,7 +1026,7 @@ var oNull = null;
 console.log(oNull.toString());   //won't   work,   causes   an   error
 ```
 
-### 八、其他
+## 八、其他
 
 #### isNaN()
 
