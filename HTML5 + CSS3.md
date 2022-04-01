@@ -3135,7 +3135,7 @@ ease 默认值，慢速开始，先加速，再减速
 - ease-in-out 先加速 后减速
 - cubic-bezier() 来指定时序函数
       https://cubic-bezier.com
-- steps() 分步执行过渡效果
+- steps() 分步执行过渡效果（通过分步实现动画效果）
    可以设置一个第二个值：
           end ， 在时间结束时执行过渡(默认值)
           start ， 在时间开始时执行过渡
@@ -3971,6 +3971,7 @@ li:nth-child(3){
 - 每一款移动设备设计时，都会有一个最佳的像素比，一般我们只需要将像素比设置为该值即可得到一个最佳效果。将像素比设置为最佳像素比的视口大小我们称其为完美视口
 
   将网页的视口设置为完美视口
+  
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 ### 4.视口的其他介绍
