@@ -3119,7 +3119,7 @@ audio 标签用来向页面中引入一个外部的音频文件，音视频文�
 
 对于IE8这种不支持audio标签的浏览器，会提示内部的文字信息：
 
-![IE8audio](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/IE8audio.png)
+![audioIE8](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/audioIE8.png)
 
 通过embed标签兼容IE8：
 
@@ -3132,7 +3132,7 @@ audio 标签用来向页面中引入一个外部的音频文件，音视频文�
     </audio>
 ```
 
-![IE8embed](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/IE8embed.png)
+![embedIE8](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/embedIE8.png)
 
 #### video
 
@@ -3146,7 +3146,7 @@ audio 标签用来向页面中引入一个外部的音频文件，音视频文�
 </video>
 ```
 
-![video](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/video.png)
+![video1](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/video1.png)
 
 复制视频的通用代码，将其引入到自己的iframe当中，该处引用腾讯视频的通用代码：
 
@@ -3154,7 +3154,7 @@ audio 标签用来向页面中引入一个外部的音频文件，音视频文�
 <iframe frameborder="0" src="https://v.qq.com/txp/iframe/player.html?vid=b00318l66nt" allowFullScreen="true" width="500" height="300"></iframe>
 ```
 
-![ifvideo](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/ifvideo.png)
+![iframeVideo](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/iframeVideo.png)
 
 ### 4.Canvas绘图
 
