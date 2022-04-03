@@ -3819,41 +3819,36 @@ background-image: repeating-linear-gradient(to right ,red, yellow 50px);
 
 #### 径向渐变(放射性的效果)
 
-- 默认情况下径向渐变的形状根据元素的形状来计算的
+默认情况下径向渐变的形状根据元素的形状来计算的
 
-  - 正方形 --> 圆形
-
-  - 长方形 --> 椭圆形
-
-   - 也可以手动指定径向渐变的大小
-
+- 正方形 --> 圆形
+- 长方形 --> 椭圆形
+ - 也可以手动指定径向渐变的大小
    - circle
+   - ellipse
+ - 也可以指定渐变的位置
 
-     - ellipse
+语法：
 
-   - 也可以指定渐变的位置
+radial-gradient(大小 at 位置, 颜色 位置 ,颜色 位置 ,颜色 位置)
 
-     语法：
+- 大小：
 
-     radial-gradient(大小 at 位置, 颜色 位置 ,颜色 位置 ,颜色 位置)
+  circle 圆形
 
-     - 大小：
+  ellipse 椭圆
 
-       circle 圆形
+  closest-side 近边
 
-       ellipse 椭圆
+  closest-corner 近角
 
-       closest-side 近边
+  farthest-side 远边
 
-       closest-corner 近角
+  farthest-corner 远角
 
-       farthest-side 远边
+- 位置：
 
-       farthest-corner 远角
-
-     - 位置：
-
-       top right left center bottom
+  top right left center bottom
 
 ```
 background-image: radial-gradient(farthest-side at 100px 100px, red , #bfa)
