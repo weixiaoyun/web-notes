@@ -1,4 +1,4 @@
-# HTML5 + CSS3
+HTML5 + CSS3
 
 网页分成三个部分：
 
@@ -3548,7 +3548,414 @@ WebSocket是HTML5开始提供的一种在单个 TCP 连接上进行全双工通�
 
 ## 九、CSS3新特性
 
-### 1.过渡
+### 1.CSS3选择器
+
+| 选择器                                                       | 示例                  | 示例说明                                                  | CSS  |
+| :----------------------------------------------------------- | :-------------------- | :-------------------------------------------------------- | :--- |
+| [.*class*](http://www.runoob.com/cssref/sel-class.html)      | .intro                | 选择所有class="intro"的元素                               | 1    |
+| [#*id*](http://www.runoob.com/cssref/sel-id.html)            | #firstname            | 选择所有id="firstname"的元素                              | 1    |
+| [*](http://www.runoob.com/cssref/sel-all.html)               | *                     | 选择所有元素                                              | 2    |
+| *[element](http://www.runoob.com/cssref/sel-element.html)*   | p                     | 选择所有<p>元素                                           | 1    |
+| *[element,element](http://www.runoob.com/cssref/sel-element-comma.html)* | div,p                 | 选择所有<div>元素和<p>元素                                | 1    |
+| [*element* *element*](http://www.runoob.com/cssref/sel-element-element.html) | div p                 | 选择<div>元素内的所有<p>元素                              | 1    |
+| [*element*>*element*](http://www.runoob.com/cssref/sel-element-gt.html) | div>p                 | 选择所有父级是 <div> 元素的 <p> 元素                      | 2    |
+| [*element*+*element*](http://www.runoob.com/cssref/sel-element-pluss.html) | div+p                 | 选择所有紧接着<div>元素之后的<p>元素                      | 2    |
+| [[*attribute*\]](http://www.runoob.com/cssref/sel-attribute.html) | [target]              | 选择所有带有target属性元素                                | 2    |
+| [[*attribute*=*value*\]](http://www.runoob.com/cssref/sel-attribute-value.html) | [target=-blank]       | 选择所有使用target="-blank"的元素                         | 2    |
+| [[*attribute*~=*value*\]](http://www.runoob.com/cssref/sel-attribute-value-contains.html) | [title~=flower]       | 选择标题属性包含单词"flower"的所有元素                    | 2    |
+| [[*attribute*\|=*language*\]](http://www.runoob.com/cssref/sel-attribute-value-lang.html) | [lang\|=en]           | 选择一个lang属性的起始值="EN"的所有元素                   | 2    |
+| [:link](http://www.runoob.com/cssref/sel-link.html)          | a:link                | 选择所有未访问链接                                        | 1    |
+| [:visited](http://www.runoob.com/cssref/sel-visited.html)    | a:visited             | 选择所有访问过的链接                                      | 1    |
+| [:active](http://www.runoob.com/cssref/sel-active.html)      | a:active              | 选择活动链接                                              | 1    |
+| [:hover](http://www.runoob.com/cssref/sel-hover.html)        | a:hover               | 选择鼠标在链接上面时                                      | 1    |
+| [:focus](http://www.runoob.com/cssref/sel-focus.html)        | input:focus           | 选择具有焦点的输入元素                                    | 2    |
+| [:first-letter](http://www.runoob.com/cssref/sel-firstletter.html) | p:first-letter        | 选择每一个<P>元素的第一个字母                             | 1    |
+| [:first-line](http://www.runoob.com/cssref/sel-firstline.html) | p:first-line          | 选择每一个<P>元素的第一行                                 | 1    |
+| [:first-child](http://www.runoob.com/cssref/sel-firstchild.html) | p:first-child         | 指定只有当<p>元素是其父级的第一个子级的样式。             | 2    |
+| [:before](http://www.runoob.com/cssref/sel-before.html)      | p:before              | 在每个<p>元素之前插入内容                                 | 2    |
+| [:after](http://www.runoob.com/cssref/sel-after.html)        | p:after               | 在每个<p>元素之后插入内容                                 | 2    |
+| [:lang(*language*)](http://www.runoob.com/cssref/sel-lang.html) | p:lang(it)            | 选择一个lang属性的起始值="it"的所有<p>元素                | 2    |
+| [*element1*~*element2*](http://www.runoob.com/cssref/sel-gen-sibling.html) | p~ul                  | 选择p元素之后的每一个ul元素                               | 3    |
+| [[*attribute*^=*value*\]](http://www.runoob.com/cssref/sel-attr-begin.html) | a[src^="https"]       | 选择每一个src属性的值以"https"开头的元素                  | 3    |
+| [[*attribute*$=*value*\]](http://www.runoob.com/cssref/sel-attr-end.html) | a[src$=".pdf"]        | 选择每一个src属性的值以".pdf"结尾的元素                   | 3    |
+| [[*attribute**=*value*\]](http://www.runoob.com/cssref/sel-attr-contain.html) | a[src*="44lan"]       | 选择每一个src属性的值包含子字符串"44lan"的元素            | 3    |
+| [:first-of-type](http://www.runoob.com/cssref/sel-first-of-type.html) | p:first-of-type       | 选择每个p元素是其父级的第一个p元素                        | 3    |
+| [:last-of-type](http://www.runoob.com/cssref/sel-last-of-type.html) | p:last-of-type        | 选择每个p元素是其父级的最后一个p元素                      | 3    |
+| [:only-of-type](http://www.runoob.com/cssref/sel-only-of-type.html) | p:only-of-type        | 选择每个p元素是其父级的唯一p元素                          | 3    |
+| [:only-child](http://www.runoob.com/cssref/sel-only-child.html) | p:only-child          | 选择每个p元素是其父级的唯一子元素                         | 3    |
+| [:nth-child(*n*)](http://www.runoob.com/cssref/sel-nth-child.html) | p:nth-child(2)        | 选择每个p元素是其父级的第二个子元素                       | 3    |
+| [:nth-last-child(*n*)](http://www.runoob.com/cssref/sel-nth-last-child.html) | p:nth-last-child(2)   | 选择每个p元素的是其父级的第二个子元素，从最后一个子项计数 | 3    |
+| [:nth-of-type(*n*)](http://www.runoob.com/cssref/sel-nth-of-type.html) | p:nth-of-type(2)      | 选择每个p元素是其父级的第二个p元素                        | 3    |
+| [:nth-last-of-type(*n*)](http://www.runoob.com/cssref/sel-nth-last-of-type.html) | p:nth-last-of-type(2) | 选择每个p元素的是其父级的第二个p元素，从最后一个子项计数  | 3    |
+| [:last-child](http://www.runoob.com/cssref/sel-last-child.html) | p:last-child          | 选择每个p元素是其父级的最后一个子级。                     | 3    |
+| [:root](http://www.runoob.com/cssref/sel-root.html)          | :root                 | 选择文档的根元素                                          | 3    |
+| [:empty](http://www.runoob.com/cssref/sel-empty.html)        | p:empty               | 选择每个没有任何子级的p元素（包括文本节点）               | 3    |
+| [:target](http://www.runoob.com/cssref/sel-target.html)      | #news:target          | 选择当前活动的#news元素（包含该锚名称的点击的URL）        | 3    |
+| [:enabled](http://www.runoob.com/cssref/sel-enabled.html)    | input:enabled         | 选择每一个已启用的输入元素                                | 3    |
+| [:disabled](http://www.runoob.com/cssref/sel-disabled.html)  | input:disabled        | 选择每一个禁用的输入元素                                  | 3    |
+| [:checked](http://www.runoob.com/cssref/sel-checked.html)    | input:checked         | 选择每个选中的输入元素                                    | 3    |
+| [:not(*selector*)](http://www.runoob.com/cssref/sel-not.html) | :not(p)               | 选择每个并非p元素的元素                                   | 3    |
+| [::selection](http://www.runoob.com/cssref/sel-selection.html) | ::selection           | 匹配元素中被用户选中或处于高亮状态的部分                  | 3    |
+| [:out-of-range](http://www.runoob.com/cssref/sel-out-of-range.html) | :out-of-range         | 匹配值在指定区间之外的input元素                           | 3    |
+| [:in-range](http://www.runoob.com/cssref/sel-in-range.html)  | :in-range             | 匹配值在指定区间之内的input元素                           | 3    |
+| [:read-write](http://www.runoob.com/cssref/sel-read-write.html) | :read-write           | 用于匹配可读及可写的元素                                  | 3    |
+| [:read-only](http://www.runoob.com/cssref/sel-read-only.html) | :read-only            | 用于匹配设置 "readonly"（只读） 属性的元素                | 3    |
+| [:optional](http://www.runoob.com/cssref/sel-optional.html)  | :optional             | 用于匹配可选的输入元素                                    | 3    |
+| [:required](http://www.runoob.com/cssref/sel-required.html)  | :required             | 用于匹配设置了 "required" 属性的元素                      | 3    |
+| [:valid](http://www.runoob.com/cssref/sel-valid.html)        | :valid                | 用于匹配输入值为合法的元素                                | 3    |
+| [:invalid](http://www.runoob.com/cssref/sel-invalid.html)    | :invalid              | 用于匹配输入值为非法的元素                                | 3    |
+
+可以参考第二章中的伪类选择器和伪元素选择器
+
+### 2.CSS3边框
+
+用CSS3，你可以创建圆角边框，添加阴影框，并作为边界的形象而不使用设计程序：
+
+| 属性                                                         | 说明                                           | CSS  |
+| :----------------------------------------------------------- | :--------------------------------------------- | :--- |
+| [border-image](http://www.runoob.com/cssref/css3-pr-border-image.html) | 设置所有边框图像的速记属性。                   | 3    |
+| [border-radius](http://www.runoob.com/cssref/css3-pr-border-radius.html) | 一个用于设置所有四个边框- *-半径属性的速记属性 | 3    |
+| [box-shadow](http://www.runoob.com/cssref/css3-pr-box-shadow.html) | 附加一个或多个下拉框的阴影                     | 3    |
+
+#### box-shadow
+
+用来设置元素的阴影效果，阴影不会影响页面布局
+
+- 第一个值 水平偏移量 设置阴影的水平位置 正值向右移动 负值向左移动
+- 第二个值 垂直偏移量 设置阴影的水平位置 正值向下移动 负值向上移动
+- 第三个值 阴影的模糊半径
+- 第四个值 阴影的颜色
+
+```
+box-shadow: 0px 0px 50px rgba(0, 0, 0, .3) ;
+```
+
+![阴影](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E9%98%B4%E5%BD%B1.png)
+
+**outline**
+
+用来设置元素的轮廓线，用法和border一模一样,轮廓和边框不同的点，就是轮廓不会影响到可见框的大小
+
+#### border-radius
+
+用来设置圆角(圆角设置的圆的半径大小),border-radius 可以分别指定四个角的圆角:
+
+- 四个值 左上 右上 右下 左下
+- 三个值 左上 右上/左下 右下
+- 两个值 左上/右下 右上/左下
+
+```
+border-radius: 20px / 40px; 
+```
+
+或者分别设置：
+
+```
+/* border-top-left-radius:  */
+/* border-top-right-radius */
+/* border-bottom-left-radius:  */
+/* border-bottom-right-radius:  */
+ border-top-left-radius:50px 100px;
+```
+
+用百分比设置：
+
+```
+/* 将元素设置为一个圆形 */
+border-radius: 50%;
+```
+
+![圆角](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%9C%86%E8%A7%92.png)
+
+#### border-image
+
+指定作为div元素周围边框的图像，border-image属性是速记属性用于设置border-image-source，border-image-slice，border-image-width，border-image-outset和border-image-repeat的值：
+
+```
+border-image: source slice width outset repeat|initial|inherit;
+```
+
+其中：
+
+- border-image-source：用于指定要用于绘制边框的图像的位置；
+- border-image-slice：图像边界向内偏移；
+- border-image-width： 图像边界的宽度；
+- border-image-outset：用于指定在边框外部绘制 border-image-area 的量
+- border-image-repeat： 用于设置图像边界是否应重复（repeat）、拉伸（stretch）或铺满（round）。
+
+```
+<p id="borderimg1">在这里，图像平铺（重复），以填补该地区。</p>
+<p id="borderimg2">在这里，图像被拉伸以填补该地区</p>
+```
+
+```
+#borderimg1 {
+    border: 10px solid transparent;
+    padding: 15px;
+    -webkit-border-image: url(border.png) 30 round; /* Safari 3.1-5 */
+    -o-border-image: url(border.png) 30 round; /* Opera 11-12.1 */
+    border-image: url(border.png) 30 round;
+}
+
+#borderimg2 {
+    border: 10px solid transparent;
+    padding: 15px;
+    -webkit-border-image: url(border.png) 30 stretch; /* Safari 3.1-5 */
+    -o-border-image: url(border.png) 30 stretch; /* Opera 11-12.1 */
+    border-image: url(border.png) 30 stretch;
+}
+```
+
+![边框图](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E8%BE%B9%E6%A1%86%E5%9B%BE.png)
+
+这是原始图片：
+
+![原始图片](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%8E%9F%E5%A7%8B%E5%9B%BE%E7%89%87.png)
+
+### 3.CSS3背景
+
+ CSS3中包含几个新的背景属性，提供更大背景元素控制。
+
+| 顺序                                                         | 描述                     | CSS  |
+| :----------------------------------------------------------- | :----------------------- | :--- |
+| [background-clip](http://www.runoob.com/cssref/css3-pr-background-clip.html) | 规定背景的绘制区域。     | 3    |
+| [background-origin](http://www.runoob.com/cssref/css3-pr-background-origin.html) | 规定背景图片的定位区域。 | 3    |
+| [background-size](http://www.runoob.com/cssref/css3-pr-background-size.html) | 规定背景图片的尺寸。     | 3    |
+
+#### background-clip
+
+background-clip属性指定背景绘制区域，语法：
+
+```
+background-clip: border-box|padding-box|content-box;
+```
+
+- border-box: 默认值。背景绘制在边框方框内（剪切成边框方框）
+- padding-box: 背景绘制在衬距方框内（剪切成衬距方框）
+- content-box: 背景绘制在内容方框内（剪切成内容方框）
+
+```
+<p>没有背景剪裁 (border-box没有定义):</p>
+<div class="example1">
+    <h2>感谢他的痛苦</h2>
+    <p>痛苦本身就是爱</p>
+</div>
+
+<p>background-clip: padding-box:</p>
+<div class="example2">
+    <h2>感谢他的痛苦</h2>
+    <p>痛苦本身就是爱</p>
+</div>
+
+<p>background-clip: content-box:</p>
+<div class="example3">
+    <h2>感谢他的痛苦</h2>
+    <p>痛苦本身就是爱</p>
+</div>
+```
+
+```
+<style>
+    .example1 {
+        border: 10px dotted black;
+        padding:35px;
+        background: yellow;
+    }
+
+    .example2 {
+        border: 10px dotted black;
+        padding:35px;
+        background: yellow;
+        background-clip: padding-box;
+    }
+
+    .example3 {
+        border: 10px dotted black;
+        padding:35px;
+        background: yellow;
+        background-clip: content-box;
+    }
+</style>
+```
+
+![background-clip](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/background-clip.png)
+
+#### background-origin
+
+相对于内容框来定位背景图像，语法：
+
+```
+background-origin: padding-box|border-box|content-box;
+```
+
+- padding-box: 背景图像填充框的相对位置;
+- border-box: 背景图像边界框的相对位置;
+- content-box: 背景图像的相对位置的内容框
+
+```
+<p>背景图像边界框的相对位置：</p>
+<div id="div1">
+    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+</div>
+
+<p>背景图像的相对位置的内容框：</p>
+<div id="div2">
+    Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat.
+</div>
+```
+
+```
+div
+{
+    border:1px solid black;
+    padding:35px;
+    background-image:url('smiley.gif');
+    background-repeat:no-repeat;
+    background-position:left;
+}
+#div1
+{
+    background-origin:border-box;
+}
+#div2
+{
+    background-origin:content-box;
+}
+```
+
+![background-origin](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/background-origin.png)
+
+#### background-size
+
+background-size属性指定背景图片大小，语法：
+
+```
+background-size: length|percentage|cover|contain;
+```
+
+- length：设置背景图片高度和宽度。第一个值设置宽度，第二个值设置的高度。如果只给出一个值，第二个是设置为 **auto**(自动)
+- percentage：将计算相对于背景定位区域的百分比。第一个值设置宽度，第二个值设置的高度。如果只给出一个值，第二个是设置为"auto(自动)"
+- cover：此时会保持图像的纵横比并将图像缩放成将完全覆盖背景定位区域的最小大小。
+- contain：此时会保持图像的纵横比并将图像缩放成将适合背景定位区域的最大大小。
+
+```
+<p>
+    Lorem ipsum，中文又称“乱数假文”， 是指一篇常用于排版设计领域的拉丁文文章 ，主要的目的为测试文章或文字在不同字型、版型下看起来的效果。
+</p>
+
+<p>原始图片: <img src="/try/demo_source/img_flwr.gif"  alt="Flowers" width="224" height="162"></p>
+```
+
+```
+body{
+    background:url(/try/demo_source/img_flwr.gif);
+    background-size:80px 60px;
+    background-repeat:no-repeat;
+    padding-top:40px;
+}
+```
+
+![background-size](https://raw.githubusercontent.com/weixiaoyun/Images/html-%252B-css/background-size.png)
+
+### 4.CSS3渐变
+
+通过渐变可以设置一些复杂的背景颜色，可以实现从一个颜色向其他颜色过渡
+
+的效果
+
+#### 线性渐变
+
+颜色沿着一条直线变化，linear-gradient()
+
+linear-gradient(red,yellow) 红色在开头，黄色在结尾，中间是过渡区域
+
+- 线性渐变的开头，我们可以指定一个渐变的方向
+  - to left
+  - to right
+  - to bottom
+  - to top
+  - deg deg表示度数
+  - turn 表示圈
+- 渐变可以同时指定多个颜色，多个颜色默认情况下平均分布，
+  也可以手动指定渐变的分布情况
+
+repeating-linear-gradient()： 可以平铺的线性渐变
+
+通过渐变可以设置一些复杂的背景颜色，可以实现从一个颜色向其他颜色过渡的效果，**渐变是图片，需要通过background-image来设置**：
+
+```
+background-image: repeating-linear-gradient(to right ,red, yellow 50px);
+```
+
+![线性渐变](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%BA%BF%E6%80%A7%E6%B8%90%E5%8F%98.png)
+
+#### 径向渐变(放射性的效果)
+
+- 默认情况下径向渐变的形状根据元素的形状来计算的
+
+  - 正方形 --> 圆形
+
+  - 长方形 --> 椭圆形
+
+   - 也可以手动指定径向渐变的大小
+
+   - circle
+
+     - ellipse
+
+   - 也可以指定渐变的位置
+
+     语法：
+
+     radial-gradient(大小 at 位置, 颜色 位置 ,颜色 位置 ,颜色 位置)
+
+     - 大小：
+
+       circle 圆形
+
+       ellipse 椭圆
+
+       closest-side 近边
+
+       closest-corner 近角
+
+       farthest-side 远边
+
+       farthest-corner 远角
+
+     - 位置：
+
+       top right left center bottom
+
+```
+background-image: radial-gradient(farthest-side at 100px 100px, red , #bfa)
+```
+
+![径向渐变](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%BE%84%E5%90%91%E6%B8%90%E5%8F%98.png)
+
+### 5.CSS3文本效果
+
+| 属性                                                         | 描述                                                    | CSS  |
+| :----------------------------------------------------------- | :------------------------------------------------------ | :--- |
+| [hanging-punctuation](http://www.runoob.com/cssref/css3-pr-hanging-punctuation.html) | 规定标点字符是否位于线框之外。                          | 3    |
+| [punctuation-trim](http://www.runoob.com/cssref/css3-pr-punctuation-trim.html) | 规定是否对标点字符进行修剪。                            | 3    |
+| text-align-last                                              | 设置如何对齐最后一行或紧挨着强制换行符之前的行。        | 3    |
+| text-emphasis                                                | 向元素的文本应用重点标记以及重点标记的前景色。          | 3    |
+| [text-justify](http://www.runoob.com/cssref/css3-pr-text-justify.html) | 规定当 text-align 设置为 "justify" 时所使用的对齐方法。 | 3    |
+| [text-outline](http://www.runoob.com/cssref/css3-pr-text-outline.html) | 规定文本的轮廓。                                        | 3    |
+| [text-overflow](http://www.runoob.com/cssref/css3-pr-text-overflow.html) | 规定当文本溢出包含元素时发生的事情。                    | 3    |
+| [text-shadow](http://www.runoob.com/cssref/css3-pr-text-shadow.html) | 向文本添加阴影。                                        | 3    |
+| [text-wrap](http://www.runoob.com/cssref/css3-pr-text-wrap.html) | 规定文本的换行规则。                                    | 3    |
+| [word-break](http://www.runoob.com/cssref/css3-pr-word-break.html) | 规定非中日韩文本的换行规则。                            | 3    |
+| [word-wrap](http://www.runoob.com/cssref/css3-pr-word-wrap.html) | 允许对长的不可分割的单词进行分割并换行到下一行。        | 3    |
+
+### 6.CSS3字体
+
+ 以前CSS3的版本，网页设计师不得不使用用户计算机上已经安装的字体。使用CSS3，网页设计师可以使用他/她喜欢的任何字体。当你发现您要使用的字体文件时，只需简单的将字体文件包含在网站中，它会自动下载给需要的用户。所选择的字体在新的CSS3版本有关于@font-face规则描述。"自己的"的字体是在 CSS3 @font-face 规则中定义的。
+
+**详情可参考第六章字体——@font-face**
+
+### 7.过渡
 
 - 通过过渡可以指定一个属性发生变化时的切换方式
 - 通过过渡可以创建一些非常好的效果，提升用户的体验
@@ -3654,7 +4061,7 @@ transition:2s margin-left 1s cubic-bezier(.24,.95,.82,-0.88);
 
 ![过渡](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E8%BF%87%E6%B8%A1.gif)
 
-### 2.动画
+### 8.动画
 
 - 动画和过渡类似，都是可以实现一些动态的效果
 - 不同的是过渡需要在某个属性发生变化时才会触发，动画可以自动触发动态效果   
@@ -3791,7 +4198,7 @@ animation-direction: alternate-reverse;
 
 ![动画](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E5%8A%A8%E7%94%BB.gif)
 
-### 3.变形
+### 9.变形
 
 变形就是指通过CSS来改变元素的形状或位置
 
@@ -3848,7 +4255,7 @@ body:hover .box1{
 transform-origin:20px 20px; 
 ```
 
-### 4.旋转
+### 10.旋转
 
 通过旋转可以使元素沿着x y 或 z旋转指定的角度
 
@@ -3870,7 +4277,7 @@ transform: translateZ(400px) rotateY(180deg) ;
 backface-visibility: hidden;
 ```
 
-### 5.缩放
+### 11.缩放
 
 - scaleX() 水平方向缩放
 - scaleY() 垂直方向缩放
@@ -3897,6 +4304,45 @@ backface-visibility: hidden;
 ```
 
 ![缩放](https://raw.githubusercontent.com/weixiaoyun/Images/html-%2B-css/%E7%BC%A9%E6%94%BE.gif)
+
+### 12.CSS多列
+
+下表列出了所有 CSS3 的多列属性：
+
+| 属性                                                         | 描述                                     |
+| :----------------------------------------------------------- | :--------------------------------------- |
+| [column-count](http://www.runoob.com/cssref/css3-pr-column-count.html) | 指定元素应该被分割的列数。               |
+| [column-fill](http://www.runoob.com/cssref/css3-pr-column-fill.html) | 指定如何填充列                           |
+| [column-gap](http://www.runoob.com/cssref/css3-pr-column-gap.html) | 指定列与列之间的间隙                     |
+| [column-rule](http://www.runoob.com/cssref/css3-pr-column-rule.html) | 所有 column-rule-* 属性的简写            |
+| [column-rule-color](http://www.runoob.com/cssref/css3-pr-column-rule-color.html) | 指定两列间边框的颜色                     |
+| [column-rule-style](http://www.runoob.com/cssref/css3-pr-column-rule-style.html) | 指定两列间边框的样式                     |
+| [column-rule-width](http://www.runoob.com/cssref/css3-pr-column-rule-width.html) | 指定两列间边框的厚度                     |
+| [column-span](http://www.runoob.com/cssref/css3-pr-column-span.html) | 指定元素要跨越多少列                     |
+| [column-width](http://www.runoob.com/cssref/css3-pr-column-width.html) | 指定列的宽度                             |
+| [columns](http://www.runoob.com/cssref/css3-pr-columns.html) | 设置 column-width 和 column-count 的简写 |
+
+### 13.CSS3盒模型
+
+ 在 CSS3 中, 增加了一些新的用户界面特性来调整元素尺寸，框尺寸和外边框，主要包括以下用户界面属性：
+
+- resize：none | both | horizontal | vertical | inherit
+- box-sizing: content-box | border-box | inherit
+- outline:outline-color outline-style outline-width outine-offset
+
+resize属性指定一个元素是否应该由用户去调整大小。
+
+box-sizing 属性允许您以确切的方式定义适应某个区域的具体内容。
+
+outline-offset 属性对轮廓进行偏移，并在超出边框边缘的位置绘制轮廓。
+
+### 14.弹性盒
+
+**详情参考第十一章flex**
+
+### 15.CSS多媒体查询
+
+**详情参考第十三章媒体查询**
 
 ## 十、less
 
@@ -4522,7 +4968,7 @@ html{
 }
 ```
 
-### 7.媒体查询
+## 十三、媒体查询
 
 媒体特性：
 
