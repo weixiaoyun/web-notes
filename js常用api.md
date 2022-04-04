@@ -869,6 +869,15 @@ console.log(letters.size) //3
 
  为每个元素调用回调
 
+### Set.clear()
+
+从 Set 中删除所有元素
+
+```
+letters.clear()
+console.log(letters.keys())//{}
+```
+
 ## 六、Math相关
 
 - Math.ceil (): 对数进行上舍入（天花板函数）
