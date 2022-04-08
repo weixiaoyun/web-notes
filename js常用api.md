@@ -14,6 +14,81 @@ const a = Array.from(new Set(arr)) // [3, 4, 5, 6, 7]
 const a = [...new Set(arr)]//推荐
 ```
 
+### new Array()
+
+创建一个定长数组
+
+```
+var arr1 = new Array(5);//[空属性 * 5]
+var arr2 = new Array(5).fill('')//['','','','','']
+var arr3 = new Array(2)
+for (let i = 0; i < 2; i++){
+    arr3[i] = new Array(2)
+}//创建二维数组
+console.log(arr3)//[[空属性*2]， [空属性*2]]
+```
+
+### from()
+
+用于通过拥有 length 属性的对象或可迭代的对象来返回一个数组。
+
+如果对象是数组返回 true，否则返回 false
+
+```
+Array.from(object, mapFunction, thisValue)
+```
+
+| 参数          | 描述                                        |
+| ------------- | ------------------------------------------- |
+| *object*      | 必需，要转换为数组的对象。                  |
+| *mapFunction* | 可选，数组中每个元素要调用的函数。          |
+| *thisValue*   | 可选，映射函数(mapFunction)中的 this 对象。 |
+
+```
+var setObj = new Set(["a", "b", "c"]);
+var objArr = Array.from(setObj);
+console.log(objArr[1] == "b");  // true
+var arr = Array.from([1, 2, 3], x => x * 10);
+console.log(arr)
+// arr[0] == 10;
+// arr[1] == 20;
+// arr[2] == 30;
+```
+
+Array.from() 可以将一个伪数组转换为数组，如下所示：
+
+```
+let obj = {
+    '0': 1,//'0':1中的'0'将转换为下标0,下面的key同理
+    '1': 2,
+    '2':3,
+    'length': 4,//length规定了转换的数组有多长
+}
+let newObj= Array.from(obj, item => {return item})
+console.log(newObj); //输出:[ 1, 2, 3, undefined ]
+```
+
+```
+let obj = {
+    'a': 1,
+    'b': 2,
+    'c':3,
+    'length': 4,
+}
+let newObj= Array.from(obj, item => {return item})
+console.log(newObj); //key值不按常理出牌所以无效，但规定了 length 所以输出: 四个 undefined
+```
+
+```
+let obj = {
+    '0': 1,
+    '3': 2,
+    'length': 4,
+}
+let newObj= Array.from(obj, item => {return item})
+console.log(newObj); // 输出:[ 1, undefined, undefined, 2 ]
+```
+
 ### sort()
 
 对数组元素进行排序（改变原数组）
