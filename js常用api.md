@@ -100,6 +100,38 @@ cosole.log(arr.sort((a,b)=>b-a))// [6,5,4,3,2,1] 大小倒序
 //不可以进行运算的则比较编码大小  'b' > 'a' => true
 ```
 
+sort() 方法用于对数组的元素进行排序。
+
+排序顺序可以是字母或数字，并按升序或降序。
+
+默认排序顺序为按字母升序。
+
+**语法：**    *array*.sort(*sortfunction*)
+
+| 参数           | 描述                             |
+| :------------- | :------------------------------- |
+| *sortfunction* | 可选。规定排序顺序。必须是函数。 |
+
+```
+var str = ['ranko', 'kotori', 'ruby', 'rank']
+var fruits = ["Banana", "Orange", "Apple", "Mango"]
+fruits.sort();//['Apple', 'Banana', 'Mango', 'Orange']
+str.sort((a, b)=> {
+    var i = 0;
+    while (a.charCodeAt(i) || b.charCodeAt(i)){
+        if(!a.charCodeAt(i)){
+            return -1
+        } else if(!b.charCodeAt(i)){
+            return 1
+        } else  if(a.charCodeAt(i)!==b.charCodeAt(i)){
+            return a.charCodeAt(i) - b.charCodeAt(i)
+        } else {
+            i++
+        }
+    }//模拟字典升序
+}); //['kotori', 'rank', 'ranko', 'ruby']
+```
+
 ### reverse()
 
 反转数组中的元素（改变原数组）
