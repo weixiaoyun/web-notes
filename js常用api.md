@@ -954,6 +954,16 @@ console.log(letters instanceof Set) //true
 console.log(letters.has('a')) //true
 ```
 
+### Set.delete()
+
+删除由其值指定的元素：
+
+```
+letters.delete('a')
+console.log(letters.has('a')) //false
+console.log(letters); //{'b', 'c'}
+```
+
 ### Set.keys()
 
 返回 Set 对象中值的数组
@@ -985,7 +995,118 @@ letters.clear()
 console.log(letters.keys())//{}
 ```
 
-## 六、Math相关
+## 六、Map()相关
+
+可以将 Array 传递给 new Map() 构造函数：
+
+```
+const apples = {name: 'Apples'};
+const bananas = {name: 'Bananas'};
+const oranges = {name: 'Oranges'};
+
+// 创建新的 Map
+const fruits = new Map([
+[apples, 500],
+    [bananas, 300],
+    [oranges, 200]
+]);
+console.log(fruits)//{{name: 'Apples'} => 500, {name: 'Bananas'} => 300, {name: 'Oranges'} => 200}
+```
+
+### Map.set()
+
+为 Map 对象中的键设置值:
+
+```
+const apples = {name: 'Apples'};
+const bananas = {name: 'Bananas'};
+const oranges = {name: 'Oranges'};
+
+// 创建新的 Map
+const fruits = new Map();
+
+// Add new Elements to the Map
+fruits.set(apples, 500);
+fruits.set(bananas, 300);
+fruits.set(oranges, 200);
+console.log(fruits) //{{name: 'Apples'} => 500, {name: 'Bananas'} => 300, {name: 'Oranges'} => 200}
+```
+
+### Map.get()
+
+get() 方法获取 Map 中键的值：
+
+```
+console.log(fruits.get(apples));//500
+```
+
+```
+fruits.get("apples");  // 返回 undefined
+```
+
+### Map.entries()
+
+返回 Map 对象中键/值对的数组：
+
+```
+console.log(fruits.entries()) //MapIterator {{name: 'Apples'} => 500, {name: 'Bananas'} => 300, {name: 'Oranges'} => 200}
+```
+
+### Map.keys()
+
+返回 Map 对象中键的数组：
+
+```
+console.log(fruits.keys()) //MapIterator {{name: 'Apples'}, {name: 'Bananas'}, {name: 'Oranges'}}
+```
+
+### Map.values()
+
+返回 Map 对象中值的数组：
+
+```
+console.log(fruits.values()) //MapIterator {500, 300, 200}
+```
+
+### Map.has()
+
+如果 Map 中存在键，则 Map.has() 返回 true：
+
+```
+console.log(fruits.has(apples))//true
+```
+
+### Map.size
+
+Map.size 返回 Map 中元素的数量：
+
+```
+console.log(fruits.size)//3
+```
+
+### Map.delete()
+
+Map.delete() 删除 Map 元素：
+
+```
+fruits.delete(apples)
+console.log(fruits) //{{name: 'Bananas'} => 300, {name: 'Oranges'} => 200}
+```
+
+### Map.clear()
+
+Map.clear() 从 Map 中移除所有元素：
+
+```
+fruits.clear()
+console.log(fruits) //Map(0) {size: 0}
+```
+
+### Map.forEach()
+
+为每个键/值对调用回调
+
+## 七、Math相关
 
 - Math.ceil (): 对数进行上舍入（天花板函数）
 
@@ -1050,7 +1171,7 @@ console.log(letters.keys())//{}
 
 - Math.valueOf (): 返回 Math 对象的原始值
 
-## 七、数据转换
+## 八、数据转换
 
 ### 1.转换函数
 
@@ -1142,7 +1263,7 @@ var oNull = null;
 console.log(oNull.toString());   //won't   work,   causes   an   error
 ```
 
-## 八、其他
+## 九、其他
 
 #### isNaN()
 
