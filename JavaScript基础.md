@@ -1340,14 +1340,14 @@ switch(num){
    ```
 
 - while语句在执行时，先对条件表达式进行求值判断：
-   
+  
    - 如果值为true，则执行循环体；循环体执行完毕以后，继续对表达式进行判断；如果为true，则继续执行循环体，以此类推
    - 如果值为false，则终止循环
 
 #### do...while循环
 
 - 语法：
-   
+  
    ```
    do{
       语句...
@@ -1355,7 +1355,7 @@ switch(num){
    ```
    
 - 执行流程：
-   
+  
    - do...while语句在执行时，会先执行循环体，
       循环体执行完毕以后，在对while后的条件表达式进行判断，
       如果结果为true，则继续执行循环体，执行完毕继续判断以此类推
@@ -1432,6 +1432,12 @@ for循环的执行流程：
 ```
 for(var i = 0 ; i < 10 ; i++ ){
    alert(i);
+}
+```
+
+```
+for(var i = 0 ; i < 10 ; i++ ){
+   console.log(i); //0,1,2,3,4,5,6,7,8,9
 }
 ```
 
@@ -1877,4 +1883,489 @@ sum(123,456,"hello",true,null); //579
 //a = 123
 //b = undefined
 sum(123); //NaN
+```
+
+### 3.函数的返回值
+
+可以使用 return 来设置函数的返回值
+语法：*return 值*
+
+return后的值将会会作为函数的执行结果返回；可以定义一个变量，来接收该结果
+
+在函数中return后的语句都不会执行
+
+- 如果return语句后不跟任何值就相当于返回一个undefined，
+- 如果函数中不写return，则也会返回undefined
+
+- return后可以跟任意类型的值；可以是一个对象，也可以是一个函数
+
+```
+function sum(a , b , c){
+
+   var d = a + b + c;
+
+   return d;
+
+}
+```
+
+```
+function fun2(){
+
+   //返回一个对象
+   return {name:"沙和尚"};
+}
+
+var a = fun2();
+
+console.log("a = "+a); //a = [object Object]
+
+function fun3(){
+   //在函数内部再声明一个函数
+   function fun4(){
+      return '我是fun4'
+   }
+
+   //将fun4函数对象作为返回值返回
+   return fun4;
+}
+
+a = fun3();
+console.log(a);/*ƒ fun4(){
+   return '我是fun4'
+}*/
+console.log(a());  //我是fun4
+console.log(fun3()());  //我是fun4
+```
+
+调用函数
+
+```
+var result = sum(4,7,8);
+
+console.log("result = "+result); //result = 19
+```
+
+- 函数名()：调用函数，相当于使用的函数的返回值
+
+- 函数名：函数对象，相当于直接使用函数对象
+
+break，continue，return的区别：
+
+- 使用break可以退出当前的循环
+- continue用于跳过当次循环
+- 使用return可以结束整个函数
+
+### 4.立即执行函数
+
+函数定义完，立即被调用，这种函数叫做立即执行函数（立即执行函数往往只会执行一次）
+
+```
+(function(a,b){
+   console.log("a = "+a);
+   console.log("b = "+b);
+})(123,456); /*a = 123
+          b = 456*/
+```
+
+### 5.方法
+
+函数也可以作为对象的属性，如果一个函数作为一个对象的属性保存，那么我们称这个函数是这个对象的方法。
+调用这个函数就说调用对象的方法（method）
+
+（但是它只是名称上的区别没有其他的区别）
+
+```
+var obj = new Object();
+
+//向对象中添加属性
+obj.name = "孙悟空";
+obj.age = 18;
+
+//对象的属性值可以是任何的数据类型，也可以是个函数
+obj.sayName = function(){
+   console.log(obj.name);
+};
+```
+
+```
+//调方法
+obj.sayName();
+```
+
+### 6.枚举对象中的属性
+
+使用for ... in 语句
+
+语法：
+
+```
+for(var 变量 in 对象){
+
+}
+```
+
+for...in语句 对象中有几个属性，循环体就会执行几次，每次执行时，会将对象中的一个属性的名字赋值给变量
+
+```
+var obj = {
+         name:"孙悟空",
+         age:18,
+         gender:"男",
+         address:"花果山"
+       };
+
+//枚举对象中的属性
+
+for(var n in obj){
+   console.log("属性名:"+n);
+
+   console.log("属性值:"+obj[n]);
+}
+/*属性名:name
+属性值:孙悟空
+属性名:age
+属性值:18
+属性名:gender
+属性值:男
+属性名:address
+属性值:花果山*/
+```
+
+### 7.作用域
+
+作用域指一个变量的作用的范围，在JS中一共有两种作用域：
+
+#### 全局作用域
+
+   - 直接编写在script标签中的JS代码，都在全局作用域
+   - 全局作用域在页面打开时创建，在页面关闭时销毁
+   - 在全局作用域中有一个全局对象window，
+      它代表的是一个浏览器的窗口，它由浏览器创建我们可以直接使用
+   - 在全局作用域中：
+      创建的变量都会作为window对象的属性保存
+      创建的函数都会作为window对象的方法保存
+   - 全局作用域中的变量都是全局变量，
+      在页面的任意的部分都可以访问的到
+
+```
+var a = 10;
+var b = 20;
+var c = "hello";
+
+console.log(window.c); //hello
+
+function fun(){
+   console.log("我是fun函数");
+}
+
+window.fun(); //我是fun函数
+```
+
+变量的声明提前
+   - 使用var关键字声明的变量，会在所有的代码执行之前被声明（但是不会赋值），
+      但是如果声明变量时不使用var关键字，则变量不会被声明提前
+
+函数的声明提前
+   - 使用函数声明形式创建的函数 function 函数(){}
+      它会在所有的代码执行之前就被创建，所以我们可以在函数声明前来调用函数
+   - 使用函数表达式创建的函数，不会被声明提前，所以不能在声明前调用
+
+```
+console.log("a = "+a); //a = undefined
+
+var a = 123;
+```
+
+```
+fun();//我是一个fun函数
+
+//函数声明，会被提前创建
+function fun(){
+   console.log("我是一个fun函数");
+}
+
+fun2();//Uncaught TypeError: fun2 is not a function
+
+//函数表达式，不会被提前创建
+var fun2 = function(){
+   console.log("我是fun2函数");
+};
+```
+
+#### 函数作用域
+
+- 调用函数时创建函数作用域，函数执行完毕以后，函数作用域销毁
+- 每调用一次函数就会创建一个新的函数作用域，他们之间是互相独立的
+- 在函数作用域中可以访问到全局作用域的变量
+   在全局作用域中无法访问到函数作用域的变量
+- 当在函数作用域操作一个变量时，它会先在自身作用域中寻找，如果有就直接使用
+   如果没有则向上一级作用域中寻找，直到找到全局作用域，
+   如果全局作用域中依然没有找到，则会报错ReferenceError
+- 在函数中要访问全局变量可以使用window对象
+
+```
+var a = 10;
+
+function fun(){
+
+   var a = "我是fun函数中的变量a";
+   var b = 20;
+
+   function fun2(){
+      console.log("a = "+a);  //a = 我是fun函数中的变量a
+      console.log("a = "+window.a);  //a = 10
+   }
+
+   fun2();
+
+}
+
+fun();
+console.log("b = "+b);  //Uncaught ReferenceError: b is not defined
+```
+
+在函数作用域也有声明提前的特性：
+
+- 使用var关键字声明的变量，会在函数中所有的代码执行之前被声明
+- 函数声明也会在函数中所有的代码执行之前执行
+- 在函数中，不使用var声明的变量都会成为全局变量
+- 定义形参就相当于在函数作用域中声明了变量
+
+```
+function fun3(){
+
+   fun4();  //I'm fun4
+
+   console.log(a); //undefined
+
+   var a = 35;
+
+   function fun4(){
+      console.log("I'm fun4");
+   }
+
+}
+
+fun3();
+```
+
+```
+var c = 33;
+
+function fun5(){
+   console.log("c = "+c); //c = undefined
+
+   var c = 10;
+}
+
+fun5();
+```
+
+该处由于没有使用var，那么也不会提前声明，console处的c需要到上一级作用域寻找，所以输出33
+
+```
+var c = 33;
+
+function fun5(){
+   console.log("c = "+c); //c = 33
+
+   c = 10;
+}
+```
+
+在函数中，不使用var声明的变量都会成为全局变量：
+
+```
+var c = 33;
+function fun5(){
+   console.log("c = "+c); //c = 33
+   c = 10;
+}
+console.log("c = "+c) //c = 33
+fun5();
+console.log("c = "+c) //c = 10
+```
+
+```
+function fun5(){
+   //d没有使用var关键字，则会设置为全局变量
+   d = 100;
+}
+fun5();
+//在全局输出d
+console.log("d = "+d); //d = 100
+```
+
+定义形参就相当于在函数作用域中声明了变量：
+
+```
+var e = 23;
+
+function fun6(){
+   alert(e);  //23
+}
+
+fun6();
+```
+
+```
+var e = 23;
+
+function fun6(e){
+   alert(e);  //undefined
+}
+
+fun6();
+```
+
+### 8.this
+
+解析器在调用函数每次都会向函数内部传递进一个隐含的参数；这个隐含的参数就是this，this指向的是一个对象。
+
+这个对象我们称为函数执行的 上下文对象
+
+根据函数的调用方式的不同，this会指向不同的对象
+
+1. 以函数的形式调用时，this永远都是window
+2. 以方法的形式调用时，this就是调用方法的那个对象
+
+
+
+其中，直接以函数形式调用，会输出  ‘全局的name属性’，this相当于windows；
+
+但是刚打开页面时，‘全局的name属性’ 不会打印出来，因为先调用的fun函数，后定义的全局name，但是刷新页面就会打印出，因为name属性赋值给了全局变量window，除非销毁页面，那样定义的全局作用域变量才会失效。
+
+以方法的形式调用，this是调用方法的对象。
+
+```
+function fun(){
+   console.log(this.name);
+}
+
+//以函数形式调用，this是window
+fun(); //全局的name属性
+
+//创建一个对象
+var obj = {
+   name:"孙悟空",
+   sayName:fun
+};
+
+console.log(obj.sayName == fun); //true
+var name = "全局的name属性";
+
+//以方法的形式调用，this是调用方法的对象
+obj.sayName(); //孙悟空
+```
+
+#### 使用工厂法创建对象
+
+可以通过该方法可以大批量的创建对象
+
+使用工厂方法创建的对象，使用的构造函数都是Object，所以创建的对象都是Object这个类型，就导致我们无法区分出多种不同类型的对象
+
+```
+function createPerson(name , age ,gender){
+   //创建一个新的对象
+   var obj = new Object();
+   //向对象中添加属性
+   obj.name = name;
+   obj.age = age;
+   obj.gender = gender;
+   obj.sayName = function(){
+      alert(this.name);
+   };
+   //将新的对象返回
+   return obj;
+}
+
+/*
+ * 用来创建狗的对象
+ */
+function createDog(name , age){
+   var obj = new Object();
+   obj.name = name;
+   obj.age = age;
+   obj.sayHello = function(){
+      alert("汪汪~~");
+   };
+
+   return obj;
+}
+
+var obj2 = createPerson("猪八戒",28,"男");
+var obj3 = createPerson("白骨精",16,"女");
+var obj4 = createPerson("蜘蛛精",18,"女");
+
+//创建一个狗的对象
+var dog = createDog("旺财",3);
+
+console.log(dog); //{name: '旺财', age: 3, sayHello: ƒ}
+console.log(obj4);  //{name: '蜘蛛精', age: 18, gender: '女', sayName: ƒ}
+```
+
+### 9.构造函数
+
+可以创建一个构造函数，专门用来创建Person对象
+
+- 构造函数就是一个普通的函数，创建方式和普通函数没有区别，不同的是构造函数习惯上首字母大写
+- 构造函数和普通函数的区别就是调用方式的不同；普通函数是直接调用，而构造函数需要使用new关键字来调用
+
+
+**构造函数的执行流程**：
+
+1. 立刻创建一个新的对象
+2. 将新建的对象设置为函数中this,在构造函数中可以使用this来引用新建的对象
+3. 逐行执行函数中的代码
+4. 将新建的对象作为返回值返回
+
+使用同一个构造函数创建的对象，我们称为一类对象，也将一个构造函数称为一个类。
+我们将通过一个构造函数创建的对象，称为是该类的实例（也就是说通过构造函数创建的对象可以知道它是哪一个类，而不用像工厂法创建的对象一样全是object）
+
+**this的情况**：
+
+1. 当以函数的形式调用时，this是window
+2. 当以方法的形式调用时，谁调用方法this就是谁
+3. 当以构造函数的形式调用时，this就是新创建的那个对象
+
+```
+function Person(name , age , gender){
+   this.name = name;
+   this.age = age;
+   this.gender = gender;
+   this.sayName = function(){
+      alert(this.name);
+   };
+}
+
+function Dog(){
+
+}
+
+var per = new Person("孙悟空",18,"男");
+var per2 = new Person("玉兔精",16,"女");
+var per3 = new Person("奔波霸",38,"男");
+
+var dog = new Dog();
+
+console.log(per); //Person {name: '孙悟空', age: 18, gender: '男', sayName: ƒ}
+console.log(dog); //Dog {}
+```
+
+使用instanceof可以检查一个对象是否是一个类的实例，语法：
+
+*对象 instanceof 构造函数*
+
+如果是，则返回true，否则返回false
+
+```
+console.log(per instanceof Person); //true
+console.log(dog instanceof Person); //false
+
+/*
+ * 所有的对象都是Object的后代，
+ *     所以任何对象和Object左instanceof检查时都会返回true
+ */
+console.log(dog instanceof Object); //true
 ```
