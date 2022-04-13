@@ -2369,3 +2369,455 @@ console.log(dog instanceof Person); //false
  */
 console.log(dog instanceof Object); //true
 ```
+
+在Person构造函数中，为每一个对象都添加了一个sayName方法。
+
+目前我们的方法是在构造函数内部创建的，也就是构造函数每执行一次就会创建一个新的sayName方法。
+
+但是所有实例的sayName都是唯一的。这样就导致了构造函数执行一次就会创建一个新的方法，执行10000次就会创建10000个新的方法，而10000个方法都是一摸一样的，这是完全没有必要，完全可以使所有的对象共享同一个方法。
+
+将函数定义在全局作用域，污染了全局作用域的命名空间，而且定义在全局作用域中也很不安全：
+
+```
+function Person(name , age , gender){
+   this.name = name;
+   this.age = age;
+   this.gender = gender;
+   //向对象中添加一个方法
+   this.sayName = fun;
+}
+```
+
+```
+function fun(){
+   alert("Hello大家好，我是:"+this.name);
+};
+```
+
+所以可以向原型中添加sayName方法：
+
+```
+//向原型中添加sayName方法
+Person.prototype.sayName = function(){
+   alert("Hello大家好，我是:"+this.name);
+};
+```
+
+```
+var per = new Person("孙悟空",18,"男");
+var per2 = new Person("猪八戒",28,"男");
+per.sayName();
+per2.sayName();
+
+console.log(per.sayName == per2.sayName); //true
+```
+
+### 10.原型
+
+- 我们所创建的每一个函数，解析器都会向函数中添加一个属性prototype，这个属性对应着一个对象，这个对象就是我们所谓的原型对象
+- 如果函数作为普通函数调用prototype没有任何作用
+- 当函数以构造函数的形式调用时，它所创建的对象中都会有一个隐含的属性，指向该构造函数的原型对象，我们可以通过__proto__来访问该属性
+- 原型对象就相当于一个公共的区域，所有同一个类的实例都可以访问到这个原型对象，
+  我们可以将对象中共有的内容，统一设置到原型对象中
+- 当我们访问对象的一个属性或方法时，它会先在对象自身中寻找，如果有则直接使用，
+  如果没有则会去原型对象中寻找，如果找到则直接使用
+- 以后我们创建构造函数时，可以将这些对象共有的属性和方法，统一添加到构造函数的原型对象中
+- 这样不用分别为每一个对象添加，也不会影响到全局作用域，就可以使每个对象都具有这些属性和方法了
+
+![原型](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/%E5%8E%9F%E5%9E%8B.png)
+
+```
+function MyClass(){
+
+}
+
+//向MyClass的原型中添加属性a
+MyClass.prototype.a = 123;
+
+//向MyClass的原型中添加一个方法
+MyClass.prototype.sayHello = function(){
+   alert("hello");
+};
+
+var mc = new MyClass();
+
+var mc2 = new MyClass();
+
+console.log(MyClass.prototype);  //{a: 123, sayHello: ƒ, constructor: ƒ}
+console.log(mc2.__proto__ == MyClass.prototype); //true
+
+//向mc中添加a属性
+mc.a = "我是mc中的a";
+
+console.log(mc.a); //我是mc中的a
+console.log(mc2.a); //123
+```
+
+原型对象也是对象，所以它也有原型，当我们使用一个对象的属性或方法时，会现在自身中寻找：
+
+- 自身中如果有，则直接使用
+- 如果没有则去原型对象中寻找，如果原型对象中有，则使用
+- 如果没有则去原型的原型中寻找,直到找到Object对象的原型
+- Object对象的原型没有原型，如果在Object原型中依然没有找到，则返回undefined
+
+```
+function MyClass(){
+
+}
+
+//向MyClass的原型中添加一个name属性
+MyClass.prototype.name = "我是原型中的名字";
+
+var mc = new MyClass();
+mc.age = 18;
+
+console.log(mc.name); //我是原型中的名字
+```
+
+- 使用in检查对象中是否含有某个属性时，如果对象中没有但是原型中有，也会返回true
+- 可以使用对象的hasOwnProperty()来检查对象自身中是否含有该属性，使用该方法只有当对象自身中含有属性时，才会返回true
+
+```
+//使用in检查对象中是否含有某个属性时，如果对象中没有但是原型中有，也会返回true
+console.log("name" in mc); //true
+
+/*可以使用对象的hasOwnProperty()来检查对象自身中是否含有该属性
+使用该方法只有当对象自身中含有属性时，才会返回true*/
+console.log(mc.hasOwnProperty("age")); //true
+console.log(mc.hasOwnProperty("name")); //false
+console.log(mc.hasOwnProperty("hasOwnProperty")); //false
+```
+
+```
+console.log(mc.__proto__.hasOwnProperty("hasOwnProperty")); //false
+
+console.log(mc.__proto__.__proto__.hasOwnProperty("hasOwnProperty")); //true
+
+console.log(mc.hello); //undefined
+
+//Object对象
+console.log(mc.__proto__); //{name: '我是原型中的名字', constructor: ƒ}
+
+//Object对象的原型
+console.log(mc.__proto__.__proto__); //{constructor: ƒ, __defineGetter__: ƒ, __defineSetter__: ƒ, hasOwnProperty: ƒ, __lookupGetter__: ƒ, …}
+
+console.log(mc.__proto__.__proto__.__proto__) //null
+```
+
+### 11.toString
+
+当我们直接在页面中打印一个对象时，事件上是输出的对象的toString()方法的返回值
+
+如果我们希望在输出对象时不输出[object Object]，可以为对象添加一个toString()方法
+
+```
+function Person(name , age , gender){
+   this.name = name;
+   this.age = age;
+   this.gender = gender;
+}
+
+//修改Person原型的toString
+Person.prototype.toString = function(){
+   return "Person[name="+this.name+",age="+this.age+",gender="+this.gender+"]";
+};
+
+//创建一个Person实例
+var per = new Person("孙悟空",18,"男");
+```
+
+```
+var result = per.toString();
+console.log("result = " + result); //result = Person[name=孙悟空,age=18,gender=男]
+console.log(per.__proto__.hasOwnProperty("toString")) //true
+console.log(per.__proto__.__proto__.hasOwnProperty("toString")); //true
+```
+
+### 12.垃圾回收（GC）
+
+就像人生活的时间长了会产生垃圾一样，程序运行过程中也会产生垃圾；这些垃圾积攒过多以后，会导致程序运行的速度过慢；所以我们需要一个垃圾回收的机制，来处理程序运行过程中产生垃圾：
+
+- 当一个对象没有任何的变量或属性对它进行引用，此时我们将永远无法操作该对象，此时这种对象就是一个垃圾，这种对象过多会占用大量的内存空间，导致程序运行变慢，所以这种垃圾必须进行清理
+- 在JS中拥有自动的垃圾回收机制，会自动将这些垃圾对象从内存中销毁，
+   我们不需要也不能进行垃圾回收的操作
+- 我们需要做的只是要将不再使用的对象设置null即可
+
+```
+var obj = new Object();
+
+//对对象进行各种操作。。。。
+
+obj = null;
+```
+
+## 十、数组（Array）
+
+   - 数组也是一个对象
+   - 它和我们普通对象功能类似，也是用来存储一些值的
+   - 不同的是普通对象是使用字符串作为属性名的，而数组时使用数字来作为索引操作元素
+   - 索引：从0开始的整数就是索引
+   - 数组的存储性能比普通对象要好，在开发中我们经常使用数组来存储一些数据
+
+```
+var arr = new Array();
+
+console.log(typeof arr); //object
+```
+
+向数组中添加元素，语法：*数组[索引] = 值*
+
+```
+arr[0] = 10;
+arr[1] = 33;
+arr[2] = 22;
+arr[3] = 44;
+```
+
+读取数组中的元素，语法：*数组[索引]*
+
+如果读取不存在的索引，他不会报错而是返回undefined
+
+```
+console.log(arr[3]); //44
+```
+
+获取数组的长度，可以使用length属性来获取数组的长度(元素的个数)
+语法：*数组.length*
+
+- 对于连续的数组，使用length可以获取到数组的长度（元素的个数）
+- 对于非连续的数组，使用length会获取到数组的最大的索引+1，尽量不要创建非连续的数组
+
+```
+console.log(arr.length); //4
+console.log(arr); // [10, 33, 22, 44]
+```
+
+修改length
+
+- 如果修改的length大于原长度，则多出部分会空出来
+- 如果修改的length小于原长度，则多出的元素会被删除
+
+```
+arr.length = 10;
+console.log(arr.length); //10
+console.log(arr); //[10, 33, 22, 44, 空属性 × 6]
+
+arr.length = 2;
+
+console.log(arr.length); //2
+console.log(arr); //[10, 33]
+```
+
+向数组的最后一个位置添加元素；
+
+语法：*数组[数组.length] = 值;*
+
+```
+arr[4] = 50;
+arr[5] = 60;
+
+arr[arr.length] = 70;
+arr[arr.length] = 80;
+arr[arr.length] = 90;
+
+console.log(arr); // [10, 33, 22, 44, 50, 60, 70, 80, 90]
+```
+
+### 1.创建数组
+
+#### 使用字面量来创建数组
+
+语法: *[]*
+
+```
+var arr = [];
+
+console.log(typeof arr); //object
+
+//使用字面量创建数组时，可以在创建时就指定数组中的元素
+var arr = [1,2,3,4,5,10];
+
+console.log(arr[3]); //4
+```
+
+#### 使用构造函数创建数组
+
+使用构造函数创建数组时，也可以同时添加元素，将要添加的元素作文构造函数的参数传递。元素之间使用,隔开
+
+```
+var arr2 = new Array(10,20,30); 
+console.log(arr2);  //[10, 20, 30]
+```
+
+```
+//创建一个数组数组中只有一个元素10
+arr = [10];
+console.log(arr.length) //1
+
+//创建一个长度为10的数组
+arr2 = new Array(10);
+
+console.log(arr2.length);  //10
+```
+
+数组中的元素可以是任意的数据类型：
+
+```
+arr = ["hello",1,true,null,undefined];
+
+//也可以是对象
+var obj = {name:"孙悟空"};
+arr[arr.length] = obj;
+arr = [{name:"孙悟空"},{name:"沙和尚"},{name:"猪八戒"}];
+
+//也可以是一个函数
+arr = [function(){alert(1)},function(){alert(2)}];
+
+console.log(arr); //[ƒ, ƒ]
+arr[0]();
+```
+
+数组中也可以放数组，如下这种数组我们称为二维数组：
+
+```
+arr = [[1,2,3],[3,4,5],[5,6,7]];
+console.log(arr[1]); // [3, 4, 5]
+```
+
+### 2.数组的方法
+
+#### push()
+
+- 该方法可以向数组的末尾添加一个或多个元素，并返回数组的新的长度
+- 可以将要添加的元素作为方法的参数传递，这样这些元素将会自动添加到数组的末尾
+- 该方法会将数组新的长度作为返回值返回
+
+```
+//创建一个数组
+var arr = ["孙悟空","猪八戒","沙和尚"];
+
+var result = arr.push("唐僧","蜘蛛精","白骨精","玉兔精");
+
+console.log(arr);  //['孙悟空', '猪八戒', '沙和尚', '唐僧', '蜘蛛精', '白骨精', '玉兔精']
+console.log("result = "+result);  //result = 7
+```
+
+#### pop()
+
+该方法可以删除数组的最后一个元素,并将被删除的元素作为返回值返回
+
+```
+result = arr.pop();
+console.log(arr); //['孙悟空', '猪八戒', '沙和尚', '唐僧', '蜘蛛精', '白骨精']
+console.log("result = "+result); //result = 玉兔精
+```
+
+#### unshift()
+
+   - 向数组开头添加一个或多个元素，并返回新的数组长度
+   - 向前边插入元素以后，其他的元素索引会依次调整
+
+```
+arr.unshift("牛魔王","二郎神"); 
+
+console.log(arr); //['牛魔王', '二郎神', '孙悟空', '猪八戒', '沙和尚', '唐僧', '蜘蛛精', '白骨精']
+```
+
+#### shift()
+
+可以删除数组的第一个元素，并将被删除的元素作为返回值返回
+
+```
+result = arr.shift();
+
+console.log(arr); //['二郎神', '孙悟空', '猪八戒', '沙和尚', '唐僧', '蜘蛛精', '白骨精']
+console.log("result = "+result); //result = 牛魔王
+```
+
+#### forEach()
+
+一般我们都是使用for循环去遍历数组，JS中还为我们提供了一个方法forEach()，用来遍历数组
+
+这个方法只支持IE8以上的浏览器,IE8及以下的浏览器均不支持该方法，所以如果需要兼容IE8，则不要使用forEach,还是使用for循环来遍历
+
+forEach()方法需要一个函数作为参数
+   - 像这种函数，由我们创建但是不由我们调用的，我们称为回调函数
+   - 数组中有几个元素函数就会执行几次，每次执行时，浏览器会将遍历到的元素
+      以实参的形式传递进来，我们可以来定义形参，来读取这些内容
+   - 浏览器会在回调函数中传递三个参数：
+      - 第一个参数，就是当前正在遍历的元素
+      - 第二个参数，就是当前正在遍历的元素的索引
+      - 第三个参数，就是正在遍历的数组
+
+```
+var arr = ["孙悟空","猪八戒","沙和尚","唐僧","白骨精"];
+
+arr.forEach(function(value , index , obj){
+   console.log(value);
+   console.log(index);
+   console.log(obj);
+});
+```
+
+#### slice()
+
+- 可以用来从数组提取指定元素
+
+- 该方法不会改变元素数组，而是将截取到的元素封装到一个新数组中返回
+
+- 参数：
+
+  截取开始的位置的索引,包含开始索引
+
+  截取结束的位置的索引,不包含结束索引
+
+     - 第二个参数可以省略不写,此时会截取从开始索引往后的所有元素
+   - 索引可以传递一个负值，如果传递一个负值，则从后往前计算
+      -1 倒数第一个
+      -2 倒数第二个
+
+```
+var arr = ["孙悟空","猪八戒","沙和尚","唐僧","白骨精"];
+
+var result = arr.slice(1,4);
+console.log(result); // ['猪八戒', '沙和尚', '唐僧']
+result = arr.slice(3);
+console.log(result); //['唐僧', '白骨精']
+result = arr.slice(1,-2); 
+console.log(result); //['猪八戒', '沙和尚']
+```
+
+#### splice()
+
+splice()
+   - 可以用于删除数组中的指定元素
+   - 使用splice()会影响到原数组，会将指定元素从原数组中删除,并将被删除的元素作为返回值返回
+   - 参数：
+      第一个，表示开始位置的索引
+      第二个，表示删除的数量
+      第三个及以后，可以传递一些新的元素，这些元素将会自动插入到开始位置索引前边
+
+```
+arr = ["孙悟空","猪八戒","沙和尚","唐僧","白骨精"];
+var result = arr.splice(3,0,"牛魔王","铁扇公主","红孩儿");
+
+console.log(arr); //['孙悟空', '猪八戒', '沙和尚', '牛魔王', '铁扇公主', '红孩儿', '唐僧', '白骨精']
+console.log(result); //[]
+```
+
+### 3.数组的遍历
+
+所谓的遍历数组，就是将数组中所有的元素都取出来
+
+```
+//创建一个数组
+var arr = ["孙悟空","猪八戒","沙和尚","唐僧","白骨精"];
+
+for(var i=0 ; i<arr.length ; i++){
+   console.log(arr[i]);
+}                       /*孙悟空
+                  猪八戒
+                  沙和尚
+                  唐僧
+                  白骨精*/
+```
