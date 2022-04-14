@@ -89,6 +89,30 @@ let newObj= Array.from(obj, item => {return item})
 console.log(newObj); // 输出:[ 1, undefined, undefined, 2 ]
 ```
 
+### isArray()
+
+isArray() 方法用于判断一个对象是否为数组。
+
+如果对象是数组返回 true，否则返回 false。
+
+语法：*Array.isArray(obj)*
+
+| 参数  | 描述                 |
+| ----- | -------------------- |
+| *obj* | 必需，要判断的对象。 |
+
+```
+var fruits = ["Banana", "Orange", "Apple", "Mango"];
+console.log(Array.isArray(fruits)) //true
+```
+
+```
+const arr = [3,4,4,5,4,6,5,7];
+console.log(Array.isArray(arr)) // true
+```
+
+
+
 ### sort()
 
 对数组元素进行排序（改变原数组）
@@ -398,6 +422,13 @@ num.reduce((pre,cur)=>{
 
 返回给定元素在数组中的第一次出现的位置，如果没有则返回 - 1 (同样适用于字符串)。
 
+语法：*string*.indexOf(*searchvalue*,*start*)
+
+| 参数          | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| *searchvalue* | 必需。规定需检索的字符串值。                                 |
+| *start*       | 可选的整数参数。规定在字符串中开始检索的位置。它的合法取值是 0 到 string Object.length - 1。如省略该参数，则将从字符串的首字符开始检索。 |
+
 ```
 const arr = [3,4,4,5,4,6,5,7];
 console.log(arr.indexOf(4)) // 1
@@ -411,6 +442,15 @@ console.log(string.indexOf('a')) // 0
 ### lastIndexOf()
 
 返回给定元素在数组中最后一次出现的位置，没有返回 - 1 (同样适用于字符串)。
+
+如果指定第二个参数 start，则在一个字符串中的指定位置从后向前搜索。
+
+语法：*string*.lastIndexOf(*searchvalue*,*start*)
+
+| 参数          | 描述                                                         |
+| :------------ | :----------------------------------------------------------- |
+| *searchvalue* | 必需。规定需检索的字符串值。                                 |
+| *start*       | 可选的整数参数。规定在字符串中开始检索的位置。它的合法取值是 0 到 stringObject.length - 1。如省略该参数，则将从字符串的最后一个字符处开始检索。 |
 
 ```
 const arr = [3,4,4,5,4,6,5,7];
@@ -429,15 +469,6 @@ const arr = [[1,2,3],[4,5,[6,7]]];
 const a = arr.flat(1);// [1, 2, 3, 4, 5, [6,7]]
 // const a = arr.flat(3);// [1, 2, 3, 4, 5, 6, 7]
 console.log(a); 
-```
-
-### Array.isArray()
-
-用来判断是不是数据是不是一个数组，返回值为 true 或 false。
-
-```
-const arr = [3,4,4,5,4,6,5,7];
-console.log(Array.isArray(arr)) // true
 ```
 
 ### find()
@@ -499,6 +530,20 @@ console.log(str.match('guys'))  // ["guys"]
 // 使用正则匹配字符串
 const strs = '1.hello guys, 2.are you ok?';
 console.log(strs.match(/\d+/g)) // ["1", "2"]
+```
+
+- 可以根据正则表达式，从一个字符串中将符合条件的内容提取出来
+- 默认情况下我们的match只会找到第一个符合要求的内容，找到以后就停止检索
+  我们可以设置正则表达式为全局匹配模式，这样就会匹配到所有的内容
+  可以为一个正则表达式设置多个匹配模式，且顺序无所谓
+- match()会将匹配到的内容封装到一个数组中返回，即使只查询到一个结果
+
+```
+str = "1a2a3a4a5e6f7A8B9C";
+
+result = str.match(/[a-z]/ig); 
+console.log(result); //['a', 'a', 'a', 'a', 'e', 'f', 'A', 'B', 'C']
+console.log(result[2]); //a
 ```
 
 ### replace()
