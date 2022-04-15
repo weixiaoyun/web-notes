@@ -2611,7 +2611,7 @@ arguments是一个类数组对象,它也可以通过索引来操作数据，也�
    - arguments.length可以用来获取实参的长度
       - 我们即使不定义形参，也可以通过arguments来使用实参，只不过比较麻烦
             - arguments[0] 表示第一个实参
-arguments[1] 表示第二个实参 。。。
+        arguments[1] 表示第二个实参 。。。
 
    - 里边有一个属性callee，
          这个属性对应一个函数对象，就是当前正在指向的函数的对象
@@ -3502,4 +3502,383 @@ console.log(result[2]); //a
 result = str.replace(/[a-z]/gi , "");
 
 console.log(result); //123456789
+```
+
+### 5.量词
+
+- 通过量词可以设置一个内容出现的次数
+- 量词只对它前边的一个内容起作用
+- {n} 正好出现n次
+- {m,n} 出现m-n次
+- {m,} m次以上
+- +： 至少一个，相当于{1,}
+- *： 0个或多个，相当于{0,}
+- ? ：0个或1个，相当于{0,1}
+
+```
+//创建一个正则表达式检查一个字符串中是否含有aaa
+var reg = /a{3}/;
+//ababab
+reg = /(ab){3}/;
+
+reg = /b{3}/;
+
+reg = /ab{1,3}c/;
+
+reg = /ab{3,}c/;
+
+reg = /ab+c/;
+
+reg = /ab*c/;
+
+reg = /ab?c/;
+
+console.log(reg.test("abbc")); //false
+```
+
+### 6.检测开头或结尾
+
+- ^ 表示开头
+- $ 表示结尾
+
+```
+reg = /^a/; //匹配开头的a
+
+reg = /a$/; //匹配结尾的a
+```
+
+如果在正则表达式中同时使用^ $则要求字符串必须完全符合正则表达式：
+
+```
+reg = /^a$/;
+
+console.log(reg.test("abbca")); //false
+```
+
+```
+/*
+ * 创建一个正则表达式，用来检查一个字符串是否是一个合法手机号
+ *
+ * 手机号的规则：
+ *     1 3 567890123 （11位）
+ *
+ *     1. 以1开头
+ *  2. 第二位3-9任意数字
+ *     3. 三位以后任意数字9个
+ *
+ *  ^1   [3-9]  [0-9]{9}$
+ *
+ */
+
+var phoneStr = "13067890123";
+
+var phoneReg = /^1[3-9][0-9]{9}$/;
+
+console.log(phoneReg.test(phoneStr)); //true
+```
+
+### 7.转义字符
+
+. 表示任意字符
+
+在正则表达式中使用\作为转义字符：
+
+- \. 来表示.
+- \\  表示\
+
+注意：使用构造函数时，由于它的参数是一个字符串，而\是字符串中转义字符，
+   如果要使用 \ 则需要使用 \\ 来代替
+
+```
+// 检查一个字符串中是否含有 .
+var reg = /\./;
+
+// 检查一个字符串中是否含有\
+reg = /\\/;
+```
+
+\w：任意字母、数字、_        [A-z0-9_]
+
+\W：除了字母、数字、_       [ ^A-z0-9_]
+
+\d：任意的数字  [0-9]
+
+\D：除了数字     [ ^0-9]
+
+\s：空格
+
+\S：除了空格
+
+\b：单词边界
+
+\B：除了单词边界
+
+
+
+```
+/*
+ * 创建一个正则表达式检查一个字符串中是否含有单词child
+ */
+
+reg = /\bchild\b/;
+
+console.log(reg.test("hello child ")); //true
+```
+
+去除字符串中的空格：
+
+```
+var str = "              he      llo                ";
+
+//去除掉字符串中的空格
+//去除空格就是使用""来替换空格
+
+str = str.replace(/\s/g , "");
+console.log(str); //hello
+```
+
+去除开头的空格：
+
+```
+str = str.replace(/^\s*/, "");
+console.log(str)  //he      llo   
+```
+
+去除结尾的空格：
+
+```
+str = str.replace(/\s*$/, ""); 
+console.log(str) //              he      llo
+```
+
+去除开头和结尾的空格：
+
+```
+str = str.replace(/^\s*|\s*$/g,"");
+
+console.log(str); //he      llo
+```
+
+### 8.邮件的正则
+
+```
+/*
+ * 电子邮件
+ *     hello  .nihao          @     abc  .com.cn
+ * 
+ * 任意字母数字下划线    .任意字母数字下划线  @   任意字母数字     .任意字母（2-5位）   .任意字母（2-5位）
+ * 
+ * \w{3,}  (\.\w+)*  @  [A-z0-9]+  (\.[A-z]{2,5}){1,2}
+ */
+
+var emailReg = /^\w{3,}(\.\w+)*@[A-z0-9]+(\.[A-z]{2,5}){1,2}$/;
+
+var email = "abc.hello@163.com";
+
+console.log(emailReg.test(email)); //true
+```
+
+## 十五、DOM
+
+DOM，全称Document Object Model（文档对象模型）
+
+- JS中通过DOM来对HTML文档进行操作。只要理解了DOM就可以随心所欲的操作WEB页面。
+- 文档：文档表示的就是整个的HTML网页文档
+- 对象：对象表示将网页中的每一个部分都转换为了一个对象。
+- 模型：使用模型来表示对象之间的关系，这样方便我们获取对象。
+
+![模型](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/%E6%A8%A1%E5%9E%8B.png)
+
+### 1.节点
+
+- 节点Node，是构成我们网页的最基本的组成部分，网页中的每一个部分都可以称为是一个节点。
+
+  比如：html标签、属性、文本、注释、整个文档等都是一个节点。
+
+- 虽然都是节点，但是实际上他们的具体类型是不同的。
+
+  比如：标签我们称为元素节点、属性称为属性节点、文本称为文本节点、文档称为文档节点。
+
+- 节点的类型不同，属性和方法也都不尽相同。
+
+**节点**：Node——构成HTML文档最基本的单元。常用节点分为四类：
+
+- 文档节点：整个HTML文档
+- 元素节点：HTML文档中的HTML标签
+- 属性节点：元素的属性
+- 文本节点：HTML标签中的文本内容
+
+![节点](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/%E8%8A%82%E7%82%B9.png)
+
+**节点的属性：**
+
+![节点的属性](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/%E8%8A%82%E7%82%B9%E7%9A%84%E5%B1%9E%E6%80%A7.png)
+
+#### 文档节点
+
+- 文档节点document，代表的是整个HTML文档，网页中的所有节点都是它的子节点。
+- document对象作为window对象的属性存在的，我们不用获取可以直接使用。
+- 通过该对象我们可以在整个文档访问内查找节点对象，并可以通过该对象创建各种节点对象。
+
+#### 元素节点（Element）
+
+- HTML中的各种标签都是元素节点，这也是我们最常用的一个节点。
+- 浏览器会将页面中所有的标签都转换为一个元素节点，我们可以通过document的方法来获取元素节点。
+- 比如：
+  - document.getElementById()
+  - 根据id属性值获取一个元素节点对象。
+
+1.获取元素节点：通过document对象调用
+
+- getElementById()：通过**id**属性获取**一个**元素节点对象
+- getElementsByTagName()：通过**标签名**获取**一组**元素节点对象
+- getElementsByName()：通过**name**属性获取**一组**元素节点对象
+
+2.获取元素节点的子节点：通过具体的元素节点调用
+
+- getElementsByTagName()：方法，返回当前节点的指定标签名后代节点
+- childNodes：属性，表示当前节点的所有子节点
+- firstChild：属性，表示当前节点的第一个子节点
+- lastChild：属性，表示当前节点的最后一个子节点
+
+3.获取父节点和兄弟节点，通过具体的节点调用
+
+- parentNode：属性，表示当前节点的父节点
+- previousSibling：属性，表示当前节点的前一个兄弟节点
+- nextSibling：属性，表示当前节点的后一个兄弟节点
+
+4.元素节点的属性
+
+- 获取，元素对象.属性名
+
+  例：element.value
+
+  element.id
+
+  element.className
+
+- 设置，元素对象.属性名=新的值
+
+  例：element.value = “hello”
+
+  element.id = “id01”
+
+  element.className = “newClass”
+
+#### 文本节点（Text）
+
+- 文本节点表示的是HTML标签以外的文本内容，任意非HTML的文本都是文本节点。
+- 它包括可以字面解释的纯文本内容。
+- 文本节点一般是作为元素节点的子节点存在的。
+- 获取文本节点时，一般先要获取元素节点。在通过元素节点获取文本节点。
+- 例如：
+  - 元素节点.firstChild;
+  - 获取元素节点的第一个子节点，一般为文本节点
+
+#### 属性节点（Attr）
+
+- 属性节点表示的是标签中的一个一个的属性，这里要注意的是属性节点并非是元素节点的子节点，而是元素节点的一部分。
+- 可以通过元素节点来获取指定的属性节点。
+- 例如：元素节点.getAttributeNode("属性名");
+- 注意：我们一般不使用属性节点。
+
+```
+<button id="btn">我是一个按钮</button>
+<script type="text/javascript">
+   
+   //获取到button对象
+   var btn = document.getElementById("btn");
+   
+   //修改按钮的文字
+   btn.innerHTML = "I'm Button";
+   
+   
+</script>
+```
+
+![DOM](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/DOM.png)
+
+#### 其他属性
+
+- nodeValue：文本节点可以通过nodeValue属性获取和设置文本节点的内容
+- innerHTML：元素节点通过该属性获取和设置标签内部的html代码
+
+#### 使用CSS选择器进行查询
+
+- querySelector()
+- querySelectorAll()
+- 这两个方法都是用document对象来调用，两个方法使用相同，都是传递一个选择器字符串作为参数，方法会自动根据选择器字符串去网页中查找元素。
+- 不同的地方是querySelector()只会返回找到的第一个元素，而querySelectorAll()会返回所有符合条件的元素。
+
+#### 节点的修改
+
+这里的修改我们主要指对元素节点的操作。
+
+- 创建节点：document.createElement(标签名) 
+- 删除节点：父节点.removeChild(子节点) 
+- 替换节点：父节点.replaceChild(新节点 , 旧节点) 
+- 插入节点：
+  - 父节点.appendChild(子节点) 
+  - 父节点.insertBefore(新节点 , 旧节点)
+
+### 2.事件
+
+- 事件，就是文档或浏览器窗口中发生的一些特定的交互瞬间。 
+- JavaScript 与 HTML 之间的交互是通过事件实现的。 
+- 对于 Web 应用来说，有下面这些代表性的事件：点击某个元素、将鼠标移动至某个元素上方、按下键盘上某个键，等等。
+
+我们可以在事件对应的属性中设置一些js代码，这样当事件被触发时，这些代码将会执行
+
+这种写法我们称为结构和行为耦合，不方便维护，不推荐使用
+
+```
+<button id="btn" onmousemove="alert('讨厌，你点我干嘛！');">我是一个按钮</button>
+```
+
+可以为按钮的对应事件绑定处理函数的形式来响应事件；这样当事件被触发时，其对应的函数将会被调用
+
+```
+//获取按钮对象
+var btn = document.getElementById("btn");
+
+//绑定一个单击事件
+//像这种为单击事件绑定的函数，我们称为单击响应函数
+btn.onclick = function(){
+   alert("你还点~~~");
+};
+```
+
+### 3.文档的加载
+
+浏览器在加载一个页面时，是按照自上向下的顺序加载的，读取到一行就运行一行,如果将script标签写到页面的上边，在代码执行时，页面还没有加载，页面没有加载DOM对象也没有加载，会导致无法获取到DOM对象
+
+onload事件会在整个页面加载完成之后才触发；为window绑定一个onload事件：
+
+该事件对应的响应函数将会在页面加载完成之后执行，这样可以确保我们的代码执行时所有的DOM对象已经加载完毕了
+
+```
+window.onload = function(){
+   //获取id为btn的按钮
+   var btn = document.getElementById("btn");
+   //为按钮绑定一个单击响应函数
+   btn.onclick = function(){
+      alert("hello");
+   };
+};
+```
+
+```
+<script type="text/javascript">
+
+   /*
+    * 将js代码编写到页面的下部就是为了，可以在页面加载完毕以后再执行js代码
+    */
+   //获取id为btn的按钮
+   var btn = document.getElementById("btn");
+   //为按钮绑定一个单击响应函数
+   btn.onclick = function(){
+      alert("hello");
+   };
+
+</script>
 ```
