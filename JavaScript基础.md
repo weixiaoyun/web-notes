@@ -3731,8 +3731,22 @@ DOM，全称Document Object Model（文档对象模型）
 1.获取元素节点：通过document对象调用
 
 - getElementById()：通过**id**属性获取**一个**元素节点对象
+
 - getElementsByTagName()：通过**标签名**获取**一组**元素节点对象
+
 - getElementsByName()：通过**name**属性获取**一组**元素节点对象
+
+  ```
+  var btn02 = document.getElementById("btn02");
+  ```
+
+  ```
+  var lis = document.getElementsByTagName("li");
+  ```
+
+  ```
+  var inputs = document.getElementsByName("gender");
+  ```
 
 2.获取元素节点的子节点：通过具体的元素节点调用
 
@@ -3810,16 +3824,78 @@ DOM，全称Document Object Model（文档对象模型）
 - 这两个方法都是用document对象来调用，两个方法使用相同，都是传递一个选择器字符串作为参数，方法会自动根据选择器字符串去网页中查找元素。
 - 不同的地方是querySelector()只会返回找到的第一个元素，而querySelectorAll()会返回所有符合条件的元素。
 
+```
+<div class="box1">
+   <div>我是box1中的div</div>
+</div>
+```
+
+```
+var div = document.querySelector(".box1 div");
+
+var box1 = document.querySelector(".box1")
+```
+
 #### 节点的修改
 
 这里的修改我们主要指对元素节点的操作。
 
 - 创建节点：document.createElement(标签名) 
+
+  它需要一个标签名作为参数，将会根据该标签名创建元素节点对象，并将创建好的对象作为返回值返回
+
+  ```
+  var li = document.createElement("li");
+  ```
+
+- 创建一个文本节点对象：需要一个文本内容作为参数，将会根据该内容创建文本节点，并将新的节点返回
+
+  ```
+  var li = document.createElement("li");
+  ```
+
+  ```
+  var gzText = document.createTextNode("广州");
+  ```
+
 - 删除节点：父节点.removeChild(子节点) 
-- 替换节点：父节点.replaceChild(新节点 , 旧节点) 
+
+  ```
+  bj.parentNode.removeChild(bj);
+  ```
+
+- 替换节点：可以使用指定的子节点替换已有的子节点：父节点.replaceChild(新节点 , 旧节点) 
+
+  ```
+  city.replaceChild(li , bj);
+  ```
+
 - 插入节点：
-  - 父节点.appendChild(子节点) 
-  - 父节点.insertBefore(新节点 , 旧节点)
+  
+  - 向一个父节点中添加一个新的子节点：父节点.appendChild(子节点) 
+  
+    ```
+    li.appendChild(gzText);
+    ```
+  
+  - 也可以通过innerHTML完成DOM的增删改的相关操作
+  
+    ```
+    //创建一个li
+    var li = document.createElement("li");
+    //向li中设置文本
+    li.innerHTML = "广州";
+    //将li添加到city中
+    city.appendChild(li);
+    ```
+  
+  - 可以在指定的子节点前插入新的子节点：父节点.insertBefore(新节点 , 旧节点)
+  
+    ```
+    city.insertBefore(li , bj);
+    ```
+
+
 
 ### 2.事件
 
@@ -3846,6 +3922,127 @@ var btn = document.getElementById("btn");
 btn.onclick = function(){
    alert("你还点~~~");
 };
+```
+
+点击超链接以后，超链接会跳转页面，这个是超链接的默认行为，但是此时我们不希望出现默认行为，可以通过在响应函数的最后return false来取消默认行为：
+
+```
+<script type="text/javascript">
+
+   window.onload = function(){
+
+      /*
+       * 点击超链接以后，删除一个员工的信息
+       */
+
+      //获取所有额超链接
+      var allA = document.getElementsByTagName("a");
+
+      //为每个超链接都绑定一个单击响应函数
+      for(var i=0 ; i < allA.length ; i++){
+         allA[i].onclick = function(){
+
+            //点击超链接以后需要删除超链接所在的那行
+            //这里我们点击那个超链接this就是谁
+            //获取当前tr
+            var tr = this.parentNode.parentNode;
+
+            //获取要删除的员工的名字
+            //var name = tr.getElementsByTagName("td")[0].innerHTML;
+            var name = tr.children[0].innerHTML;
+
+            //删除之前弹出一个提示框
+            /*
+             * confirm()用于弹出一个带有确认和取消按钮的提示框
+             *     需要一个字符串作为参数，该字符串将会作为提示文字显示出来
+             * 如果用户点击确认则会返回true，如果点击取消则返回false
+             */
+            var flag = confirm("确认删除"+name+"吗?");
+
+            //如果用户点击确认
+            if(flag){
+               //删除tr
+               tr.parentNode.removeChild(tr);
+            }
+
+            /*
+              点击超链接以后，超链接会跳转页面，这个是超链接的默认行为，
+               但是此时我们不希望出现默认行为，可以通过在响应函数的最后return false来取消默认行为
+             */
+            return false;
+         };
+      }
+
+   };
+
+
+</script>
+</head>
+<body>
+
+   <table id="employeeTable">
+      <tr>
+         <th>Name</th>
+         <th>Email</th>
+         <th>Salary</th>
+         <th>&nbsp;</th>
+      </tr>
+      <tr>
+         <td>Tom</td>
+         <td>tom@tom.com</td>
+         <td>5000</td>
+         <td><a href="javascript:;">Delete</a></td>
+      </tr>
+      <tr>
+         <td>Jerry</td>
+         <td>jerry@sohu.com</td>
+         <td>8000</td>
+         <td><a href="deleteEmp?id=002">Delete</a></td>
+      </tr>
+      <tr>
+         <td>Bob</td>
+         <td>bob@tom.com</td>
+         <td>10000</td>
+         <td><a href="deleteEmp?id=003">Delete</a></td>
+      </tr>
+   </table>
+
+   <div id="formDiv">
+
+      <h4>添加新员工</h4>
+
+      <table>
+         <tr>
+            <td class="word">name: </td>
+            <td class="inp">
+               <input type="text" name="empName" id="empName" />
+            </td>
+         </tr>
+         <tr>
+            <td class="word">email: </td>
+            <td class="inp">
+               <input type="text" name="email" id="email" />
+            </td>
+         </tr>
+         <tr>
+            <td class="word">salary: </td>
+            <td class="inp">
+               <input type="text" name="salary" id="salary" />
+            </td>
+         </tr>
+         <tr>
+            <td colspan="2" align="center">
+               <button id="addEmpButton" value="abc">
+                  Submit
+               </button>
+            </td>
+         </tr>
+      </table>
+
+   </div>
+
+</body>
+</html>
 ```
 
 ### 3.文档的加载
