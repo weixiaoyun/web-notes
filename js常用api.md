@@ -28,6 +28,16 @@ for (let i = 0; i < 2; i++){
 console.log(arr3)//[[空属性*2]， [空属性*2]]
 ```
 
+或者传递多个参数作为数组中每个item的值：
+
+```
+var arr2 = new Array(10,20,30);
+console.log(arr2);  //[10, 20, 30]
+
+var arr3 = new  Array([1,2,3],[4,5,6])
+console.log(arr3); //[[1,2,3], [4,5,6]]
+```
+
 ### from()
 
 用于通过拥有 length 属性的对象或可迭代的对象来返回一个数组。
