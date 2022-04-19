@@ -4754,6 +4754,8 @@ function bind(obj , eventStr , callback){
 
 - IE8及以下的浏览器中没有捕获阶段
 
+   ![事件的传播](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%A0%E6%92%AD.png)
+
 ```
 function bind(obj , eventStr , callback){
    if(obj.addEventListener){
@@ -5101,4 +5103,269 @@ input.onkeydown = function(event){
       //如果在onkeydown中取消了默认行为，则输入的内容，不会出现在文本框中
       return false;
    }
+```
+
+## 十六、BOM
+
+浏览器对象模型：BOM可以使我们通过JS来操作浏览器；在BOM中为我们提供了一组对象，用来完成对浏览器的操作，这些功能与任何网页内容无关。
+
+BOM对象：
+
+- Window：代表的是整个浏览器的窗口，同时window也是网页中的全局对象
+- Navigator：代表的当前浏览器的信息，通过该对象可以来识别不同的浏览器
+- Location：代表当前浏览器的地址栏信息，通过Location可以获取地址栏信息，或者操作浏览器跳转页面
+- History：代表浏览器的历史记录，可以通过该对象来操作浏览器的历史记录；由于隐私原因，该对象不能获取到具体的历史记录，只能操作浏览器向前或向后翻页；而且该操作只在当次访问时有效
+- Screen：代表用户的屏幕的信息，通过该对象可以获取到用户的显示器的相关的信息
+
+这些BOM对象在浏览器中都是作为window对象的属性保存的，可以通过window对象来使用，也可以直接使用
+
+### 1.window对象
+
+- window对象是BOM的核心，它表示一个浏览器的实例。
+- 在浏览器中我们可以通过window对象来访问操作浏览器，同时window也是作为全局对象存在的。
+- 全局作用域：window对象是浏览器中的全局对象，因此所有在全局作用域中声明的变量、对象、函数都会变成window对象的属性和方法。
+
+#### 窗口大小
+
+浏览器中提供了四个属性用来确定窗口的大小：
+
+- 网页窗口的大小
+
+  innerWidth
+
+  innerHeight
+
+- 浏览器本身的尺寸
+
+  outerWidth
+
+  outerHeight
+
+#### 打开窗口
+
+使用 window.open() 方法既可以导航到一个特定的 URL，也可以打开一个新的浏览器窗口。 
+
+这个方法需要四个参数：
+
+- 需要加载的url地址
+- 窗口的目标
+-  一个特性的字符串
+- 是否创建新的历史记录
+
+#### 超时调用/延时调用
+
+- 延时调用一个函数不马上执行，而是隔一段时间以后在执行，而且只会执行一次
+
+- 延时调用和定时调用的区别，定时调用会执行多次，而延时调用只会执行一次
+
+- 延时调用和定时调用实际上是可以互相代替的，在开发中可以根据自己需要去选择
+
+setTimeout()
+
+- 超过一定时间以后执行指定函数
+- 需要2个参数：要执行的内容、超过的时间
+
+取消超时调用：clearTimeout()
+
+超时调用都是在全局作用域中执行的。
+
+```
+var timer = setTimeout(function(){
+   console.log(num++);
+},3000);
+
+//使用clearTimeout()来关闭一个延时调用
+clearTimeout(timer);
+```
+
+#### 间歇调用/定时调用
+
+可以将一个函数，每隔一段时间执行一次
+
+- setInterval()：每隔一段时间执行指定代码
+
+- clearInterval()：取消间隔调用
+
+- 参数：
+
+  - 回调函数，该函数会每隔一段时间被调用一次
+  - 每次调用间隔的时间，单位是毫秒
+
+- 返回值：返回一个Number类型的数据，这个数字用来作为定时器的唯一标识
+
+  ```
+  var num = 1;
+  
+  var timer = setInterval(function(){
+  
+     count.innerHTML = num++;
+  
+     if(num == 11){
+        //关闭定时器
+        clearInterval(timer);
+     }
+  
+  },1000);
+  
+  console.log(timer); //1
+  ```
+
+#### 系统对话框
+
+- 浏览器通过 alert() 、 confirm() 和 prompt() 方法可以调用系统对话框向用户显示消息。 
+- 它们的外观由操作系统及（或）浏览器设置决定，而不是由 CSS 决定。 
+- 显示系统对话框时会导致程序终止，当关闭对话框程序会恢复执行。
+
+1.alert
+
+alert()接收一个字符串并显示给用户。调用alert()方法会向用户显示一个包含一个确认按钮的对话框。例如：alert("Hello World");
+
+![alert](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/alert.png)
+
+2.confirm
+
+confirm和alert类似，只不过confirm弹出的对话框有一个确认和取消按钮。用户可以通过按钮来确认是否执行操作。
+
+例如：confirm('你确定吗？');
+
+这个函数的执行会返回一个布尔值，如果选择确定则返回true，如果点击取消则返回false。
+
+![confirm](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/confirm.png)
+
+3.prompt
+
+prompt会弹出一个带输入框的提示框，并可以将用户输入的内容返回。
+
+它需要两个值作为参数：
+
+- 显示的提示文字
+- 文本框中的默认值
+
+例子：prompt('你的年龄是？','18');
+
+![prompt](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/prompt.png)
+
+### 2.navigator对象
+
+- 代表的当前浏览器的信息，通过该对象可以来识别不同的浏览器。navigator 对象包含了浏览器的版本、浏览器所支持的插件、浏览器所使用的语言等各种与浏览器相关的信息。
+
+- 由于历史原因，Navigator对象中的大部分属性都已经不能帮助我们识别浏览器了
+
+- 一般我们只会使用userAgent来判断浏览器的信息，userAgent是一个字符串，这个字符串中包含有用来描述浏览器信息的内容，不同的浏览器会有不同的userAgent：
+
+   - 火狐的userAgent
+     Mozilla/5.0 (Windows NT 6.1; WOW64; rv:50.0) Gecko/20100101 Firefox/50.0
+
+   - Chrome的userAgent
+     Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36
+
+   - IE8
+     Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)
+
+   - IE9
+     Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)
+
+   - IE10
+     Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E)
+
+   - IE11
+     Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; SLCC2; .NET CLR 2.0.50727; .NET CLR 3.5.30729; .NET CLR 3.0.30729; Media Center PC 6.0; .NET4.0C; .NET4.0E; rv:11.0) like Gecko
+
+```
+var ua = navigator.userAgent;
+
+console.log(ua);
+
+if(/firefox/i.test(ua)){
+   alert("你是火狐！！！");
+}else if(/chrome/i.test(ua)){
+   alert("你是Chrome");
+}else if(/msie/i.test(ua)){
+   alert("你是IE浏览器~~~");
+}else if("ActiveXObject" in window){
+   alert("你是IE11");
+}
+```
+
+在IE11中已经将微软和IE相关的标识都已经去除了，所以我们基本已经不能通过UserAgent来识别一个浏览器是否是IE了
+
+如果通过UserAgent不能判断，还可以通过一些浏览器中特有的对象，来判断浏览器的信息；比如：ActiveXObject
+
+```
+if("ActiveXObject" in window){
+   alert("你是IE，我已经抓住你了~~~");
+}else{
+   alert("你不是IE~~~");
+}
+```
+
+### 3.history对象
+
+history 对象保存着用户上网的历史记录，从窗口被打开的那一刻算起。可以用来操作浏览器向前或向后翻页
+
+**go()：**使用 go() 方法可以在用户的历史记录中任意跳转，可以向后也可以向前。
+
+- 可以用来跳转到指定的页面
+- 它需要一个整数作为参数
+   1:表示向前跳转一个页面 相当于forward()
+   2:表示向前跳转两个页面
+   -1:表示向后跳转一个页面
+   -2:表示向后跳转两个页面
+
+```
+history.go(-2);
+```
+
+**back()：**向后跳转；可以用来回退到上一个页面，作用和浏览器的回退按钮一样
+
+```
+history.back();
+```
+
+**forward()：**向前跳转；可以跳转下一个页面，作用和浏览器的前进按钮一样
+
+```
+history.forward();
+```
+
+### 4.Location对象
+
+location对象中封装了浏览器的地址栏的信息，提供了与当前窗口中加载的文档有关的信息，还提供了一些导航功能。 
+
+- href属性：href属性可以获取或修改当前页面的完整的URL地址，使浏览器跳转到指定页面
+- assign() 方法：所用和href一样，使浏览器跳转页面，新地址错误参数传递到assign ()方法中
+- replace()方法：功能一样，只不过使用replace方法跳转地址不会体现到历史记录中
+- reload() 方法：用于强制刷新当前页面
+
+如果直接打印location，则可以获取到地址栏的信息（当前页面的完整路径）：
+
+```
+alert(location);
+```
+
+如果直接将location属性修改为一个完整的路径，或相对路径，则我们页面会自动跳转到该路径，并且会生成相应的历史记录
+
+```
+location = "http://www.baidu.com";
+location = "01.BOM.html";
+```
+
+assign()：用来跳转到其他的页面，作用和直接修改location一样
+
+```
+location.assign("http://www.baidu.com");
+```
+
+reload()：
+   - 用于重新加载当前页面，作用和刷新按钮一样
+   - 如果在方法中传递一个true，作为参数，则会强制清空缓存刷新页面
+
+```
+location.reload(true);
+```
+
+replace()：可以使用一个新的页面替换当前页面，调用完毕也会跳转页面，不会生成历史记录，不能使用回退按钮回退
+
+```
+location.replace("01.BOM.html");
 ```
