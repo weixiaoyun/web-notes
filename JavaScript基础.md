@@ -1,4 +1,4 @@
-# JavaScript基础
+JavaScript基础
 
 ## 一、JS的HelloWorld
 
@@ -4388,6 +4388,84 @@ alert(box4.scrollWidth);
 </body>
 ```
 
+- 通过style属性来修改元素的样式，每修改一个样式，浏览器就需要重新渲染一次页面；这样的执行的性能是比较差的，而且这种形式当我们要修改多个样式时，也不太方便
+- 我们可以通过修改元素的class属性来间接的修改样式
+  这样一来，我们只需要修改一次，即可同时修改多个样式，浏览器只需要重新渲染页面一次，性能比较好，并且这种方式，可以使表现和行为进一步的分离
+
+```
+.b2{
+   height: 300px;
+   background-color: yellow;
+}
+```
+
+```
+//定义一个函数，用来向一个元素中添加指定的class属性值
+/*
+ * 参数:
+ *     obj 要添加class属性的元素
+ *  cn 要添加的class值
+ *
+ */
+function addClass(obj , cn){
+
+   //检查obj中是否含有cn
+   if(!hasClass(obj , cn)){
+      obj.className += " "+cn;
+   }
+
+}
+```
+
+```
+addClass(box,"b2");
+```
+
+```
+function hasClass(obj , cn){
+
+   //判断obj中有没有cn class
+   //创建一个正则表达式
+   //var reg = /\bb2\b/;
+   var reg = new RegExp("\\b"+cn+"\\b");
+
+   return reg.test(obj.className);
+
+}
+
+/*
+ * 删除一个元素中的指定的class属性
+ */
+function removeClass(obj , cn){
+   //创建一个正则表达式
+   var reg = new RegExp("\\b"+cn+"\\b");
+
+   //删除class
+   obj.className = obj.className.replace(reg , "");
+
+}
+```
+
+toggleClass可以用来切换一个类
+
+- 如果元素中具有该类，则删除
+- 如果元素中没有该类，则添加
+
+```
+function toggleClass(obj , cn){
+
+   //判断obj中是否含有cn
+   if(hasClass(obj , cn)){
+      //有，则删除
+      removeClass(obj , cn);
+   }else{
+      //没有，则添加
+      addClass(obj , cn);
+   }
+
+}
+```
+
 ### 5.事件对象
 
 当事件的响应函数被触发时，浏览器每次都会将一个事件对象**作为实参**传递进响应函数。在事件对象中封装了当前事件相关的一切信息，比如：鼠标的坐标  键盘哪个按键被按下  鼠标滚轮滚动的方向。。。
@@ -5377,3 +5455,102 @@ screen 对象基本上只用来表明客户端的能力，其中包括浏览器�
 ### 6.document
 
 document对象也是window的一个属性，这个对象代表的是整个网页的文档对象。我们对网页的大部分操作都需要以document对象作为起点。
+
+## 十七、JSON
+
+JSON(JavaScript Object Notation JS对象表示法)
+
+   - JS中的对象只有JS自己认识，其他的语言都不认识
+   - JSON就是一个特殊格式的字符串，这个字符串可以被任意的语言所识别，并且可以转换为任意语言中的对象，JSON在开发中主要用来数据的交互
+   - JSON和JS对象的格式一样，只不过JSON字符串中的属性名必须加双引号
+       其他的和JS语法一致
+
+JSON分类：
+
+1. 对象 {}
+2. 数组 []
+
+JSON中允许的值：
+
+1. 字符串
+2. 数值
+3. 布尔值
+4. null
+5. 对象
+6. 数组
+
+```
+var arr = '[1,2,3,"hello",true]';
+
+var obj2 = '{"arr":[1,2,3]}';
+
+var arr2 ='[{"name":"孙悟空","age":18,"gender":"男"},{"name":"孙悟空","age":18,"gender":"男"}]';
+```
+
+### 1.将JSON字符串转换为JS中的对象
+
+在JS中，为我们提供了一个工具类，就叫JSON
+
+这个对象可以帮助我们将一个JSON转换为JS对象，也可以将一个JS对象转换为JSON
+
+**JSON.parse()**
+
+可以将以JSON字符串转换为js对象；它需要一个JSON字符串作为参数，会将该字符串转换为JS对象并返回
+
+```
+var arr = '[1,2,3,"hello",true]';
+```
+
+```
+var json = '{"name":"孙悟空","age":18,"gender":"男"}';
+```
+
+```
+var o = JSON.parse(json);
+var o2 = JSON.parse(arr);
+
+console.log(o); //{name: '孙悟空', age: 18, gender: '男'}
+console.log(o2); // [1, 2, 3, 'hello', true]
+```
+
+### 2.将json对象转换为json字符串
+
+**JSON.stringify()**
+
+   - 可以将一个JS对象转换为JSON字符串
+   - 需要一个js对象作为参数，会返回一个JSON字符串
+
+```
+var obj3 = {name:"猪八戒" , age:28 , gender:"男"};
+```
+
+```
+var str = JSON.stringify(obj3);
+console.log(str); //'{"name":"猪八戒","age":28,"gender":"男"}'
+```
+
+**注意：**JSON这个对象在IE7及以下的浏览器中不支持
+
+### 3.eval
+
+- 这个函数可以用来执行一段字符串形式的JS代码，并将执行结果返回
+- 如果使用eval()执行的字符串中含有{},它会将{}当成是代码块；如果不希望将其当成代码块解析，则需要在字符串前后各加一个()
+   
+- eval()这个函数的功能很强大，可以直接执行一个字符串中的js代码；但是在开发中尽量不要使用，首先它的执行性能比较差，然后它还具有安全隐患
+
+借此来兼容IE7一下浏览器
+
+```
+var str = '{"name":"孙悟空","age":18,"gender":"男"}'
+
+var str2 = "alert('hello');";
+
+var obj = eval("("+str+")");
+
+var obj2 = eval(str2)
+
+console.log(obj);  //{name: '孙悟空', age: 18, gender: '男'}
+console.log(obj2)  //undefined
+```
+
+![eval](https://raw.githubusercontent.com/weixiaoyun/Images/JavaScript/eval.png)
