@@ -450,7 +450,9 @@ fun1();
 
 ## 五、函数高级
 
-### 1.原型（prototype）
+### 1.原型与原型链
+
+#### 原型（prototype）
 
 1. 函数的prototype属性
   * 每个函数都有一个prototype属性, 它默认指向一个Object空对象(即称为: 原型对象)
@@ -482,7 +484,7 @@ var fun = new Fun()
 fun.test()
 ```
 
-### 2.显示原型与隐式原型
+#### 显示原型与隐式原型
 
 1. 每个函数function都有一个prototype，即显式原型(属性)
 
@@ -520,7 +522,7 @@ Fn.prototype.test = function () {
 fn.test()
 ```
 
-### 3.原型链
+#### 原型链
 
 * 访问一个对象的属性时，
   * 先在自身属性中查找，找到返回
@@ -603,7 +605,7 @@ console.log(p2) //Person {name: 'Cat', age: 12}
 console.log(p1.__proto__===p2.__proto__) // true
 ```
 
-### 4.instanceof
+#### instanceof
 
 instanceof是如何判断的?
 
@@ -629,7 +631,7 @@ function Foo() {}
 console.log(Object instanceof  Foo) // false
 ```
 
-### 5.原型（链）面试题
+#### 面试题
 
 ```
 function A () {
@@ -670,7 +672,9 @@ console.log(Function.prototype.b) /*ƒ (){
                                           }*/
 ```
 
-### 6.函数提升与变量提升
+### 2.执行上下文与执行上下文栈
+
+#### 函数提升与变量提升
 
 变量声明提升
 
@@ -720,7 +724,7 @@ var fn3 = function () {
 }
 ```
 
-### 7.执行上下文
+#### 执行上下文
 
 代码分类(位置)
 
@@ -759,7 +763,7 @@ function a2() {
 console.log(a1) //3
 ```
 
-### 8.执行上下文栈
+#### 执行上下文栈
 
 1. 在全局代码执行前, JS引擎就会创建一个栈来存储管理所有的执行上下文对象
 2. 在全局执行上下文(window)确定后, 将其添加到栈中(压栈)
@@ -812,7 +816,7 @@ ge: 1
 
 整个过程中产生了5个执行上下文
 
-### 9.执行上下文面试题
+#### 面试题
 
 先执行变量提升, 再执行函数提升（函数提升优先级高于变量提升）
 
@@ -847,4 +851,374 @@ function c(c) {
   var c = 3
 }
 c(2) // 2
+```
+
+### 3.作用域与作用域链
+
+#### 作用域
+
+理解
+
+  * 就是一块"地盘", 一个代码段所在的区域
+  * 它是静态的(相对于上下文对象), 在编写代码时就确定了
+
+分类
+
+  * 全局作用域
+  * 函数作用域
+  * 块作用域(ES6)
+
+作用
+
+  * 隔离变量，不同作用域下同名变量不会有冲突
+
+```
+var a = 10,
+  b = 20
+function fn(x) {
+  var a = 100,
+    c = 300;
+  console.log('fn()', a, b, c, x)
+  function bar(x) {
+    var a = 1000,
+      d = 400
+    console.log('bar()', a, b, c, d, x)
+  }
+
+  bar(100)
+  bar(200)
+}
+fn(10)
+// fn() 100 20 300 10
+// bar() 1000 20 300 400 100
+// bar() 1000 20 300 400 200
+```
+
+#### 作用域与执行上下文
+
+区别1
+
+  * 全局作用域之外，每个函数都会创建自己的作用域，作用域在函数定义时就已经确定了。而不是在函数调用时
+  * 全局执行上下文环境是在全局作用域确定之后, js代码马上执行之前创建
+  * 函数执行上下文是在调用函数时, 函数体代码执行之前创建
+
+区别2
+
+  * 作用域是静态的, 只要函数定义好了就一直存在, 且不会再变化
+  * 执行上下文是动态的, 调用函数时创建, 函数调用结束时就会自动释放
+
+联系
+
+  * 执行上下文(对象)是从属于所在的作用域
+  * 全局上下文环境==>全局作用域
+  * 函数上下文环境==>对应的函数使用域
+
+#### 作用域链
+
+理解
+
+  * 多个上下级关系的作用域形成的链, 它的方向是从下向上的(从内到外)
+  * 查找变量时就是沿着作用域链来查找的
+
+查找一个变量的查找规则
+
+  1. 在当前作用域下的执行上下文中查找对应的属性, 如果有直接返回, 否则进入2
+  2. 在上一级作用域的执行上下文中查找对应的属性, 如果有直接返回, 否则进入3
+  3. 再次执行2的相同操作, 直到全局作用域, 如果还找不到就抛出找不到的异常
+
+```
+var a = 1
+function fn1() {
+  var b = 2
+  function fn2() {
+    var c = 3
+    console.log(c) //3
+    console.log(b) //2
+    console.log(a) //1
+    console.log(d) //报错
+  }
+  fn2()
+}
+fn1()
+```
+
+#### 面试题
+
+```
+var x = 10;
+function fn() {
+  console.log(x);
+}
+function show(f) {
+  var x = 20;
+  f();
+}
+show(fn);  //10
+```
+
+```
+var fn = function () {
+  console.log(fn)
+}
+fn()
+/*ƒ () {
+  console.log(fn)
+}*/
+
+var obj = {
+  fn2: function () {
+   // console.log(fn2) //报错 fn2 is not defined
+   console.log(this.fn2)
+    /*ƒ () {
+      // console.log(fn2) //fn2 is not defined
+      console.log(this.fn2)
+    }*/
+  }
+}
+obj.fn2()
+```
+
+### 4.闭包
+
+如何产生闭包?
+
+  * 当一个嵌套的内部(子)函数引用了嵌套的外部(父)函数的变量(函数)时, 就产生了闭包
+
+闭包到底是什么?
+
+  * 使用chrome调试查看
+  * 理解一: 闭包是嵌套的内部函数(绝大部分人)
+  * 理解二: 包含被引用变量(函数)的对象(极少数人)
+  * 注意: 闭包存在于嵌套的内部函数中
+
+产生闭包的条件?
+
+  * 函数嵌套
+  * 内部函数引用了外部函数的数据(变量/函数)
+
+```
+function fn1 () {
+  var a = 2
+  var b = 'abc'
+  function fn2 () { //执行函数定义就会产生闭包(不用调用内部函数)
+    console.log(a)
+  }
+  // fn2()
+}
+fn1()
+
+function fun1() {
+  var a = 3
+  var fun2 = function () {
+    console.log(a)
+  }
+}
+fun1()
+```
+
+#### 常见的闭包
+
+1. 将函数作为另一个函数的返回值
+2. 将函数作为实参传递给另一个函数调用
+
+```
+// 1. 将函数作为另一个函数的返回值
+function fn1() {
+  var a = 2
+  function fn2() {
+    a++
+    console.log(a)
+  }
+  return fn2
+}
+var f = fn1()
+f() // 3
+f() // 4
+
+// 2. 将函数作为实参传递给另一个函数调用
+function showDelay(msg, time) {
+  setTimeout(function () {
+    alert(msg)
+  }, time)
+}
+showDelay('wxy', 2000)
+```
+
+#### 闭包的作用
+
+- 使用函数内部的变量在函数执行完后, 仍然存活在内存中(延长了局部变量的生命周期)
+- 让函数外部可以操作(读写)到函数内部的数据(变量/函数)
+
+问题:
+  1. 函数执行完后, 函数内部声明的局部变量是否还存在? 
+
+      一般是不存在, 存在于闭中的变量才可能存在
+
+  2. 在函数外部能直接访问函数内部的局部变量吗? 
+
+     不能, 但我们可以通过闭包让外部操作它
+
+```
+function fn1() {
+  var a = 2
+  function fn2() {
+    a++
+    console.log(a)
+    // return a
+  }
+  function fn3() {
+    a--
+    console.log(a)
+  }
+  return fn3
+}
+var f = fn1()
+f() // 1
+f() // 0
+```
+
+#### 闭包的生命周期
+
+1. 产生: 在嵌套内部函数定义执行完时就产生了(不是在调用)
+2. 死亡: 在嵌套的内部函数成为垃圾对象时
+
+```
+function fn1() {
+  //此时闭包就已经产生了(函数提升, 内部函数对象已经创建了)
+  var a = 2
+  function fn2 () {
+    a++
+    console.log(a)
+  }
+  return fn2
+}
+var f = fn1()
+f() // 3
+f() // 4
+f = null //闭包死亡(包含闭包的函数对象成为垃圾对象)
+```
+
+#### 闭包的应用
+
+定义JS模块
+  * 具有特定功能的js文件
+  * 将所有的数据和功能都封装在一个函数内部(私有的)
+  * 只向外暴露一个包信n个方法的对象或函数
+  * 模块的使用者, 只需要通过模块暴露的对象调用方法来实现对应的功能
+
+```
+function myModule() {
+  //私有数据
+  var msg = 'wxy'
+  //操作数据的函数
+  function doSomething() {
+    console.log('doSomething() '+msg.toUpperCase())
+  }
+  function doOtherthing () {
+    console.log('doOtherthing() '+msg.toLowerCase())
+  }
+
+  //向外暴露对象(给外部使用的方法)
+  return {
+    doSomething: doSomething,
+    doOtherthing: doOtherthing
+  }
+}
+```
+
+```
+(function () {
+  //私有数据
+  var msg = 'wxy'
+  //操作数据的函数
+  function doSomething() {
+    console.log('doSomething() '+msg.toUpperCase())
+  }
+  function doOtherthing () {
+    console.log('doOtherthing() '+msg.toLowerCase())
+  }
+
+  //向外暴露对象(给外部使用的方法)
+  window.myModule2 = {
+    doSomething: doSomething,
+    doOtherthing: doOtherthing
+  }
+})()
+```
+
+#### 闭包的缺陷及解决方案
+
+缺陷：
+
+  * 函数执行完后, 函数内的局部变量没有释放, 占用内存时间会变长
+  * 容易造成内存泄露
+
+解决：
+
+  * 能不用闭包就不用
+  * 及时释放
+
+```
+function fn1() {
+  var arr = new Array[100000]
+  function fn2() {
+    console.log(arr.length)
+  }
+  return fn2
+}
+var f = fn1()
+f()
+
+f = null //让内部函数成为垃圾对象-->回收闭包
+```
+
+#### 面试题
+
+```
+var name = "The Window";
+var object = {
+  name : "My Object",
+  getNameFunc : function(){
+    return function(){
+      return this.name;
+    };
+  }
+};
+console.log('obj', object.getNameFunc()());  //  the window
+```
+
+```
+var name2 = "The Window";
+var object2 = {
+  name2 : "My Object",
+  getNameFunc : function(){
+    var that = this;
+    return function(){
+      console.log(this.name2) //The Window
+      return that.name2;
+    };
+  }
+};
+console.log('obj2', object2.getNameFunc()()); //  my object
+```
+
+```
+function fun(n,o) {
+  console.log(o)
+  return {
+    fun:function(m){
+      return fun(m,n)
+    }
+  }
+}
+var a = fun(0)
+a.fun(1)
+a.fun(2)
+a.fun(3)//undefined,0,0,0
+
+var b = fun(0).fun(1).fun(2).fun(3)//undefined,0,1,2
+
+var c = fun(0).fun(1)
+c.fun(2)
+c.fun(3)//undefined,0,1,1
 ```
