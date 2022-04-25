@@ -1222,3 +1222,246 @@ var c = fun(0).fun(1)
 c.fun(2)
 c.fun(3)//undefined,0,1,1
 ```
+
+## 六、对象高级
+
+### 1.对象创建模式
+
+#### Object构造函数模式
+
+  * 套路: 先创建空Object对象, 再动态添加属性/方法
+  * 适用场景: 起始时不确定对象内部数据
+  * 问题: 语句太多
+
+```
+var p = new Object()
+p = {}
+p.name = 'Tom'
+p.age = 12
+p.setName = function (name) {
+  this.name = name
+}
+p.setaAge = function (age) {
+  this.age = age
+}
+
+console.log(p)  //{name: 'Tom', age: 12, setName: ƒ, setaAge: ƒ}
+```
+
+#### 对象字面量模式
+
+  * 套路: 使用{}创建对象, 同时指定属性/方法
+  * 适用场景: 起始时对象内部数据是确定的
+  * 问题: 如果创建多个对象, 有重复代码
+
+```
+var p = {
+  name: 'Tom',
+  age: 23,
+  setName: function (name) {
+    this.name = name
+  }
+}
+console.log(p.name, p.age) //Tom 23
+p.setName('JACK')
+console.log(p.name, p.age) //JACK 23
+
+var p2 = {
+  name: 'BOB',
+  age: 24,
+  setName: function (name) {
+    this.name = name
+  }
+}
+```
+
+#### 工厂模式
+
+* 套路: 通过工厂函数动态创建对象并返回
+* 适用场景: 需要创建多个对象
+* 问题: 对象没有一个具体的类型, 都是Object类型
+
+```
+function createPerson(name, age) {
+  var p = {
+    name: name,
+    age: age,
+    setName: function (name) {
+      this.name = name
+    }
+  }
+  return p
+}
+
+var p1 = createPerson('Tom', 12)
+var p2 = createPerson('JAck', 13)
+console.log(p1) //{name: 'Tom', age: 12, setName: ƒ}
+console.log(p2) //{name: 'JAck', age: 13, setName: ƒ}
+```
+
+#### 自定义构造函数模式
+
+* 套路: 自定义构造函数, 通过new创建对象
+* 适用场景: 需要创建多个类型确定的对象
+* 问题: 每个对象都有相同的数据, 浪费内存
+
+```
+function Person(name, age) {
+  this.name = name
+  this.age = age
+  this.setName = function (name) {
+    this.name = name
+  }
+}
+
+var p1 = new Person('Tom', 12)
+var p2 = new Person('Tom2', 13)
+console.log(p1, p1 instanceof Person) //Person {name: 'Tom', age: 12, setName: ƒ} true
+```
+
+#### 构造函数+原型的组合模式
+
+* 套路: 自定义构造函数, 属性在函数中初始化, 方法添加到原型上
+* 适用场景: 需要创建多个类型确定的对象
+
+```
+function Person (name, age) {
+  this.name = name
+  this.age = age
+}
+Person.prototype.setName = function (name) {
+  this.name = name
+}
+var p1 = new Person('Tom', 12)
+var p2 = new Person('JAck', 23)
+p1.setName('TOM3')
+console.log(p1) //Person {name: 'TOM3', age: 12}
+
+Person.prototype.setAge = function (age) {
+  this.age = age
+}
+p1.setAge(23)
+console.log(p1.age) //23
+
+Person.prototype = {}
+p1.setAge(34)
+console.log(p1) //Person {name: 'TOM3', age: 34}
+var p3 = new Person('BOB', 12)
+p3.setAge(12) //报错，Uncaught TypeError: p3.setAge is not a function
+```
+
+### 2.继承模式
+
+#### 原型继承链
+
+套路
+
+- 定义父类型构造函数
+- 给父类型的原型添加方法
+- 定义子类型的构造函数
+- 创建父类型的对象赋值给子类型的原型
+- 将子类型原型的构造属性设置为子类型
+- 给子类型原型添加方法
+- 创建子类型的对象: 可以调用父类型的方法
+
+**关键**
+
+​	子类型的原型为父类型的一个实例对象
+
+因为父类型的实例能看到父类型原型上的方法，所以子类型的原型必须指向父类型的实例，其中原型指向的都是一个实例对象，而不是一个构造函数
+
+```
+function Supper() { //父类型
+  this.superProp = 'The super prop'
+}
+//原型的数据所有的实例对象都可见
+Supper.prototype.showSupperProp = function () {
+  console.log(this.superProp)
+}
+
+function Sub() { //子类型
+  this.subProp = 'The sub prop'
+}
+
+// 子类的原型为父类的实例
+Sub.prototype = new Supper()
+// Sub.prototype = Supper()
+// 修正Sub.prototype.constructor为Sub本身
+Sub.prototype.constructor = Sub
+
+Sub.prototype.showSubProp = function () {
+  console.log(this.subProp)
+}
+
+// 创建子类型的实例
+var sub = new Sub()
+// 调用父类型的方法
+sub.showSubProp() //The sub prop
+// 调用子类型的方法
+sub.showSupperProp() //The super prop
+console.log(sub.__proto__) //Supper {superProp: 'The super prop', constructor: ƒ, showSubProp: ƒ}
+```
+
+![原型链继承](https://raw.githubusercontent.com/weixiaoyun/Images/js%E9%AB%98%E7%BA%A7/%E5%8E%9F%E5%9E%8B%E9%93%BE%E7%BB%A7%E6%89%BF.png)
+
+#### 借用构造函数继承
+
+套路:
+
+- 定义父类型构造函数
+- 定义子类型构造函数
+- 在子类型构造函数中调用父类型构造
+
+**关键**:
+
+  - 在子类型构造函数中通用super()调用父类型构造函数
+
+```
+function Person(name, age) {
+  this.name = name
+  this.age = age
+}
+
+function Student(name, age, price) {
+  Person.call(this, name, age)   // this.Person(name, age)
+  this.price = price
+}
+
+var s = new Student('Tom', 20, 12000)
+console.log(s.name, s.age, s.price) //Tom 20 12000
+```
+
+#### 组合继承
+
+- 利用原型链实现对父类型对象的方法继承
+- 利用call()借用父类型构建函数初始化相同属性
+
+```
+function Person(name, age) {
+  this.name = name
+  this.age = age
+}
+Person.prototype.setName = function (name) {
+  this.name = name
+}
+
+function Student(name, age, price) {
+  Person.call(this, name, age) //得到父类型的属性
+  this.price = price
+}
+Student.prototype = new Person()  //得到父类型的方法
+Student.prototype.constructor = Student
+Student.prototype.setPrice = function (price) {
+  this.price = price
+}
+
+var s = new Student('Tom', 12, 10000)
+s.setPrice(11000)
+s.setName('Bob')
+console.log(s) //Student {name: 'Bob', age: 12, price: 11000}
+console.log(s.constructor)
+/*ƒ Student(name, age, price) {
+  Person.call(this, name, age) //得到父类型的属性
+  this.price = price
+}
+```
