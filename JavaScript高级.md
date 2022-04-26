@@ -1465,3 +1465,372 @@ console.log(s.constructor)
   this.price = price
 }
 ```
+
+## 七、线程机制与事件机制
+
+### 1.进程与线程
+
+进程：程序的一次执行, 它占有一片独有的内存空间
+
+线程： CPU的基本调度单位, 是程序执行的一个完整流程
+
+进程与线程
+
+  * 一个进程中一般至少有一个运行的线程: 主线程
+  * 一个进程中也可以同时运行多个线程, 我们会说程序是多线程运行的
+  * 一个进程内的数据可以供其中的多个线程直接共享
+  * 多个进程之间的数据是不能直接共享的
+
+浏览器运行是单进程还是多进程?
+
+  * 有的是单进程
+    * firefox
+    * 老版IE
+  * 有的是多进程
+    * chrome
+    * 新版IE
+
+如何查看浏览器是否是多进程运行?
+
+  * 任务管理器==>进程
+
+浏览器运行是单线程还是多线程?
+
+  * 都是多线程运行的
+
+### 2.浏览器内核
+
+什么是浏览器内核?
+
+  * 支持浏览器运行的最核心的程序
+
+不同的浏览器可能不太一样
+
+  * Chrome, Safari: webkit
+  * firefox: Gecko
+  * IE: Trident
+  * 360,搜狗等国内浏览器: Trident + webkit
+
+内核由很多模块组成
+
+  * html,css文档解析模块 : 负责页面文本的解析
+  * dom/css模块 : 负责dom/css在内存中的相关处理
+  * 布局和渲染模块 : 负责页面的布局和效果的绘制
+  * 布局和渲染模块 : 负责页面的布局和效果的绘制
+
+  * 定时器模块 : 负责定时器的管理
+  * 网络请求模块 : 负责服务器请求(常规/Ajax)
+  * 事件响应模块 : 负责事件的管理
+
+### 3.定时器
+
+定时器真是定时执行的吗?
+
+  * 定时器并不能保证真正定时执行
+  * 一般会延迟一丁点(可以接受), 也有可能延迟很长时间(不能接受)
+
+定时器回调函数是在分线程执行的吗?
+
+  * 在主线程执行的, js是单线程的
+
+定时器是如何实现的?
+
+  * 事件循环模型
+
+```
+document.getElementById('btn').onclick = function () {
+  var start = Date.now()
+  console.log('启动定时器前...')
+  setTimeout(function () {
+    console.log('定时器执行了', Date.now()-start)
+  }, 200)
+  console.log('启动定时器后...')
+  //启动定时器前...
+  //启动定时器后...
+  //定时器执行了 420
+```
+
+### 4.js单线程
+
+如何证明js执行是单线程的?
+
+  * setTimeout()的回调函数是在主线程执行的
+  * 定时器回调函数只有在运行栈中的代码全部执行完后才有可能执行
+
+为什么js要用单线程模式, 而不用多线程模式?
+
+  * JavaScript的单线程，与它的用途有关。
+  * 作为浏览器脚本语言，JavaScript的主要用途是与用户互动，以及操作DOM。
+  * 这决定了它只能是单线程，否则会带来很复杂的同步问题
+
+代码的分类:
+
+  * 初始化代码
+  * 回调代码
+
+js引擎执行代码的基本流程
+
+  * 先执行初始化代码: 包含一些特别的代码、回调函数(异步执行)
+    * 设置定时器
+    * 绑定事件监听
+    * 发送ajax请求
+  * 后面在某个时刻才会执行回调代码
+
+```
+setTimeout(function () {
+  console.log('timeout 2222')
+  alert('22222222')
+}, 2000)
+setTimeout(function () {
+  console.log('timeout 1111')
+  alert('1111111')
+}, 1000)
+setTimeout(function () {
+  console.log('timeout() 00000')
+}, 0)
+setTimeout(function () {
+  console.log('timeout() 3000')
+}, 3000)
+function fn() {
+  console.log('fn()')
+}
+fn()
+
+console.log('alert()之前')
+alert('------') //暂停当前主线程的执行, 同时暂停计时, 点击确定后, 恢复程序执行和计时
+console.log('alert()之后')
+/*fn()
+alert()之前
+alert()之后
+timeout() 00000
+timeout 1111
+timeout 2222
+timeout() 3000
+*/
+```
+
+### 5.事件循环模型
+
+所有代码分类
+
+  * 初始化执行代码(同步代码): 包含绑定dom事件监听, 设置定时器, 发送ajax请求的代码
+  * 回调执行代码(异步代码): 处理回调逻辑
+
+js引擎执行代码的基本流程:
+
+  * 初始化代码===>回调代码
+
+模型的2个重要组成部分:
+
+  * 事件(定时器/DOM事件/Ajax)管理模块
+  * 回调队列
+
+模型的运转流程
+
+  * 执行初始化代码, 将事件回调函数交给对应模块管理
+  * 当事件发生时, 管理模块会将回调函数及其数据添加到回调列队中
+  * 只有当初始化代码执行完后(可能要一定时间), 才会遍历读取回调队列中的回调函数执行
+
+![事件循环模型](https://raw.githubusercontent.com/weixiaoyun/Images/js%E9%AB%98%E7%BA%A7/%E4%BA%8B%E4%BB%B6%E5%BE%AA%E7%8E%AF%E6%A8%A1%E5%9E%8B.png)
+
+```
+function fn1() {
+  console.log('fn1()')
+}
+fn1()
+document.getElementById('btn').onclick = function () {
+  console.log('点击了btn')
+}
+setTimeout(function () {
+  console.log('定时器执行了')
+}, 2000)
+function fn2() {
+  console.log('fn2()')
+}
+fn2()
+/*fn1()
+fn2()
+定时器执行了*/
+```
+
+### 6.Web Workers
+
+H5规范提供了js分线程的实现, 取名为: Web Workers
+
+相关API
+
+  * Worker: 构造函数, 加载分线程执行的js文件
+  * Worker.prototype.onmessage: 用于接收另一个线程的回调函数
+  * Worker.prototype.postMessage: 向另一个线程发送消息
+
+不足
+
+  * worker内代码不能操作DOM(更新UI)
+  * 不能跨域加载JS
+  * 不是每个浏览器都支持这个新特性
+
+
+
+```
+function fibonacci(n) {
+  return n<=2 ? 1 : fibonacci(n-1) + fibonacci(n-2)  //递归调用
+}
+// console.log(fibonacci(7))
+var input = document.getElementById('number')
+document.getElementById('btn').onclick = function () {
+  var number = input.value
+  var result = fibonacci(number)
+  alert(result) //输入7 alert 13
+                //输入5 alert 5
+}
+```
+
+其中，worker.js文件：
+
+```
+function fibonacci(n) {
+  return n<=2 ? 1 : fibonacci(n-1) + fibonacci(n-2)  //递归调用
+}
+
+console.log(this)
+this.onmessage = function (event) {
+  var number = event.data
+  console.log('分线程接收到主线程发送的数据: '+number)
+  //计算
+  var result = fibonacci(number)
+  postMessage(result)
+  console.log('分线程向主线程返回数据: '+result)
+  // alert(result)  alert是window的方法, 在分线程不能调用
+  // 分线程中的全局对象不再是window, 所以在分线程中不可能更新界面
+}
+```
+
+
+
+```
+<input type="text" placeholder="数值" id="number">
+<button id="btn">计算</button>
+<script type="text/javascript">
+  var input = document.getElementById('number')
+  document.getElementById('btn').onclick = function () {
+    var number = input.value
+
+    //创建一个Worker对象
+    var worker = new Worker('worker.js')
+    // 绑定接收消息的监听
+    worker.onmessage = function (event) {
+      console.log('主线程接收分线程返回的数据: '+event.data)
+      alert(event.data)
+    }
+
+    // 向分线程发送消息
+    worker.postMessage(number)
+    console.log('主线程向分线程发送数据: '+number)
+  }
+  // console.log(this) // window
+
+  /*主线程向分线程发送数据: 5
+  DedicatedWorkerGlobalScope
+  分线程接收到主线程发送的数据: 5
+  分线程向主线程返回数据: 5
+  主线程接收分线程返回的数据: 5*/
+```
+
+![H5 Web Workers(多线程)](https://raw.githubusercontent.com/weixiaoyun/Images/js%E9%AB%98%E7%BA%A7/H5%20Web%20Workers(%E5%A4%9A%E7%BA%BF%E7%A8%8B).png)
+
+## 八、其他
+
+### 1.分号问题
+
+- js一条语句的后面可以不加分号
+
+- 是否加分号是编码风格问题, 没有应该不应该，只有你自己喜欢不喜欢
+
+- 在下面2种情况下不加分号会有问题
+
+  - 小括号开头的前一条语句
+
+    * 中方括号开头的前一条语句
+
+- 解决办法: 在行首加分号
+
+- 强有力的例子: vue.js库
+
+- 知乎热议: https://www.zhihu.com/question/20298345
+
+```
+var a = 3
+;(function () {
+
+})()
+/*
+ 错误理解
+ var a = 3(function () {
+
+ })();
+*/
+
+var b = 4
+;[1, 3].forEach(function () {
+
+})
+/*
+错误理解
+ var b = 4[3].forEach(function () {
+
+ })
+ */
+```
+
+### 2.内存溢出与内存泄漏
+
+内存溢出
+
+  * 一种程序运行出现的错误
+  * 当程序运行需要的内存超过了剩余的内存时, 就出抛出内存溢出的错误
+
+内存泄露
+
+  * 占用的内存没有及时释放
+  * 内存泄露积累多了就容易导致内存溢出
+  * 常见的内存泄露:
+    * 意外的全局变量
+    * 没有及时清理的计时器或回调函数
+    * 闭包
+
+```
+// 1. 内存溢出
+var obj = {}
+for (var i = 0; i < 10000; i++) {
+  obj[i] = new Array(10000000)
+  console.log('-----')
+}
+
+// 2. 内存泄露
+  // 意外的全局变量
+function fn() {
+  a = new Array(10000000)
+  console.log(a)
+}
+fn()
+
+ // 没有及时清理的计时器或回调函数
+var intervalId = setInterval(function () { //启动循环定时器后不清理
+  console.log('----')
+}, 1000)
+
+// clearInterval(intervalId)
+
+  // 闭包
+function fn1() {
+  var a = 4
+  function fn2() {
+    console.log(++a)
+  }
+  return fn2
+}
+var f = fn1()
+f()
+
+// f = null
+```
