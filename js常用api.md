@@ -364,6 +364,28 @@ for(let a in arr) {
 3*/
 ```
 
+### for of()
+
+**`for...of`语句**在[可迭代对象](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Iteration_protocols)（包括 [`Array`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Array)，[`Map`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Map)，[`Set`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Set)，[`String`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/String)，[`TypedArray`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/TypedArray)，[arguments](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions_and_function_scope/arguments) 对象等等）上创建一个迭代循环，调用自定义迭代钩子，并为每个不同属性的值执行语句
+
+**语法：**
+
+```
+for (variable of iterable) {
+    //statements
+}
+```
+
+```
+var arr = ['A', 'B', 'C']
+for(let x of arr){
+    console.log(x)
+}
+//A
+//B
+//C
+```
+
 ### filter（）
 
 一个过滤方法，参数是一个函数，所有的数组成员依次执行该函数，返回结果为 true 的成员组成一个新数组返回。（不会改变原始数组）。
