@@ -5136,3 +5136,949 @@ class DistributedEdit extends mix(Loggable, Serializable) {
   // ...
 }
 ```
+
+### 17.数值扩展
+
+#### 二进制和八进制表示法
+
+ES6 提供了二进制和八进制数值的新的写法，分别用前缀`0b`（或`0B`）和`0o`（或`0O`）表示。
+
+```javascript
+0b111110111 === 503 // true
+0o767 === 503 // true
+```
+
+从 ES5 开始，在严格模式之中，八进制就不再允许使用前缀`0`表示，ES6 进一步明确，要使用前缀`0o`表示。
+
+```javascript
+// 非严格模式
+(function(){
+  console.log(0o11 === 011);
+})() // true
+
+// 严格模式
+(function(){
+  'use strict';
+  console.log(0o11 === 011);
+})() // Uncaught SyntaxError: Octal literals are not allowed in strict mode.
+```
+
+如果要将`0b`和`0o`前缀的字符串数值转为十进制，要使用`Number`方法。
+
+```javascript
+Number('0b111')  // 7
+Number('0o10')  // 8
+```
+
+#### 数值分隔符
+
+欧美语言中，较长的数值允许每三位添加一个分隔符（通常是一个逗号），增加数值的可读性。比如，`1000`可以写作`1,000`。
+
+[ES2021](https://github.com/tc39/proposal-numeric-separator)，允许 JavaScript 的数值使用下划线（`_`）作为分隔符。
+
+```javascript
+let budget = 1_000_000_000_000;
+budget === 10 ** 12 // true
+```
+
+这个数值分隔符没有指定间隔的位数，也就是说，可以每三位添加一个分隔符，也可以每一位、每两位、每四位添加一个。
+
+```javascript
+123_00 === 12_300 // true
+
+12345_00 === 123_4500 // true
+12345_00 === 1_234_500 // true
+```
+
+小数和科学计数法也可以使用数值分隔符。
+
+```javascript
+// 小数
+0.000_001
+
+// 科学计数法
+1e10_000
+```
+
+数值分隔符有几个使用注意点。
+
+- 不能放在数值的最前面（leading）或最后面（trailing）。
+- 不能两个或两个以上的分隔符连在一起。
+- 小数点的前后不能有分隔符。
+- 科学计数法里面，表示指数的`e`或`E`前后不能有分隔符。
+
+```javascript
+// 全部报错
+3_.141
+3._141
+1_e12
+1e_12
+123__456
+_1464301
+1464301_
+```
+
+除了十进制，其他进制的数值也可以使用分隔符。
+
+```javascript
+// 二进制
+0b1010_0001_1000_0101
+// 十六进制
+0xA0_B0_C0
+```
+
+**注意**，分隔符不能紧跟着进制的前缀`0b`、`0B`、`0o`、`0O`、`0x`、`0X`。
+
+```javascript
+// 报错
+0_b111111000
+0b_111111000
+```
+
+数值分隔符只是一种书写便利，对于 JavaScript 内部数值的存储和输出，并没有影响。
+
+```javascript
+let num = 12_345;
+
+num // 12345
+num.toString() // 12345
+```
+
+下面三个将字符串转成数值的函数，不支持数值分隔符。主要原因是语言的设计者认为，数值分隔符主要是为了编码时书写数值的方便，而不是为了处理外部输入的数据。
+
+- Number()
+- parseInt()
+- parseFloat()
+
+```javascript
+Number('123_456') // NaN
+parseInt('123_456') // 123
+```
+
+#### Number.isFinite(), Number.isNaN()
+
+ES6 在`Number`对象上，新提供了`Number.isFinite()`和`Number.isNaN()`两个方法。
+
+`Number.isFinite()`用来检查一个数值是否为有限的（finite），即不是`Infinity`。
+
+```javascript
+Number.isFinite(15); // true
+Number.isFinite(0.8); // true
+Number.isFinite(NaN); // false
+Number.isFinite(Infinity); // false
+Number.isFinite(-Infinity); // false
+Number.isFinite('foo'); // false
+Number.isFinite('15'); // false
+Number.isFinite(true); // false
+```
+
+**注意**，如果参数类型不是数值，`Number.isFinite`一律返回`false`。
+
+`Number.isNaN()`用来检查一个值是否为`NaN`。
+
+```javascript
+Number.isNaN(NaN) // true
+Number.isNaN(15) // false
+Number.isNaN('15') // false
+Number.isNaN(true) // false
+Number.isNaN(9/NaN) // true
+Number.isNaN('true' / 0) // true
+Number.isNaN('true' / 'true') // true
+```
+
+如果参数类型不是`NaN`，`Number.isNaN`一律返回`false`。
+
+**与传统的全局方法`isFinite()`和`isNaN()`的区别**：
+
+- 传统方法先调用`Number()`将非数值的值转为数值，再进行判断，而这两个新方法只对数值有效
+- `Number.isFinite()`对于非数值一律返回`false`, `Number.isNaN()`只有对于`NaN`才返回`true`，非`NaN`一律返回`false`。
+
+```javascript
+isFinite(25) // true
+isFinite("25") // true
+Number.isFinite(25) // true
+Number.isFinite("25") // false
+
+isNaN(NaN) // true
+isNaN("NaN") // true
+Number.isNaN(NaN) // true
+Number.isNaN("NaN") // false
+Number.isNaN(1) // false
+```
+
+#### Number.parseInt(), Number.parseFloat() 
+
+ES6 将全局方法`parseInt()`和`parseFloat()`，移植到`Number`对象上面，行为完全保持不变。
+
+```javascript
+// ES5的写法
+parseInt('12.34') // 12
+parseFloat('123.45#') // 123.45
+
+// ES6的写法
+Number.parseInt('12.34') // 12
+Number.parseFloat('123.45#') // 123.45
+```
+
+这样做的目的，是逐步减少全局性方法，使得语言逐步模块化。
+
+```javascript
+Number.parseInt === parseInt // true
+Number.parseFloat === parseFloat // true
+```
+
+#### Number.isInteger()
+
+`Number.isInteger()`用来判断一个数值是否为整数。
+
+```javascript
+Number.isInteger(25) // true
+Number.isInteger(25.1) // false
+```
+
+JavaScript 内部，整数和浮点数采用的是同样的储存方法，所以 25 和 25.0 被视为同一个值。
+
+```javascript
+Number.isInteger(25) // true
+Number.isInteger(25.0) // true
+```
+
+如果参数不是数值，`Number.isInteger`返回`false`。
+
+```javascript
+Number.isInteger() // false
+Number.isInteger(null) // false
+Number.isInteger('15') // false
+Number.isInteger(true) // false
+```
+
+**注意**，由于 JavaScript 采用 IEEE 754 标准，数值存储为64位双精度格式，数值精度最多可以达到 53 个二进制位（1 个隐藏位与 52 个有效位）。如果数值的精度超过这个限度，第54位及后面的位就会被丢弃，这种情况下，`Number.isInteger`可能会误判。
+
+```javascript
+Number.isInteger(3.0000000000000002) // true
+```
+
+`Number.isInteger`的参数明明不是整数，但是会返回`true`。原因就是这个小数的精度达到了小数点后16个十进制位，转成二进制位超过了53个二进制位，导致最后的那个`2`被丢弃了。
+
+类似的情况还有，如果一个数值的绝对值小于`Number.MIN_VALUE`（5E-324），即小于 JavaScript 能够分辨的最小值，会被自动转为 0。这时，`Number.isInteger`也会误判。
+
+```javascript
+Number.isInteger(5E-324) // false
+Number.isInteger(5E-325) // true
+```
+
+总之，如果对数据精度的要求较高，不建议使用`Number.isInteger()`判断一个数值是否为整数。
+
+#### Number.EPSILON
+
+ES6 在`Number`对象上面，新增一个极小的常量`Number.EPSILON`。根据规格，它表示 1 与大于 1 的最小浮点数之间的差。
+
+对于 64 位浮点数来说，大于 1 的最小浮点数相当于二进制的`1.00..001`，小数点后面有连续 51 个零。这个值减去 1 之后，就等于 2 的 -52 次方。
+
+```javascript
+Number.EPSILON === Math.pow(2, -52)
+// true
+Number.EPSILON
+// 2.220446049250313e-16
+Number.EPSILON.toFixed(20)
+// "0.00000000000000022204"
+```
+
+`Number.EPSILON`实际上是 JavaScript 能够表示的最小精度。误差如果小于这个值，就可以认为已经没有意义了，即不存在误差了。
+
+引入一个这么小的量的目的，在于为浮点数计算，设置一个误差范围。我们知道浮点数计算是不精确的。
+
+```javascript
+0.1 + 0.2
+// 0.30000000000000004
+
+0.1 + 0.2 - 0.3
+// 5.551115123125783e-17
+
+5.551115123125783e-17.toFixed(20)
+// '0.00000000000000005551'
+```
+
+上面代码解释了，为什么比较`0.1 + 0.2`与`0.3`得到的结果是`false`。
+
+```javascript
+0.1 + 0.2 === 0.3 // false
+```
+
+`Number.EPSILON`可以用来设置“能够接受的误差范围”。比如，误差范围设为 2 的-50 次方（即`Number.EPSILON * Math.pow(2, 2)`），即如果两个浮点数的差小于这个值，我们就认为这两个浮点数相等。
+
+```javascript
+5.551115123125783e-17 < Number.EPSILON * Math.pow(2, 2)
+// true
+```
+
+因此，`Number.EPSILON`的实质是一个可以接受的最小误差范围。
+
+```javascript
+function withinErrorMargin (left, right) {
+  return Math.abs(left - right) < Number.EPSILON * Math.pow(2, 2);
+}
+
+0.1 + 0.2 === 0.3 // false
+withinErrorMargin(0.1 + 0.2, 0.3) // true
+
+1.1 + 1.3 === 2.4 // false
+withinErrorMargin(1.1 + 1.3, 2.4) // true
+```
+
+上面的代码为浮点数运算，部署了一个误差检查函数。
+
+#### Math.trunc()
+
+`Math.trunc`方法用于去除一个数的小数部分，返回整数部分。
+
+```javascript
+Math.trunc(4.1) // 4
+Math.trunc(4.9) // 4
+Math.trunc(-4.1) // -4
+Math.trunc(-4.9) // -4
+Math.trunc(-0.1234) // -0
+```
+
+对于非数值，`Math.trunc`内部使用`Number`方法将其先转为数值。
+
+```javascript
+Math.trunc('123.456') // 123
+Math.trunc(true) //1
+Math.trunc(false) // 0
+Math.trunc(null) // 0
+```
+
+对于空值和无法截取整数的值，返回`NaN`。
+
+```javascript
+Math.trunc(NaN);      // NaN
+Math.trunc('foo');    // NaN
+Math.trunc();         // NaN
+Math.trunc(undefined) // NaN
+```
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.trunc = Math.trunc || function(x) {
+  return x < 0 ? Math.ceil(x) : Math.floor(x);
+};
+```
+
+#### Math.sign()
+
+`Math.sign`方法用来判断一个数到底是正数、负数、还是零。对于非数值，会先将其转换为数值。
+
+它会返回五种值。
+
+- 参数为正数，返回`+1`；
+- 参数为负数，返回`-1`；
+- 参数为 0，返回`0`；
+- 参数为-0，返回`-0`;
+- 其他值，返回`NaN`。
+
+```javascript
+Math.sign(-5) // -1
+Math.sign(5) // +1
+Math.sign(0) // +0
+Math.sign(-0) // -0
+Math.sign(NaN) // NaN
+```
+
+如果参数是非数值，会自动转为数值。对于那些无法转为数值的值，会返回`NaN`。
+
+```javascript
+Math.sign('')  // 0
+Math.sign(true)  // +1
+Math.sign(false)  // 0
+Math.sign(null)  // 0
+Math.sign('9')  // +1
+Math.sign('foo')  // NaN
+Math.sign()  // NaN
+Math.sign(undefined)  // NaN
+```
+
+对于没有部署这个方法的环境，可以用下面的代码模拟。
+
+```javascript
+Math.sign = Math.sign || function(x) {
+  x = +x; // convert to a number
+  if (x === 0 || isNaN(x)) {
+    return x;
+  }
+  return x > 0 ? 1 : -1;
+};
+```
+
+### 18.对象扩展
+
+#### 属性的简洁表示法
+
+ES6 允许在大括号里面，直接写入变量和函数，作为对象的属性和方法。这样的书写更加简洁。
+
+```javascript
+const foo = 'bar';
+const baz = {foo};
+baz // {foo: "bar"}
+
+// 等同于
+const baz = {foo: foo};
+```
+
+```javascript
+function f(x, y) {
+  return {x, y};
+}
+
+// 等同于
+
+function f(x, y) {
+  return {x: x, y: y};
+}
+
+f(1, 2) // Object {x: 1, y: 2}
+```
+
+除了属性简写，方法也可以简写。
+
+```javascript
+const o = {
+  method() {
+    return "Hello!";
+  }
+};
+
+// 等同于
+
+const o = {
+  method: function() {
+    return "Hello!";
+  }
+};
+```
+
+这种写法用于函数的返回值，将会非常方便。
+
+```javascript
+function getPoint() {
+  const x = 1;
+  const y = 10;
+  return {x, y};
+}
+
+getPoint()
+// {x:1, y:10}
+```
+
+CommonJS 模块输出一组变量，就非常合适使用简洁写法。
+
+```javascript
+let ms = {};
+
+function getItem (key) {
+  return key in ms ? ms[key] : null;
+}
+
+function setItem (key, value) {
+  ms[key] = value;
+}
+
+function clear () {
+  ms = {};
+}
+
+module.exports = { getItem, setItem, clear };
+// 等同于
+module.exports = {
+  getItem: getItem,
+  setItem: setItem,
+  clear: clear
+};
+```
+
+属性的赋值器（setter）和取值器（getter），事实上也是采用这种写法。
+
+```javascript
+const cart = {
+  _wheels: 4,
+
+  get wheels () {
+    return this._wheels;
+  },
+
+  set wheels (value) {
+    if (value < this._wheels) {
+      throw new Error('数值太小了！');
+    }
+    this._wheels = value;
+  }
+}
+```
+
+简洁写法在打印对象时也很有用。
+
+```javascript
+let user = {
+  name: 'test'
+};
+
+let foo = {
+  bar: 'baz'
+};
+
+console.log(user, foo)
+// {name: "test"} {bar: "baz"}
+console.log({user, foo})
+// {user: {name: "test"}, foo: {bar: "baz"}}
+```
+
+**注意**，简写的对象方法不能用作构造函数，会报错。
+
+```javascript
+const obj = {
+  f() {
+    this.foo = 'bar';
+  }
+};
+
+new obj.f() // 报错
+```
+
+上面代码中，`f`是一个简写的对象方法，所以`obj.f`不能当作构造函数使用。
+
+#### 属性名表达式
+
+avaScript 定义对象的属性，有两种方法。
+
+```javascript
+// 方法一
+obj.foo = true;
+
+// 方法二
+obj['a' + 'bc'] = 123;
+```
+
+- 方法一是直接用标识符作为属性名，
+- 方法二是用表达式作为属性名，这时要将表达式放在方括号之内
+
+ES6 允许字面量定义对象时，用方法二（表达式）作为对象的属性名，即把表达式放在方括号内。
+
+```javascript
+let propKey = 'foo';
+
+let obj = {
+  [propKey]: true,
+  ['a' + 'bc']: 123
+};
+```
+
+**注意**，属性名表达式如果是一个对象，默认情况下会自动将对象转为字符串`[object Object]`，这一点要特别小心。
+
+```javascript
+const keyA = {a: 1};
+const keyB = {b: 2};
+
+const myObject = {
+  [keyA]: 'valueA',
+  [keyB]: 'valueB'
+};
+
+myObject // Object {[object Object]: "valueB"}
+```
+
+上面代码中，`[keyA]`和`[keyB]`得到的都是`[object Object]`，所以`[keyB]`会把`[keyA]`覆盖掉，而`myObject`最后只有一个`[object Object]`属性。
+
+#### 方法的 name 属性
+
+函数的`name`属性，返回函数名。对象方法也是函数，因此也有`name`属性。
+
+```javascript
+const person = {
+  sayName() {
+    console.log('hello!');
+  },
+};
+
+person.sayName.name   // "sayName"
+```
+
+上面代码中，方法的`name`属性返回函数名（即方法名）。
+
+如果对象的方法使用了取值函数（`getter`）和存值函数（`setter`），则`name`属性不是在该方法上面，而是该方法的属性的描述对象的`get`和`set`属性上面，返回值是方法名前加上`get`和`set`。
+
+```javascript
+const obj = {
+  get foo() {},
+  set foo(x) {}
+};
+
+obj.foo.name
+// TypeError: Cannot read property 'name' of undefined
+
+const descriptor = Object.getOwnPropertyDescriptor(obj, 'foo');
+
+descriptor.get.name // "get foo"
+descriptor.set.name // "set foo"
+```
+
+有两种特殊情况：`bind`方法创造的函数，`name`属性返回`bound`加上原函数的名字；`Function`构造函数创造的函数，`name`属性返回`anonymous`。
+
+```javascript
+(new Function()).name // "anonymous"
+
+var doSomething = function() {
+  // ...
+};
+doSomething.bind().name // "bound doSomething"
+```
+
+如果对象的方法是一个 Symbol 值，那么`name`属性返回的是这个 Symbol 值的描述。
+
+```javascript
+const key1 = Symbol('description');
+const key2 = Symbol();
+let obj = {
+  [key1]() {},
+  [key2]() {},
+};
+obj[key1].name // "[description]"
+obj[key2].name // ""
+```
+
+上面代码中，`key1`对应的 Symbol 值有描述，`key2`没有。
+
+#### 属性的遍历
+
+ES6 一共有 5 种方法可以遍历对象的属性。
+
+**（1）for...in**
+
+`for...in`循环遍历对象自身的和继承的可枚举属性（不含 Symbol 属性）。
+
+**（2）Object.keys(obj)**
+
+`Object.keys`返回一个数组，包括对象自身的（不含继承的）所有可枚举属性（不含 Symbol 属性）的键名。
+
+**（3）Object.getOwnPropertyNames(obj)**
+
+`Object.getOwnPropertyNames`返回一个数组，包含对象自身的所有属性（不含 Symbol 属性，但是包括不可枚举属性）的键名。
+
+**（4）Object.getOwnPropertySymbols(obj)**
+
+`Object.getOwnPropertySymbols`返回一个数组，包含对象自身的所有 Symbol 属性的键名。
+
+**（5）Reflect.ownKeys(obj)**
+
+`Reflect.ownKeys`返回一个数组，包含对象自身的（不含继承的）所有键名，不管键名是 Symbol 或字符串，也不管是否可枚举。
+
+以上的 5 种方法遍历对象的键名，都遵守同样的属性遍历的次序规则。
+
+- 首先遍历所有数值键，按照数值升序排列。
+- 其次遍历所有字符串键，按照加入时间升序排列。
+- 最后遍历所有 Symbol 键，按照加入时间升序排列。
+
+```javascript
+Reflect.ownKeys({ [Symbol()]:0, b:0, 10:0, 2:0, a:0 })
+// ['2', '10', 'b', 'a', Symbol()]
+```
+
+上面代码中，`Reflect.ownKeys`方法返回一个数组，包含了参数对象的所有属性。这个数组的属性次序是这样的，首先是数值属性`2`和`10`，其次是字符串属性`b`和`a`，最后是 Symbol 属性。
+
+#### Object.is
+
+比较两个值是否严格相等，与『===』行为基本一致（区别于+0 与 NaN）
+
+```
+console.log(Object.is(120, 120));// true
+console.log(Object.is(NaN, NaN));// true
+console.log(NaN === NaN);// false
+```
+
+#### Object.assign
+
+Object.assign 对象的合并，将源对象的所有可枚举属性，复制到目标对象
+
+```
+const config1 = {
+    host: 'localhost',
+    port: 3306,
+    name: 'root',
+    pass: 'root',
+    test: 'test'
+};
+const config2 = {
+    host: 'http://baidu.com',
+    port: 33060,
+    name: 'baidu.com',
+    pass: 'iloveyou',
+    test2: 'test2'
+}
+console.log(Object.assign(config1, config2));
+//{host: 'http://baidu.com', port: 33060, name: 'baidu.com', pass: 'iloveyou', test: 'test', test2: "test2"}
+```
+
+#### Object.setPrototypeOf
+
+__ proto __、setPrototypeOf, setPrototypeOf 可以直接设置对象的原型
+
+```
+const person = {
+    name: 'wxy'
+}
+const cities = {
+    xiaoqu: ['北京','上海','深圳']
+}
+Object.setPrototypeOf(person, cities);
+console.log(Object.getPrototypeOf(person)); //{xiaoqu: Array(3)}
+console.log(person); //{name: 'wxy'}
+```
+
+#### 对象的扩展运算符
+
+##### 解构赋值
+
+对象的解构赋值用于从一个对象取值，相当于将目标对象自身的所有可遍历的（enumerable）、但尚未被读取的属性，分配到指定的对象上面。所有的键和它们的值，都会拷贝到新对象上面。
+
+```javascript
+let { x, y, ...z } = { x: 1, y: 2, a: 3, b: 4 };
+x // 1
+y // 2
+z // { a: 3, b: 4 }
+```
+
+由于解构赋值要求等号右边是一个对象，所以如果等号右边是`undefined`或`null`，就会报错，因为它们无法转为对象。
+
+```javascript
+let { ...z } = null; // 运行时错误
+let { ...z } = undefined; // 运行时错误
+```
+
+解构赋值必须是最后一个参数，否则会报错。
+
+```javascript
+let { ...x, y, z } = someObject; // 句法错误
+let { x, ...y, ...z } = someObject; // 句法错误
+```
+
+注意，解构赋值的拷贝是浅拷贝，即如果一个键的值是复合类型的值（数组、对象、函数）、那么解构赋值拷贝的是这个值的引用，而不是这个值的副本。
+
+```javascript
+let obj = { a: { b: 1 } };
+let { ...x } = obj;
+obj.a.b = 2;
+x.a.b // 2
+```
+
+另外，**扩展运算符的解构赋值**，不能复制继承自原型对象的属性。
+
+```javascript
+let o1 = { a: 1 };
+let o2 = { b: 2 };
+o2.__proto__ = o1;
+let { ...o3 } = o2;
+o3 // { b: 2 }
+o3.a // undefined
+```
+
+
+
+```javascript
+const o = Object.create({ x: 1, y: 2 });
+o.z = 3;
+
+let { x, ...newObj } = o;
+let { y, z } = newObj;
+x // 1
+y // undefined
+z // 3
+```
+
+上面代码中，变量`x`是单纯的解构赋值，所以可以读取对象`o`继承的属性；变量`y`和`z`是扩展运算符的解构赋值，只能读取对象`o`自身的属性，所以变量`z`可以赋值成功，变量`y`取不到值。
+
+ES6 规定，变量声明语句之中，如果使用解构赋值，扩展运算符后面必须是一个变量名，而不能是一个解构赋值表达式，所以上面代码引入了中间变量`newObj`，如果写成下面这样会报错。
+
+```javascript
+let { x, ...{ y, z } } = o;
+// SyntaxError: ... must be followed by an identifier in declaration contexts
+```
+
+解构赋值的一个用处，是扩展某个函数的参数，引入其他操作。
+
+```javascript
+function baseFunction({ a, b }) {
+  // ...
+}
+function wrapperFunction({ x, y, ...restConfig }) {
+  // 使用 x 和 y 参数进行操作
+  // 其余参数传给原始函数
+  return baseFunction(restConfig);
+}
+```
+
+上面代码中，原始函数`baseFunction`接受`a`和`b`作为参数，函数`wrapperFunction`在`baseFunction`的基础上进行了扩展，能够接受多余的参数，并且保留原始函数的行为。
+
+##### 扩展运算符
+
+对象的扩展运算符（`...`）用于取出参数对象的所有可遍历属性，拷贝到当前对象之中。
+
+```javascript
+let z = { a: 3, b: 4 };
+let n = { ...z };
+n // { a: 3, b: 4 }
+```
+
+由于数组是特殊的对象，所以对象的扩展运算符也可以用于数组。
+
+```javascript
+let foo = { ...['a', 'b', 'c'] };
+foo
+// {0: "a", 1: "b", 2: "c"}
+```
+
+如果扩展运算符后面是一个空对象，则没有任何效果。
+
+```javascript
+{...{}, a: 1}
+// { a: 1 }
+```
+
+如果扩展运算符后面不是对象，则会自动将其转为对象。
+
+```javascript
+// 等同于 {...Object(1)}
+{...1} // {}
+```
+
+```javascript
+// 等同于 {...Object(true)}
+{...true} // {}
+
+// 等同于 {...Object(undefined)}
+{...undefined} // {}
+
+// 等同于 {...Object(null)}
+{...null} // {}
+```
+
+如果扩展运算符后面是字符串，它会自动转成一个类似数组的对象，因此返回的不是空对象。
+
+```javascript
+{...'hello'}
+// {0: "h", 1: "e", 2: "l", 3: "l", 4: "o"}
+```
+
+对象的扩展运算符，只会返回参数对象自身的、可枚举的属性，这一点要特别小心，尤其是用于类的实例对象时。
+
+```javascript
+class C {
+  p = 12;
+  m() {}
+}
+
+let c = new C();
+let clone = { ...c };
+
+clone.p; // ok
+clone.m(); // 报错
+```
+
+上面示例中，`c`是`C`类的实例对象，对其进行扩展运算时，只会返回`c`自身的属性`c.p`，而不会返回`c`的方法`c.m()`，因为这个方法定义在`C`的原型对象上
+
+对象的扩展运算符等同于使用`Object.assign()`方法。
+
+```javascript
+let aClone = { ...a };
+// 等同于
+let aClone = Object.assign({}, a);
+```
+
+上面的例子只是拷贝了对象实例的属性，如果想完整克隆一个对象，还拷贝对象原型的属性，可以采用下面的写法。
+
+```javascript
+// 写法一
+const clone1 = {
+  __proto__: Object.getPrototypeOf(obj),
+  ...obj
+};
+
+// 写法二
+const clone2 = Object.assign(
+  Object.create(Object.getPrototypeOf(obj)),
+  obj
+);
+
+// 写法三
+const clone3 = Object.create(
+  Object.getPrototypeOf(obj),
+  Object.getOwnPropertyDescriptors(obj)
+)
+```
+
+上面代码中，写法一的`__proto__`属性在非浏览器的环境不一定部署，因此推荐使用写法二和写法三。
+
+扩展运算符可以用于合并两个对象。
+
+```javascript
+let ab = { ...a, ...b };
+// 等同于
+let ab = Object.assign({}, a, b);
+```
+
+如果用户自定义的属性，放在扩展运算符后面，则扩展运算符内部的同名属性会被覆盖掉。
+
+```javascript
+let aWithOverrides = { ...a, x: 1, y: 2 };
+// 等同于
+let aWithOverrides = { ...a, ...{ x: 1, y: 2 } };
+// 等同于
+let x = 1, y = 2, aWithOverrides = { ...a, x, y };
+// 等同于
+let aWithOverrides = Object.assign({}, a, { x: 1, y: 2 });
+```
+
+上面代码中，`a`对象的`x`属性和`y`属性，拷贝到新对象后会被覆盖掉。
+
+这可以用来修改现有对象部分的属性
+
+```javascript
+let newVersion = {
+  ...previousVersion,
+  name: 'New Name' // Override the name property
+};
+```
+
+`newVersion`对象自定义了`name`属性，其他属性全部复制自`previousVersion`对象。
+
+如果把自定义属性放在扩展运算符前面，就变成了设置新对象的默认属性值。
+
+```javascript
+let aWithDefaults = { x: 1, y: 2, ...a };
+// 等同于
+let aWithDefaults = Object.assign({}, { x: 1, y: 2 }, a);
+// 等同于
+let aWithDefaults = Object.assign({ x: 1, y: 2 }, a);
+```
+
+与数组的扩展运算符一样，对象的扩展运算符后面可以跟表达式。
+
+```javascript
+const obj = {
+  ...(x > 1 ? {a: 1} : {}),
+  b: 2,
+};
+```
+
+扩展运算符的参数对象之中，如果有取值函数`get`，这个函数是会执行的。
+
+```javascript
+let a = {
+  get x() {
+    throw new Error('not throw yet');
+  }
+}
+
+let aWithXGetter = { ...a }; // 报错
+```
+
+取值函数`get`在扩展`a`对象时会自动执行，导致报错。
