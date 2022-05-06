@@ -488,6 +488,41 @@ const string = 'asdfghj';
 console.log(string.indexOf('a')) // 0
 ```
 
+### includes()
+
+includes() 方法用于判断字符串是否包含指定的子字符串。
+
+如果找到匹配的字符串则返回 true，否则返回 false。
+
+**注意：** includes() 方法区分大小写。
+
+**语法：**
+
+```
+string.includes(searchvalue, start)
+```
+
+**参数值：**
+
+| 参数          | 描述                                   |
+| :------------ | :------------------------------------- |
+| *searchvalue* | 必需，要查找的字符串                   |
+| *start*       | 可选，设置从那个位置开始查找，默认为 0 |
+
+**返回值：**
+
+| 类型    | 描述                                            |
+| :------ | :---------------------------------------------- |
+| Boolean | 如果找到匹配的字符串返回 true，否则返回 false。 |
+
+```
+const mingzhu = ['西游记','红楼梦','三国演义','水浒传'];
+
+//判断
+console.log(mingzhu.includes('西游记')); //true
+console.log(mingzhu.includes('金瓶梅')); //false
+```
+
 ### lastIndexOf()
 
 返回给定元素在数组中最后一次出现的位置，没有返回 - 1 (同样适用于字符串)。
