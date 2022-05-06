@@ -6082,3 +6082,28 @@ let aWithXGetter = { ...a }; // 报错
 ```
 
 取值函数`get`在扩展`a`对象时会自动执行，导致报错。
+
+## 三、ES7
+
+### 1.Array.prototype.includes
+
+Includes 方法用来检测数组中是否包含某个元素，返回布尔类型值
+
+```
+const mingzhu = ['西游记','红楼梦','三国演义','水浒传'];
+
+//判断
+console.log(mingzhu.includes('西游记')); //true
+console.log(mingzhu.includes('金瓶梅')); //false
+```
+
+### 2.指数操作符
+
+在 ES7 中引入指数运算符「**」，用来实现幂运算，功能与 Math.pow 结果相同
+
+```
+console.log(2 ** 10); //1024
+console.log(Math.pow(2, 10)); //1024
+```
+
+## 四、ES8
