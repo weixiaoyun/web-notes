@@ -7475,3 +7475,377 @@ const obj = Object.create(null, {
 Rest 参数与 spread 扩展运算符在 ES6 中已经引入，不过 ES6 中只针对于数组，
 
 在 ES9 中为对象提供了像数组一样的 rest 参数和扩展运算符
+
+```
+function connect({host, port, ...user}){
+    console.log(host); //127.0.0.1
+    console.log(port); //3306
+    console.log(user); //{username: 'root', password: 'root', type: 'master'}
+}
+
+connect({
+    host: '127.0.0.1',
+    port: 3306,
+    username: 'root',
+    password: 'root',
+    type: 'master'
+});
+
+
+//对象合并
+const skillOne = {
+    q: '天音波'
+}
+
+const skillTwo = {
+    w: '金钟罩'
+}
+
+const skillThree = {
+    e: '天雷破'
+}
+const skillFour = {
+    r: '猛龙摆尾'
+}
+
+const mangseng = {...skillOne, ...skillTwo, ...skillThree, ...skillFour};
+
+console.log(mangseng) //{q: '天音波', w: '金钟罩', e: '天雷破', r: '猛龙摆尾'}
+```
+
+### 2.正则表达式命名捕获组
+
+ES9 允许命名捕获组使用符号『?<name>』,这样获取捕获结果可读性更强
+
+```
+let str = '<a href="http://www.baidu.com">百度</a>';
+//分组命名
+const reg = /<a href="(?<url>.*)">(?<text>.*)<\/a>/;
+
+const result = reg.exec(str);
+
+console.log(result.groups.url); //http://www.baidu.com
+
+console.log(result.groups.text); //百度
+```
+
+### 3.正则表达式反向断言
+
+ES9 支持反向断言，通过对匹配结果前面的内容进行判断，对匹配进行筛选。
+
+“先行断言”指的是，`x`只有在`y`前面才匹配，必须写成`/x(?=y)/`。比如，只匹配百分号之前的数字，要写成`/\d+(?=%)/`。“先行否定断言”指的是，`x`只有不在`y`前面才匹配，必须写成`/x(?!y)/`。比如，只匹配不在百分号之前的数字，要写成`/\d+(?!%)/`。
+
+```javascript
+/\d+(?=%)/.exec('100% of US presidents have been male')  // ["100"]
+/\d+(?!%)/.exec('that’s all 44 of them')                 // ["44"]
+```
+
+上面两个字符串，如果互换正则表达式，就不会得到相同结果。另外，还可以看到，“先行断言”括号之中的部分（`(?=%)`），是不计入返回结果的。
+
+“后行断言”正好与“先行断言”相反，`x`只有在`y`后面才匹配，必须写成`/(?<=y)x/`。比如，只匹配美元符号之后的数字，要写成`/(?<=\$)\d+/`。“后行否定断言”则与“先行否定断言”相反，`x`只有不在`y`后面才匹配，必须写成`/(?<!y)x/`。比如，只匹配不在美元符号后面的数字，要写成`/(?<!\$)\d+/`。
+
+```javascript
+/(?<=\$)\d+/.exec('Benjamin Franklin is on the $100 bill')  // ["100"]
+/(?<!\$)\d+/.exec('it’s is worth about €90')                // ["90"]
+```
+
+上面的例子中，“后行断言”的括号之中的部分（`(?<=\$)`），也是不计入返回结果。
+
+### 4.正则表达式 dotAll 模式
+
+正则表达式中，点（`.`）是一个特殊字符，代表任意的单个字符，但是有两个例外。一个是四个字节的 UTF-16 字符，这个可以用`u`修饰符解决；另一个是行终止符（line terminator character）。
+
+所谓行终止符，就是该字符表示一行的终结。以下四个字符属于“行终止符”。
+
+- U+000A 换行符（`\n`）
+- U+000D 回车符（`\r`）
+- U+2028 行分隔符（line separator）
+- U+2029 段分隔符（paragraph separator）
+
+```javascript
+/foo.bar/.test('foo\nbar')
+// false
+```
+
+上面代码中，因为`.`不匹配`\n`，所以正则表达式返回`false`。
+
+但是，很多时候我们希望匹配的是任意单个字符，这时有一种变通的写法。
+
+```javascript
+/foo[^]bar/.test('foo\nbar')
+// true
+```
+
+这种解决方案毕竟不太符合直觉，ES2018 [引入](https://github.com/tc39/proposal-regexp-dotall-flag)`s`修饰符，使得`.`可以匹配任意单个字符。
+
+```javascript
+/foo.bar/s.test('foo\nbar') // true
+```
+
+这被称为`dotAll`模式，即点（dot）代表一切字符。所以，正则表达式还引入了一个`dotAll`属性，返回一个布尔值，表示该正则表达式是否处在`dotAll`模式。
+
+```javascript
+const re = /foo.bar/s;
+// 另一种写法
+// const re = new RegExp('foo.bar', 's');
+
+re.test('foo\nbar') // true
+re.dotAll // true
+re.flags // 's'
+```
+
+`/s`修饰符和多行修饰符`/m`不冲突，两者一起使用的情况下，`.`匹配所有字符，而`^`和`$`匹配每一行的行首和行尾。
+
+## 六、ES10
+
+### 1.Object.fromEntries
+
+```
+//二维数组
+const result = Object.fromEntries([
+    ['name','school'],
+    ['xueke', 'Java,大数据,前端,云计算']
+]);
+console.log(result) //{name: 'school', xueke: 'Java,大数据,前端,云计算'}
+```
+
+```
+//Object.entries ES8
+const arr = Object.entries({
+    name: "school"
+})
+console.log(arr); //[['name', 'school']]
+```
+
+```
+//Map
+const m = new Map();
+m.set('name','school');
+const result = Object.fromEntries(m);
+console.log(result) //{name: 'school'}
+```
+
+### 2.trimStart 和 trimEnd
+
+```
+// trim
+let str = '   iloveyou   ';
+
+console.log(str); //   iloveyou
+console.log(str.trimStart()); //iloveyou
+console.log(str.trimEnd()); //   iloveyou
+```
+
+### 3.Array.prototype.flat 与 flatMap
+
+```
+//flat 平
+//将多维数组转化为低位数组
+// const arr = [1,2,3,4,[5,6]];
+// const arr = [1,2,3,4,[5,6,[7,8,9]]];
+//参数为深度 是一个数字
+// console.log(arr.flat(2));  
+
+//flatMap
+const arr = [1,2,3,4];
+const result = arr.flatMap(item => [item * 10]);
+console.log(result); //[10, 20, 30, 40]
+```
+
+### 4.Symbol.prototype.description
+
+```
+let s = Symbol('wxy');
+
+console.log(s.description); //wxy
+```
+
+## 七、ES11
+
+### 1.String.prototype.matchAll
+
+如果一个正则表达式在字符串里面有多个匹配，现在一般使用`g`修饰符或`y`修饰符，在循环里面逐一取出。
+
+```javascript
+var regex = /t(e)(st(\d?))/g;
+var string = 'test1test2test3';
+
+var matches = [];
+var match;
+while (match = regex.exec(string)) {
+  matches.push(match);
+}
+
+matches
+// [
+//   ["test1", "e", "st1", "1", index: 0, input: "test1test2test3"],
+//   ["test2", "e", "st2", "2", index: 5, input: "test1test2test3"],
+//   ["test3", "e", "st3", "3", index: 10, input: "test1test2test3"]
+// ]
+```
+
+[ES2020](https://github.com/tc39/proposal-string-matchall) 增加了`String.prototype.matchAll()`方法，可以一次性取出所有匹配。不过，它返回的是一个遍历器（Iterator），而不是数组。
+
+```javascript
+const string = 'test1test2test3';
+const regex = /t(e)(st(\d?))/g;
+
+for (const match of string.matchAll(regex)) {
+  console.log(match);
+}
+// ["test1", "e", "st1", "1", index: 0, input: "test1test2test3"]
+// ["test2", "e", "st2", "2", index: 5, input: "test1test2test3"]
+// ["test3", "e", "st3", "3", index: 10, input: "test1test2test3"]
+```
+
+上面代码中，由于`string.matchAll(regex)`返回的是遍历器，所以可以用`for...of`循环取出。相对于返回数组，返回遍历器的好处在于，如果匹配结果是一个很大的数组，那么遍历器比较节省资源。
+
+遍历器转为数组是非常简单的，使用`...`运算符和`Array.from()`方法就可以了。
+
+```javascript
+// 转为数组的方法一
+[...string.matchAll(regex)]
+
+// 转为数组的方法二
+Array.from(string.matchAll(regex))
+```
+
+### 2.类的私有属性
+
+```
+class Person{
+    //公有属性
+    name;
+    //私有属性
+    #age;
+    #weight;
+    //构造方法
+    constructor(name, age, weight){
+        this.name = name;
+        this.#age = age;
+        this.#weight = weight;
+    }
+
+    intro(){
+        console.log(this.name);
+        console.log(this.#age);
+        console.log(this.#weight);
+    }
+}
+
+//实例化
+const girl = new Person('晓红', 18, '45kg');
+
+console.log(girl.name); //晓红
+// console.log(girl.#age);//Uncaught SyntaxError: Private field '#age' must be declared in an enclosing class
+// console.log(girl.#weight);
+
+girl.intro();
+```
+
+### 3.Promise.allSettled
+
+有时候，我们希望等到一组异步操作都结束了，不管每一个操作是成功还是失败，再进行下一步操作。但是，现有的 Promise 方法很难实现这个要求。
+
+`Promise.all()`方法只适合所有异步操作都成功的情况，如果有一个操作失败，就无法满足要求。
+
+```javascript
+const urls = [url_1, url_2, url_3];
+const requests = urls.map(x => fetch(x));
+
+try {
+  await Promise.all(requests);
+  console.log('所有请求都成功。');
+} catch {
+  console.log('至少一个请求失败，其他请求可能还没结束。');
+}
+```
+
+上面示例中，`Promise.all()`可以确定所有请求都成功了，但是只要有一个请求失败，它就会报错，而不管另外的请求是否结束。
+
+为了解决这个问题，[ES2020](https://github.com/tc39/proposal-promise-allSettled) 引入了`Promise.allSettled()`方法，用来确定一组异步操作是否都结束了（不管成功或失败）。所以，它的名字叫做”Settled“，包含了”fulfilled“和”rejected“两种情况。
+
+`Promise.allSettled()`方法接受一个数组作为参数，数组的每个成员都是一个 Promise 对象，并返回一个新的 Promise 对象。只有等到参数数组的所有 Promise 对象都发生状态变更（不管是`fulfilled`还是`rejected`），返回的 Promise 对象才会发生状态变更。
+
+```javascript
+const resolved = Promise.resolve(42);
+const rejected = Promise.reject(-1);
+
+const allSettledPromise = Promise.allSettled([resolved, rejected]);
+
+allSettledPromise.then(function (results) {
+  console.log(results);
+});
+// [
+//    { status: 'fulfilled', value: 42 },
+//    { status: 'rejected', reason: -1 }
+// ]
+```
+
+### 4.可选链操作符
+
+```
+// ?.
+function main(config){
+    // const dbHost = config && config.db && config.db.host;
+    const dbHost = config?.db?.host;
+
+    console.log(dbHost); //192.168.1.100
+}
+
+main({
+    db: {
+        host:'192.168.1.100',
+        username: 'root'
+    },
+    cache: {
+        host: '192.168.1.200',
+        username:'admin'
+    }
+})
+```
+
+### 5.动态 import 导入
+
+```
+//获取元素
+const btn = document.getElementById('btn');
+
+btn.onclick = function(){
+    import('./hello.js').then(module => {
+        module.hello();
+    });
+}
+```
+
+### 6.globalThis 对象
+
+```
+console.log(globalThis); //Window {window: Window, self: Window, document: document, name: '', location: Location, …}
+```
+
+### 7.BigInt
+
+```
+//大整形
+let n = 521n;
+console.log(n, typeof(n)); //521n 'bigint'
+```
+
+```
+let n = 123;
+console.log(BigInt(n)); //123n
+console.log(BigInt(1.2)); //报错 Uncaught RangeError: The number 1.2 cannot be converted to a BigInt because it is not an integer
+```
+
+```
+//大数值运算
+let max = Number.MAX_SAFE_INTEGER;
+console.log(max); //9007199254740991
+console.log(max + 1); //9007199254740992
+console.log(max + 2); //9007199254740992
+
+console.log(BigInt(max)) //9007199254740991n
+console.log(BigInt(max) + BigInt(1)) //9007199254740992n
+console.log(BigInt(max) + BigInt(2)) //9007199254740993n
+```
