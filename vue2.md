@@ -365,3 +365,206 @@ Object.defineProperty(obj2,'x',{
 当你修改vm中的数据时，界面渲染的数据也会同时发生变化：
 
 ![vue数据代理](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/vue%E6%95%B0%E6%8D%AE%E4%BB%A3%E7%90%86.png)
+
+## 七、事件处理
+
+事件的基本使用：
+
+- 使用v-on:xxx 或 @xxx 绑定事件，其中xxx是事件名；
+- 事件的回调需要配置在methods对象中，最终会在vm上；
+- methods中配置的函数，不要用箭头函数！否则this就不是vm了；
+- methods中配置的函数，都是被Vue所管理的函数，this的指向是vm 或 组件实例对象；
+- @click="demo" 和 @click="demo($event)" 效果一致，但后者可以传参；
+
+### 1.绑定监听
+
+- v-on:xxx="fun" 
+- @xxx="fun" 
+- @xxx="fun(参数)" 
+- 默认事件形参: event 
+- 隐含属性对象: $event
+
+```
+<body>
+   <!-- 准备好一个容器-->
+   <div id="root">
+      <h2>欢迎来到{{name}}学习</h2>
+      <!-- <button v-on:click="showInfo">点我提示信息</button> -->
+      <button @click="showInfo1">点我提示信息1（不传参）</button>
+      <button @click="showInfo2($event,66)">点我提示信息2（传参）</button>
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+
+   const vm = new Vue({
+      el:'#root',
+      data:{
+         name:'vue',
+      },
+      methods:{
+         showInfo1(event){
+            // console.log(event.target.innerText) //点我提示信息1（不传参）
+            // console.log(this) //此处的this是vm
+            alert('同学你好！')
+         },
+         showInfo2(event,number){
+            console.log(event,number) //PointerEvent {isTrusted: true, pointerId: 1, width: 1, height: 1, pressure: 0, …} 66
+            console.log(event.target.innerText) //点我提示信息2（传参）
+            // console.log(this) //此处的this是vm
+            alert('同学你好！！')
+         }
+      }
+   })
+</script>
+```
+
+![绑定监听](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E7%BB%91%E5%AE%9A%E7%9B%91%E5%90%AC.png)
+
+### 2.事件修饰符
+
+Vue中的事件修饰符：
+
+- prevent：阻止默认事件（常用）；
+- stop：阻止事件冒泡（常用）；
+- once：事件只触发一次（常用）；
+- capture：使用事件的捕获模式；
+- self：只有event.target是当前操作的元素时才触发事件；
+- passive：事件的默认行为立即执行，无需等待事件回调执行完毕；
+
+```
+<body>
+   <!-- 准备好一个容器-->
+   <div id="root">
+      <h2>欢迎来到{{name}}学习</h2>
+      <!-- 阻止默认事件（常用） -->
+      <!--单击该链接会弹窗但不会跳转页面-->
+      <a href="http://www.baidu.com" @click.prevent="showInfo">点我提示信息</a>
+
+      <!-- 阻止事件冒泡（常用） -->
+      <div class="demo1" @click="showInfo">
+         <button @click.stop="showInfo">点我提示信息</button> <!--只弹出一次消息-->
+         <!-- 修饰符可以连续写 -->
+         <!-- <a href="http://www.baidu.com" @click.prevent.stop="showInfo">点我提示信息</a> -->
+      </div>
+
+      <!-- 事件只触发一次（常用） -->
+      <button @click.once="showInfo">点我提示信息</button>
+
+      <!-- 使用事件的捕获模式 -->
+      <!--该处单击box1只打印1，单击box2打印1,2-->
+      <div class="box1" @click.capture="showMsg(1)">
+         div1
+         <div class="box2" @click="showMsg(2)">
+            div2
+         </div>
+      </div>
+
+      <!-- 只有event.target是当前操作的元素时才触发事件； -->
+      <!--效果上也达到了阻止冒泡的作用，原理上即为点击button冒泡到div打印的event.target还是button，并不是div自身，
+      所以不触发@click.self的事件-->
+      <div class="demo1" @click.self="showInfo">
+         <button @click="showInfo">点我提示信息</button>
+      </div>
+
+      <!-- 事件的默认行为立即执行，无需等待事件回调执行完毕； -->
+      <!--区分：
+      @scroll和@wheel: scroll相当于给滚动条添加事件，即鼠标滚轮滚动滚动条或单击滚动条滚动都可以触发@scroll事件，滚动条滚到底后不能触发
+      但是@wheel相当于给鼠标滚轮绑定事件，只能通过鼠标滚轮触发，即使滚动条滚动到底滚轮也能触发该事件
+      @wheel和@wheel.passive:
+      @wheel：当滚动滚轮时先触发滚动事件，滚动条再滚动
+      @wheel.passive: 无须等待绑定的demo事件执行完毕，滚轮也往下滚动了-->
+      <ul @wheel.passive="demo" class="list">
+         <li>1</li>
+         <li>2</li>
+         <li>3</li>
+         <li>4</li>
+      </ul>
+
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+
+   new Vue({
+      el:'#root',
+      data:{
+         name:'vue'
+      },
+      methods:{
+         showInfo(e){
+            alert('同学你好！')
+            // console.log(e.target)
+         },
+         showMsg(msg){
+            console.log(msg)
+         },
+         demo(){
+            for (let i = 0; i < 100000; i++) {
+               console.log('#')
+            }
+            console.log('累坏了')
+         }
+      }
+   })
+</script>
+```
+
+### 3.键盘事件
+
+1.Vue中常用的按键别名：
+         回车 => enter
+         删除 => delete (捕获“删除”和“退格”键)
+         退出 => esc
+         空格 => space
+         换行 => tab (特殊，必须配合keydown去使用)
+         上 => up
+         下 => down
+         左 => left
+         右 => right
+
+2.Vue未提供别名的按键，可以使用按键原始的key值去绑定，但注意要转为kebab-case（短横线命名）
+如
+
+```
+@keyup.caps-lock
+```
+
+3.系统修饰键（用法特殊）：ctrl、alt、shift、meta
+         (1) 当配合keyup使用：按下修饰键的同时，再按下其他键，随后释放其他键，事件才被触发。
+         (2) 当配合keydown使用：正常触发事件。
+
+4.也可以使用keyCode去指定具体的按键（不推荐）
+
+5.Vue.config.keyCodes.自定义键名 = 键码，可以去定制按键别名
+
+```
+<body>
+   <!-- 准备好一个容器-->
+   <div id="root">
+      <h2>欢迎来到{{name}}学习</h2>
+      <!--当按下回车按钮，控制台打印input绑定的值-->
+      <input type="text" placeholder="按下回车提示输入" @keydown.huiche="showInfo">
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+   Vue.config.keyCodes.huiche = 13 //定义了一个别名按键
+
+   new Vue({
+      el:'#root',
+      data:{
+         name:'vue'
+      },
+      methods: {
+         showInfo(e){
+            // console.log(e.key,e.keyCode)
+            console.log(e.target.value)
+         }
+      },
+   })
+</script>
+```
