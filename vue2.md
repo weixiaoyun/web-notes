@@ -915,3 +915,701 @@ fullName(){
       }
    })
 ```
+
+## 九、绑定样式
+
+在应用界面中, 某个(些)元素的样式是变化的 ，class/style 绑定就是专门用来实现动态样式效果的技术
+
+### 1.class样式
+
+- 写法:class="xxx" xxx可以是字符串、对象、数组。
+- 字符串写法适用于：'classA'，类名不确定，要动态获取。
+- 对象写法适用于：{classA:isA, classB: isB}，要绑定多个样式，个数不确定，名字也不确定。
+- 数组写法适用于：['classA', 'classB']，要绑定多个样式，个数确定，名字也确定，但不确定用不用。
+
+### 2.style样式
+
+- :style="{fontSize: xxx}"其中xxx是动态值。
+- :style="[a,b]"其中a、b是样式对象。
+
+```
+    <style>
+      .basic{
+         width: 400px;
+         height: 100px;
+         border: 1px solid black;
+      }
+
+      .happy{
+         border: 4px solid red;;
+         background-color: rgba(255, 255, 0, 0.644);
+         background: linear-gradient(30deg,yellow,pink,orange,yellow);
+      }
+      .sad{
+         border: 4px dashed rgb(2, 197, 2);
+         background-color: gray;
+      }
+      .normal{
+         background-color: skyblue;
+      }
+
+      .style1{
+         background-color: yellowgreen;
+      }
+      .style2{
+         font-size: 30px;
+         text-shadow:2px 2px 10px red;
+      }
+      .style3{
+         border-radius: 20px;
+      }
+   </style>
+   <script type="text/javascript" src="../js/vue.js"></script>
+</head>
+<body>
+   <!-- 准备好一个容器-->
+   <div id="root">
+      <!-- 绑定class样式--字符串写法，适用于：样式的类名不确定，需要动态指定 -->
+      <div class="basic" :class="mood" @click="changeMood">{{name}}</div> <br/><br/>
+
+      <!-- 绑定class样式--数组写法，适用于：要绑定的样式个数不确定、名字也不确定 -->
+      <div class="basic" :class="classArr">{{name}}</div> <br/><br/>
+
+      <!-- 绑定class样式--对象写法，适用于：要绑定的样式个数确定、名字也确定，但要动态决定用不用 -->
+      <div class="basic" :class="classObj">{{name}}</div> <br/><br/>
+
+      <!-- 绑定style样式--对象写法 -->
+      <div class="basic" :style="styleObj">{{name}}</div> <br/><br/>
+      <!-- 绑定style样式--数组写法 -->
+      <div class="basic" :style="styleArr">{{name}}</div>
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false
+
+   const vm = new Vue({
+      el:'#root',
+      data:{
+         name:'尚硅谷',
+         mood:'normal',
+         classArr:['style1','style2','style3'],
+         classObj:{
+            style1:false,
+            style2:false,
+         },
+         styleObj:{
+            fontSize: '40px',
+            color:'red',
+         },
+         styleObj2:{
+            backgroundColor:'orange'
+         },
+         styleArr:[
+            {
+               fontSize: '40px',
+               color:'blue',
+            },
+            {
+               backgroundColor:'gray'
+            }
+         ]
+      },
+      methods: {
+         changeMood(){
+            const arr = ['happy','sad','normal']
+            const index = Math.floor(Math.random()*3)
+            this.mood = arr[index]
+         }
+      },
+   })
+</script>
+```
+
+## 十、条件渲染
+
+### 1.v-if
+
+- 写法：
+  - v-if="表达式" 
+  - v-else-if="表达式"
+  - v-else="表达式"
+- 适用于：切换频率较低的场景。
+- 特点：不展示的DOM元素直接被移除。
+- 注意：v-if可以和:v-else-if、v-else一起使用，但要求结构不能被“打断”。
+
+### 2.v-show
+
+- 写法：v-show="表达式"
+- 适用于：切换频率较高的场景。
+- 特点：不展示的DOM元素未被移除，仅仅是使用样式隐藏掉
+
+### 3.备注：
+
+使用v-if的时，元素可能无法获取到，而使用v-show一定可以获取到。
+
+```
+<body>
+   <!-- 准备好一个容器-->
+   <div id="root">
+      <h2>当前的n值是:{{n}}</h2>
+      <button @click="n++">点我n+1</button>
+      <!-- 使用v-show做条件渲染 -->
+      <!-- <h2 v-show="false">欢迎来到{{name}}</h2> -->
+      <!-- <h2 v-show="1 === 1">欢迎来到{{name}}</h2> -->
+
+      <!-- 使用v-if做条件渲染 -->
+      <!-- <h2 v-if="false">欢迎来到{{name}}</h2> -->
+      <!-- <h2 v-if="1 === 1">欢迎来到{{name}}</h2> -->
+
+      <!-- v-else和v-else-if -->
+      <!-- <div v-if="n === 1">Angular</div>
+      <div v-else-if="n === 2">React</div>
+      <div v-else-if="n === 3">Vue</div>
+      <div v-else>哈哈</div> -->
+
+      <!-- v-if与template的配合使用 -->
+      <template v-if="n === 1">
+         <h2>你好</h2>
+         <h2>vue</h2>
+         <h2>北京</h2>
+      </template>
+
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false
+
+   const vm = new Vue({
+      el:'#root',
+      data:{
+         name:'vue',
+         n:0
+      }
+   })
+</script>
+```
+
+![条件渲染1](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E6%9D%A1%E4%BB%B6%E6%B8%B2%E6%9F%931.png)
+
+![条件渲染2](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E6%9D%A1%E4%BB%B6%E6%B8%B2%E6%9F%932.png)
+
+## 十一、列表渲染
+
+### 1.基本列表
+
+v-for指令:
+
+- 用于展示列表数据
+- 语法：v-for="(item, index) in xxx" :key="yyy"
+- 可遍历：数组、对象、字符串（用的很少）、指定次数（用的很少）
+
+```
+<!-- 准备好一个容器-->
+<div id="root">
+   <!-- 遍历数组 -->
+   <h2>人员列表（遍历数组）</h2>
+   <ul>
+      <li v-for="(p,index) of persons" :key="index">
+         {{p.name}}-{{p.age}}
+      </li>
+   </ul>
+
+   <!-- 遍历对象 -->
+   <h2>汽车信息（遍历对象）</h2>
+   <ul>
+      <li v-for="(value,k) of car" :key="k">
+         {{k}}-{{value}}
+      </li>
+   </ul>
+
+   <!-- 遍历字符串 -->
+   <h2>测试遍历字符串（用得少）</h2>
+   <ul>
+      <li v-for="(char,index) of str" :key="index">
+         {{char}}-{{index}}
+      </li>
+   </ul>
+   
+   <!-- 遍历指定次数 -->
+   <h2>测试遍历指定次数（用得少）</h2>
+   <ul>
+      <li v-for="(number,index) of 5" :key="index">
+         {{index}}-{{number}}
+      </li>
+   </ul>
+</div>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false
+   
+   new Vue({
+      el:'#root',
+      data:{
+         persons:[
+            {id:'001',name:'张三',age:18},
+            {id:'002',name:'李四',age:19},
+            {id:'003',name:'王五',age:20}
+         ],
+         car:{
+            name:'奥迪A8',
+            price:'70万',
+            color:'黑色'
+         },
+         str:'hello'
+      }
+   })
+</script>
+```
+
+![列表渲染](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E5%88%97%E8%A1%A8%E6%B8%B2%E6%9F%93.png)
+
+### 2.key的原理
+
+面试题：react、vue中的key有什么作用？（key的内部原理）
+
+1.虚拟DOM中key的作用：
+
+key是虚拟DOM对象的标识，当数据发生变化时，Vue会根据【新数据】生成【新的虚拟DOM】, 
+
+随后Vue进行【新虚拟DOM】与【旧虚拟DOM】的差异比较，比较规则如下：
+
+2.对比规则：
+
+- 旧虚拟DOM中找到了与新虚拟DOM相同的key：
+  - ①.若虚拟DOM中内容没变, 直接使用之前的真实DOM！
+  - ②.若虚拟DOM中内容变了, 则生成新的真实DOM，随后替换掉页面中之前的真实DOM。
+- 旧虚拟DOM中未找到与新虚拟DOM相同的key
+  - 创建新的真实DOM，随后渲染到到页面。
+                            
+
+3.用index作为key可能会引发的问题：
+
+- 若对数据进行：逆序添加、逆序删除等破坏顺序操作:会产生没有必要的真实DOM更新 ==> 界面效果没问题, 但效率低。
+- 如果结构中还包含输入类的DOM：会产生错误DOM更新 ==> 界面有问题。
+
+4.开发中如何选择key?:
+
+- 最好使用每条数据的唯一标识作为key, 比如id、手机号、身份证号、学号等唯一值。
+- 如果不存在对数据的逆序添加、逆序删除等破坏顺序操作，仅用于渲染列表用于展示，
+  使用index作为key是没有问题的。
+
+```
+<!-- 准备好一个容器-->
+<div id="root">
+   <!-- 遍历数组 -->
+   <h2>人员列表（遍历数组）</h2>
+   <button @click.once="add">添加一个老刘</button>
+   <ul>
+      <li v-for="(p,index) of persons" :key="index">
+         {{p.name}}-{{p.age}}
+         <input type="text">
+      </li>
+   </ul>
+</div>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false
+   
+   new Vue({
+      el:'#root',
+      data:{
+         persons:[
+            {id:'001',name:'张三',age:18},
+            {id:'002',name:'李四',age:19},
+            {id:'003',name:'王五',age:20}
+         ]
+      },
+      methods: {
+         add(){
+            const p = {id:'004',name:'老刘',age:40}
+            this.persons.unshift(p)
+         }
+      },
+   })
+</script>
+```
+
+![key的原理1](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/key%E7%9A%84%E5%8E%9F%E7%90%861.png)
+
+![key的原理2](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/key%E7%9A%84%E5%8E%9F%E7%90%862.png)
+
+![key的原理图](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/key%E7%9A%84%E5%8E%9F%E7%90%86%E5%9B%BE.png)
+
+### 3.列表过滤
+
+```
+<body>
+   <!-- 准备好一个容器-->
+   <div id="root">
+      <h2>人员列表</h2>
+      <input type="text" placeholder="请输入名字" v-model="keyWord">
+      <ul>
+         <li v-for="(p,index) of filPerons" :key="index">
+            {{p.name}}-{{p.age}}-{{p.sex}}
+         </li>
+      </ul>
+   </div>
+
+   <script type="text/javascript">
+      Vue.config.productionTip = false
+      
+      //用watch实现
+      //#region 
+      /* new Vue({
+         el:'#root',
+         data:{
+            keyWord:'',
+            persons:[
+               {id:'001',name:'马冬梅',age:19,sex:'女'},
+               {id:'002',name:'周冬雨',age:20,sex:'女'},
+               {id:'003',name:'周杰伦',age:21,sex:'男'},
+               {id:'004',name:'温兆伦',age:22,sex:'男'}
+            ],
+            filPerons:[]
+         },
+         watch:{
+            keyWord:{
+               immediate:true,
+               handler(val){
+                  this.filPerons = this.persons.filter((p)=>{
+                     return p.name.indexOf(val) !== -1
+                  })
+               }
+            }
+         }
+      }) */
+      //#endregion
+      
+      //用computed实现
+      new Vue({
+         el:'#root',
+         data:{
+            keyWord:'',
+            persons:[
+               {id:'001',name:'马冬梅',age:19,sex:'女'},
+               {id:'002',name:'周冬雨',age:20,sex:'女'},
+               {id:'003',name:'周杰伦',age:21,sex:'男'},
+               {id:'004',name:'温兆伦',age:22,sex:'男'}
+            ]
+         },
+         computed:{
+            filPerons(){
+               return this.persons.filter((p)=>{
+                  return p.name.indexOf(this.keyWord) !== -1
+               })
+            }
+         }
+      }) 
+   </script>
+```
+
+### 4.列表排序
+
+```
+<body>
+   <!-- 准备好一个容器-->
+   <div id="root">
+      <h2>人员列表</h2>
+      <input type="text" placeholder="请输入名字" v-model="keyWord">
+      <button @click="sortType = 2">年龄升序</button>
+      <button @click="sortType = 1">年龄降序</button>
+      <button @click="sortType = 0">原顺序</button>
+      <ul>
+         <li v-for="(p,index) of filPerons" :key="p.id">
+            {{p.name}}-{{p.age}}-{{p.sex}}
+            <input type="text">
+         </li>
+      </ul>
+   </div>
+
+   <script type="text/javascript">
+      Vue.config.productionTip = false
+      
+      new Vue({
+         el:'#root',
+         data:{
+            keyWord:'',
+            sortType:0, //0原顺序 1降序 2升序
+            persons:[
+               {id:'001',name:'马冬梅',age:30,sex:'女'},
+               {id:'002',name:'周冬雨',age:31,sex:'女'},
+               {id:'003',name:'周杰伦',age:18,sex:'男'},
+               {id:'004',name:'温兆伦',age:19,sex:'男'}
+            ]
+         },
+         computed:{
+            filPerons(){
+               const arr = this.persons.filter((p)=>{
+                  return p.name.indexOf(this.keyWord) !== -1
+               })
+               //判断一下是否需要排序
+               if(this.sortType){
+                  arr.sort((p1,p2)=>{
+                     return this.sortType === 1 ? p2.age-p1.age : p1.age-p2.age
+                  })
+               }
+               return arr
+            }
+         }
+      }) 
+
+   </script>
+```
+
+## 十二、数据监测
+
+Vue监视数据的原理：
+
+vue会监视data中所有层次的数据。
+
+1.如何监测对象中的数据？
+
+​	通过setter实现监视，且要在new Vue时就传入要监测的数据。
+
+- 对象中后追加的属性，Vue默认不做响应式处理
+- 如需给后添加的属性做响应式，请使用如下API：
+  - Vue.set(target，propertyName/index，value) 或 
+  - vm.$set(target，propertyName/index，value)
+
+2.如何监测数组中的数据？
+
+通过包裹数组更新元素的方法实现，本质就是做了两件事：
+
+- 调用原生对应的方法对数组进行更新。
+- 重新解析模板，进而更新页面。
+
+3.在Vue修改数组中的某个元素一定要用如下方法：
+
+- 使用这些API:push()、pop()、shift()、unshift()、splice()、sort()、reverse()
+- Vue.set() 或 vm.$set()
+
+**特别注意：**Vue.set() 和 vm.$set() 不能给vm 或 vm的根数据对象 添加属性！！！
+
+```
+    <div id="root">
+      <h1>学生信息</h1>
+      <button @click="student.age++">年龄+1岁</button> <br/>
+      <button @click="addSex">添加性别属性，默认值：男</button> <br/>
+      <button @click="student.sex = '未知' ">修改性别</button> <br/>
+      <button @click="addFriend">在列表首位添加一个朋友</button> <br/>
+      <button @click="updateFirstFriendName">修改第一个朋友的名字为：张三</button> <br/>
+      <button @click="addHobby">添加一个爱好</button> <br/>
+      <button @click="updateHobby">修改第一个爱好为：开车</button> <br/>
+      <button @click="removeSmoke">过滤掉爱好中的抽烟</button> <br/>
+      <h3>姓名：{{student.name}}</h3>
+      <h3>年龄：{{student.age}}</h3>
+      <h3 v-if="student.sex">性别：{{student.sex}}</h3>
+      <h3>爱好：</h3>
+      <ul>
+         <li v-for="(h,index) in student.hobby" :key="index">
+            {{h}}
+         </li>
+      </ul>
+      <h3>朋友们：</h3>
+      <ul>
+         <li v-for="(f,index) in student.friends" :key="index">
+            {{f.name}}--{{f.age}}
+         </li>
+      </ul>
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false //阻止 vue 在启动时生成生产提示。
+
+   const vm = new Vue({
+      el:'#root',
+      data:{
+         student:{
+            name:'tom',
+            age:18,
+            hobby:['抽烟','喝酒','烫头'],
+            friends:[
+               {name:'jerry',age:35},
+               {name:'tony',age:36}
+            ]
+         }
+      },
+      methods: {
+         addSex(){
+            // Vue.set(this.student,'sex','男')
+            this.$set(this.student,'sex','男')
+         },
+         addFriend(){
+            this.student.friends.unshift({name:'jack',age:70})
+         },
+         updateFirstFriendName(){
+            this.student.friends[0].name = '张三'
+         },
+         addHobby(){
+            this.student.hobby.push('学习')
+         },
+         updateHobby(){
+            // this.student.hobby.splice(0,1,'开车')
+            // Vue.set(this.student.hobby,0,'开车')
+            this.$set(this.student.hobby,0,'开车')
+         },
+         removeSmoke(){
+            this.student.hobby = this.student.hobby.filter((h)=>{
+               return h !== '抽烟'
+            })
+         }
+      }
+   })
+</script>
+```
+
+![数据监视](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E6%95%B0%E6%8D%AE%E7%9B%91%E8%A7%86.png)
+
+![数据监视up](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E6%95%B0%E6%8D%AE%E7%9B%91%E8%A7%86up.png)
+
+## 十三、收集表单数据
+
+收集表单数据：
+
+- 若：<input type="text"/>，则v-model收集的是value值，用户输入的就是value值。
+- 若：<input type="radio"/>，则v-model收集的是value值，且要给标签配置value值。
+- 若：<input type="checkbox"/>
+  - 没有配置input的value属性，那么收集的就是checked（勾选 or 未勾选，是布尔值）
+  - 配置input的value属性:
+    - v-model的初始值是非数组，那么收集的就是checked（勾选 or 未勾选，是布尔值）
+    - v-model的初始值是数组，那么收集的的就是value组成的数组
+- 备注：v-model的三个修饰符：
+  - lazy：失去焦点再收集数据
+  - number：输入字符串转为有效的数字
+  - trim：输入首尾空格过滤
+
+```
+    <!-- 准备好一个容器-->
+   <div id="root">
+      <form @submit.prevent="demo">
+         账号：<input type="text" v-model.trim="userInfo.account"> <br/><br/>
+         密码：<input type="password" v-model="userInfo.password"> <br/><br/>
+         年龄：<input type="number" v-model.number="userInfo.age"> <br/><br/>
+         性别：
+         男<input type="radio" name="sex" v-model="userInfo.sex" value="male">
+         女<input type="radio" name="sex" v-model="userInfo.sex" value="female"> <br/><br/>
+         爱好：
+         学习<input type="checkbox" v-model="userInfo.hobby" value="study">
+         打游戏<input type="checkbox" v-model="userInfo.hobby" value="game">
+         吃饭<input type="checkbox" v-model="userInfo.hobby" value="eat">
+         <br/><br/>
+         所属校区
+         <select v-model="userInfo.city">
+            <option value="">请选择校区</option>
+            <option value="beijing">北京</option>
+            <option value="shanghai">上海</option>
+            <option value="shenzhen">深圳</option>
+            <option value="wuhan">武汉</option>
+         </select>
+         <br/><br/>
+         其他信息：
+         <textarea v-model.lazy="userInfo.other"></textarea> <br/><br/>
+         <input type="checkbox" v-model="userInfo.agree">阅读并接受<a href="http://www.atguigu.com">《用户协议》</a>
+         <button>提交</button>
+      </form>
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false
+
+   new Vue({
+      el:'#root',
+      data:{
+         userInfo:{
+            account:'',
+            password:'',
+            age:18,
+            sex:'female',
+            hobby:[],
+            city:'beijing',
+            other:'',
+            agree:''
+         }
+      },
+      methods: {
+         demo(){
+            console.log(JSON.stringify(this.userInfo))
+         }
+      }
+   })
+</script>
+```
+
+![收集表单数据](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E6%94%B6%E9%9B%86%E8%A1%A8%E5%8D%95%E6%95%B0%E6%8D%AE.png)
+
+## 十四、过滤器
+
+定义：对要显示的数据进行特定格式化后再显示（适用于一些简单逻辑的处理）。
+语法：
+      1.注册过滤器：Vue.filter(name,callback) 或 new Vue{filters:{}}
+      2.使用过滤器：{{ xxx | 过滤器名}}  或  v-bind:属性 = "xxx | 过滤器名"
+备注：
+      1.过滤器也可以接收额外参数、多个过滤器也可以串联
+      2.并没有改变原本的数据, 是产生新的对应的数据
+
+```
+    <!-- 准备好一个容器-->
+   <div id="root">
+      <h2>显示格式化后的时间</h2>
+      <!-- 计算属性实现 -->
+      <h3>现在是：{{fmtTime}}</h3>
+      <!-- methods实现 -->
+      <h3>现在是：{{getFmtTime()}}</h3>
+      <!-- 过滤器实现 -->
+      <h3>现在是：{{time | timeFormater}}</h3>
+      <!-- 过滤器实现（传参） -->
+      <h3>现在是：{{time | timeFormater('YYYY_MM_DD') | mySlice}}</h3>
+      <h3 :x="msg | mySlice">vue</h3>
+   </div>
+
+   <div id="root2">
+      <h2>{{msg | mySlice}}</h2>
+   </div>
+</body>
+
+<script type="text/javascript">
+   Vue.config.productionTip = false
+   //全局过滤器
+   Vue.filter('mySlice',function(value){
+      return value.slice(0,4)
+   })
+
+   new Vue({
+      el:'#root',
+      data:{
+         time:1621561377603, //时间戳
+         msg:'你好，vue'
+      },
+      computed: {
+         fmtTime(){
+            return dayjs(this.time).format('YYYY年MM月DD日 HH:mm:ss')
+         }
+      },
+      methods: {
+         getFmtTime(){
+            return dayjs(this.time).format('YYYY年MM月DD日 HH:mm:ss')
+         }
+      },
+      //局部过滤器
+      filters:{
+         timeFormater(value,str='YYYY年MM月DD日 HH:mm:ss'){
+            // console.log('@',value)
+            return dayjs(value).format(str)
+         }
+      }
+   })
+
+   new Vue({
+      el:'#root2',
+      data:{
+         msg:'hello,vue!'
+      }
+   })
+</script>
+```
+
+![过滤器](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E8%BF%87%E6%BB%A4%E5%99%A8.png)
