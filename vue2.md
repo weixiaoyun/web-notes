@@ -2523,3 +2523,287 @@ Vue中使用组件的三大步骤：
    }
 </script>
 ```
+
+## 十九、使用vue脚手架
+
+### 1.初始化脚手架
+
+#### 说明
+
+- Vue 脚手架是 Vue 官方提供的标准化开发工具（开发平台）。 
+- 最新的版本是 4.x。 
+- 文档: https://cli.vuejs.org/zh/。 
+
+#### 具体步骤
+
+第一步（仅第一次执行）：全局安装@vue/cli。 
+
+npm install -g @vue/cli 
+
+第二步：**切换到你要创建项目的目录**，然后使用命令创建项目 
+
+vue create xxxx 
+
+第三步：启动项目 
+
+npm run serve
+
+备注： 
+
+1. 如出现下载缓慢请配置 npm 淘宝镜像：npm config set registry 
+
+https://registry.npm.taobao.org
+
+2. Vue 脚手架隐藏了所有 webpack 相关的配置，若想查看具体的 webpack 配置， 
+
+请执行：vue inspect > output.js
+
+#### 目标项目结构
+
+**├── node_modules** 
+
+**├── public** 
+
+**│ ├── favicon.ico: 页签图标** 
+
+**│ └──** **index.html: 主页面** 
+
+**├── src** 
+
+**│ ├── assets: 存放静态资源** 
+
+**│ │ └── logo.png** 
+
+**│ │──** **component: 存放组件** 
+
+**│ │ └── HelloWorld.vue** 
+
+**│ │──** **App.vue: 汇总所有组件** 
+
+**│ │──** **main.js: 入口文件** 
+
+**├── .gitignore: git 版本管制忽略的配置** 
+
+**├── babel.config.js: babel 的配置文件** 
+
+**├── package.json: 应用包配置文件** 
+
+**├── README.md: 应用描述文件** 
+
+**├── package-lock.json：包版本控制文件**
+
+
+
+index.html:
+
+```
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <meta charset="utf-8">
+      <!-- 针对IE浏览器的一个特殊配置，含义是让IE浏览器以最高的渲染级别渲染页面 -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <!-- 开启移动端的理想视口 -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+      <!-- 配置页签图标 -->
+    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+      <!-- 引入第三方样式 -->
+      <link rel="stylesheet" href="<%= BASE_URL %>css/bootstrap.css">
+      <!-- 配置网页标题 -->
+    <title>硅谷系统</title>
+  </head>
+  <body>
+      <!-- 当浏览器不支持js时noscript中的元素就会被渲染 -->
+    <noscript>
+      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+      <!-- 容器 -->
+    <div id="app"></div>
+    <!-- built files will be auto injected -->
+  </body>
+</html>
+```
+
+### 2.render函数
+
+关于不同版本的Vue：
+
+- vue.js与vue.runtime.xxx.js的区别：
+  - vue.js是完整版的Vue，包含：核心功能+模板解析器。
+  - vue.runtime.xxx.js是运行版的Vue，只包含：核心功能；没有模板解析器。
+- 因为vue.runtime.xxx.js没有模板解析器，所以不能使用template配置项，需要使用render函数接收到的createElement函数去指定具体内容。
+
+main.js文件：
+
+```
+//引入Vue
+import Vue from 'vue'
+//引入App组件，它是所有组件的父组件
+import App from './App.vue'
+//关闭vue的生产提示
+Vue.config.productionTip = false
+```
+
+```
+//创建Vue实例对象---vm
+new Vue({
+   el:'#app',
+   //render函数完成了这个功能：将App组件放入容器中
+  render: h => h(App),
+
+   // render:q=> q('h1','你好啊')
+    // render(createElement){
+    //     return createElement('h1', '你好啊')
+    // }
+
+    // 引入的vue文件不能解析template配置项，需要引入带有模板解析器的vue
+   // template:`<h1>你好啊</h1>`,
+   // components:{App},
+})
+```
+
+### 3.ref与props
+
+#### ref
+
+**1. 作用：**用于给节点打标识 
+
+**2. 读取方式：**this.$refs.xxxxxx
+
+```
+<template>
+   <div>
+      <h1 v-text="msg" ref="title"></h1>
+      <button ref="btn" @click="showDOM">点我输出上方的DOM元素</button>
+      <School ref="sch"/>
+   </div>
+</template>
+
+<script>
+   //引入School组件
+   import School from './components/School'
+
+   export default {
+      name:'App',
+      components:{School},
+      data() {
+         return {
+            msg:'欢迎学习Vue！'
+         }
+      },
+      methods: {
+         showDOM(){
+            console.log(this.$refs.title) //真实DOM元素
+            console.log(this.$refs.btn) //真实DOM元素
+            console.log(this.$refs.sch) //School组件的实例对象（vc）
+         }
+      },
+   }
+</script>
+```
+
+![ref相关](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/ref%E7%9B%B8%E5%85%B3.png)
+
+#### props
+
+**作用：**用于父组件给子组件传递数据 
+
+**读取方式一: 只指定名称** 
+
+```
+props: ['name', 'age', 'setName']
+```
+
+**读取方式二: 指定名称和类型** 
+
+```
+props: {
+   name: String, 
+   age: Number, 
+   setName: Function 
+}
+```
+
+**读取方式三: 指定名称/类型/必要性/默认值** 
+
+```
+props: {
+   name: {type: String, required: true, default:xxx}, 
+}
+```
+
+App.vue:
+
+```
+<template>
+   <div>
+      <Student name="李四" sex="女" :age="18"/>
+   </div>
+</template>
+
+<script>
+   import Student from './components/Student'
+
+   export default {
+      name:'App',
+      components:{Student}
+   }
+</script>
+```
+
+Student.vue:
+
+```
+<template>
+   <div>
+      <h1>{{msg}}</h1>
+      <h2>学生姓名：{{name}}</h2>
+      <h2>学生性别：{{sex}}</h2>
+      <h2>学生年龄：{{myAge+1}}</h2>
+      <button @click="updateAge">尝试修改收到的年龄</button>
+   </div>
+</template>
+
+<script>
+   export default {
+      name:'Student',
+      data() {
+         console.log(this)
+         return {
+            msg:'我是一个尚硅谷的学生',
+            myAge:this.age
+         }
+      },
+      methods: {
+         updateAge(){
+            this.myAge++
+         }
+      },
+      //简单声明接收
+      // props:['name','age','sex'] 
+
+      //接收的同时对数据进行类型限制
+      /* props:{
+         name:String,
+         age:Number,
+         sex:String
+      } */
+
+      //接收的同时对数据：进行类型限制+默认值的指定+必要性的限制
+      props:{
+         name:{
+            type:String, //name的类型是字符串
+            required:true, //name是必要的
+         },
+         age:{
+            type:Number,
+            default:99 //默认值
+         },
+         sex:{
+            type:String,
+            required:true
+         }
+      }
+   }
+</script>
+```
