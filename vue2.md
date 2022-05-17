@@ -2666,9 +2666,14 @@ new Vue({
 
 #### ref
 
-**1. 作用：**用于给节点打标识 
+**1. 作用：**被用来给元素或子组件注册引用信息（id的替代者），或者说用于给节点打标识
 
-**2. 读取方式：**this.$refs.xxxxxx
+应用在html标签上获取的是真实DOM元素，应用在组件标签上是组件实例对象（vc）
+
+**2. 使用方式：**
+
+- 打标识：```<h1 ref="xxx">.....</h1>``` 或 ```<School ref="xxx"></School>```
+- 获取：```this.$refs.xxx```
 
 ```
 <template>
@@ -2707,6 +2712,12 @@ new Vue({
 #### props
 
 **作用：**用于父组件给子组件传递数据 
+
+**备注：**
+
+- 子组件 ==> 父组件 通信（要求父先给子一个函数）
+- v-model绑定的值不能是props传过来的值，因为props是不可以修改的！
+- props传过来的若是对象类型的值，修改对象中的属性时Vue不会报错，但不推荐这样做。
 
 **读取方式一: 只指定名称** 
 
@@ -2806,4 +2817,514 @@ Student.vue:
       }
    }
 </script>
+```
+
+### 4.mixin混合
+
+1. 功能：可以把多个组件共用的配置提取成一个混入对象
+
+2. 使用方式：
+
+   第一步定义混合：
+
+   ```
+   {
+       data(){....},
+       methods:{....}
+       ....
+   }
+   ```
+
+   第二步使用混入：
+
+   ​	全局混入：```Vue.mixin(xxx)```
+   ​	局部混入：```mixins:['xxx']	```
+
+具体配置如下：
+
+mixin.js
+
+```
+export const hunhe = {
+   methods: {
+      showName(){
+         alert(this.name)
+      }
+   },
+   mounted() {
+      console.log('你好啊！')
+   },
+}
+export const hunhe2 = {
+   data() {
+      return {
+         x:100,
+         y:200
+      }
+   },
+}
+```
+
+#### 局部引入：
+
+Student.vue:
+
+```
+<template>
+   <div>
+      <h2 @click="showName">学生姓名：{{name}}</h2>
+      <h2>学生性别：{{sex}}</h2>
+   </div>
+</template>
+
+<script>
+   import {hunhe,hunhe2} from '../mixin'
+
+   export default {
+      name:'Student',
+      data() {
+         return {
+            name:'张三',
+            sex:'男'
+         }
+      },
+      mixins:[hunhe,hunhe2]
+   }
+```
+
+School.vue:
+
+```
+<template>
+   <div>
+      <h2 @click="showName">学校名称：{{name}}</h2>
+      <h2>学校地址：{{address}}</h2>
+   </div>
+</template>
+
+<script>
+   //引入一个hunhe
+   import {hunhe,hunhe2} from '../mixin'
+
+   export default {
+      name:'vue',
+      data() {
+         return {
+            name:'vue',
+            address:'北京',
+            x:666
+         }
+      },
+      mixins:[hunhe,hunhe2],
+   }
+```
+
+#### 全局引入：
+
+main.js
+
+```
+//引入Vue
+import Vue from 'vue'
+//引入App
+import App from './App.vue'
+import {hunhe,hunhe2} from './mixin'
+//关闭Vue的生产提示
+Vue.config.productionTip = false
+
+Vue.mixin(hunhe)
+Vue.mixin(hunhe2)
+
+
+//创建vm
+new Vue({
+   el:'#app',
+   render: h => h(App)
+})
+```
+
+### 5.插件
+
+- 功能：用于增强Vue
+
+- 本质：包含install方法的一个对象，install的**第一个参数是Vue**，**第二个以后的参数是插件使用者传递的数据**。
+
+- 定义插件：
+
+  ```js
+  对象.install = function (Vue, options) {
+      // 1. 添加全局过滤器
+      Vue.filter(....)
+  
+      // 2. 添加全局指令
+      Vue.directive(....)
+  
+      // 3. 配置全局混入(合)
+      Vue.mixin(....)
+  
+      // 4. 添加实例方法
+      Vue.prototype.$myMethod = function () {...}
+      Vue.prototype.$myProperty = xxxx
+  }
+  ```
+
+- 使用插件：```Vue.use()```
+
+具体配置如下：
+
+plugins.js
+
+```
+export default {
+   install(Vue,x,y,z){
+      console.log(x,y,z)
+      //全局过滤器
+      Vue.filter('mySlice',function(value){
+         return value.slice(0,4)
+      })
+
+      //定义全局指令
+      Vue.directive('fbind',{
+         //指令与元素成功绑定时（一上来）
+         bind(element,binding){
+            element.value = binding.value
+         },
+         //指令所在元素被插入页面时
+         inserted(element,binding){
+            element.focus()
+         },
+         //指令所在的模板被重新解析时
+         update(element,binding){
+            element.value = binding.value
+         }
+      })
+
+      //定义混入
+      Vue.mixin({
+         data() {
+            return {
+               x:100,
+               y:200
+            }
+         },
+      })
+
+      //给Vue原型上添加一个方法（vm和vc就都能用了）
+      Vue.prototype.hello = ()=>{alert('你好啊')}
+   }
+}
+```
+
+main.js
+
+```
+//引入Vue
+import Vue from 'vue'
+//引入App
+import App from './App.vue'
+//引入插件
+import plugins from './plugins'
+//关闭Vue的生产提示
+Vue.config.productionTip = false
+
+//应用（使用）插件
+Vue.use(plugins,1,2,3)
+//创建vm
+new Vue({
+   el:'#app',
+   render: h => h(App)
+})
+```
+
+然后在组件中可以使用插件中定义的全局指令
+
+Student.vue
+
+```
+<template>
+   <div>
+      <h2>学生姓名：{{name}}</h2>
+      <h2>学生性别：{{sex}}</h2>
+      <input type="text" v-fbind:value="name">
+   </div>
+</template>
+
+<script>
+   export default {
+      name:'Student',
+      data() {
+         return {
+            name:'张三',
+            sex:'男'
+         }
+      },
+   }
+</script>
+```
+
+### 6.scoped样式
+
+- 作用：让样式在局部生效，防止冲突。
+- 写法：```<style scoped>```
+
+```
+<style scoped>
+   .demo{
+      background-color: skyblue;
+   }
+</style>
+```
+
+### 7.webStorage
+
+存储内容大小一般支持5MB左右（不同浏览器可能还不一样）
+
+浏览器端通过 Window.sessionStorage 和 Window.localStorage 属性来实现本地存储机制。
+
+**相关API：**
+
+1. ```xxxxxStorage.setItem('key', 'value');```
+   	该方法接受一个键和值作为参数，会把键值对添加到存储中，如果键名存在，则更新其对应的值。
+
+2. ```xxxxxStorage.getItem('person');```
+
+   ​		该方法接受一个键名作为参数，返回键名对应的值。
+
+3. ```xxxxxStorage.removeItem('key');```
+
+   ​		该方法接受一个键名作为参数，并把该键名从存储中删除。
+
+4. ``` xxxxxStorage.clear()```
+
+   ​		该方法会清空存储中的所有数据。
+
+**备注：**
+
+- SessionStorage存储的内容会随着浏览器窗口关闭而消失。
+- LocalStorage存储的内容，需要手动清除才会消失。
+- ```xxxxxStorage.getItem(xxx)```如果xxx对应的value获取不到，那么getItem的返回值是null。
+- ```JSON.parse(null)```的结果依然是null。
+
+### 8.组件的自定义事件
+
+1. 一种组件间通信的方式，适用于：<strong style="color:red">子组件 ===> 父组件</strong>
+
+2. 使用场景：A是父组件，B是子组件，B想给A传数据，那么就要在A中给B绑定自定义事件（<span style="color:red">事件的回调在A中</span>）。
+
+3. 绑定自定义事件：
+
+   1. 第一种方式，在父组件中：```<Demo @xxx="test"/>```  或 ```<Demo v-on:xxx="test"/>```
+
+   2. 第二种方式，在父组件中：
+
+      ```js
+      <Demo ref="demo"/>
+      ......
+      mounted(){
+         this.$refs.xxx.$on('xxx',this.test)
+      }
+      ```
+
+   3. 若想让自定义事件只能触发一次，可以使用```once```修饰符，或```$once```方法。
+
+4. 触发自定义事件：```this.$emit('xxx',数据)```		
+
+5. 解绑自定义事件```this.$off('xxx')```
+
+6. 组件上也可以绑定原生DOM事件，需要使用```native```修饰符。
+
+7. 注意：通过```this.$refs.xxx.$on('atguigu',回调)```绑定自定义事件时，回调<span style="color:red">要么配置在methods中</span>，<span style="color:red">要么用箭头函数</span>，否则this指向会出问题！
+
+
+
+App.vue:
+
+```
+<template>
+   <div class="app">
+      <h1>{{msg}}，学生姓名是:{{studentName}}</h1>
+
+      <!-- 通过父组件给子组件传递函数类型的props实现：子给父传递数据 -->
+      <School :getSchoolName="getSchoolName"/>
+
+      <!-- 通过父组件给子组件绑定一个自定义事件实现：子给父传递数据（第一种写法，使用@或v-on） -->
+      <!-- <Student @atguigu="getStudentName" @demo="m1"/> -->
+
+      <!-- 通过父组件给子组件绑定一个自定义事件实现：子给父传递数据（第二种写法，使用ref） -->
+      <Student ref="student" @click.native="show"/>
+   </div>
+</template>
+
+<script>
+   import Student from './components/Student'
+   import School from './components/School'
+
+   export default {
+      name:'App',
+      components:{School,Student},
+      data() {
+         return {
+            msg:'你好啊！',
+            studentName:''
+         }
+      },
+      methods: {
+         getSchoolName(name){
+            console.log('App收到了学校名：',name)
+         },
+         getStudentName(name,...params){
+            console.log('App收到了学生名：',name,params)
+            this.studentName = name
+         },
+         m1(){
+            console.log('demo事件被触发了！')
+         },
+         show(){
+            alert(123)
+         }
+      },
+      mounted() {
+         this.$refs.student.$on('atguigu',this.getStudentName) //绑定自定义事件
+         // this.$refs.student.$once('atguigu',this.getStudentName) //绑定自定义事件（一次性）
+      },
+   }
+</script>
+```
+
+Student.vue:利用组件自定义事件向父组件传递数据
+
+```
+<template>
+   <div class="student">
+      <h2>学生姓名：{{name}}</h2>
+      <h2>学生性别：{{sex}}</h2>
+      <h2>当前求和为：{{number}}</h2>
+      <button @click="add">点我number++</button>
+      <button @click="sendStudentlName">把学生名给App</button>
+      <button @click="unbind">解绑atguigu事件</button>
+      <button @click="death">销毁当前Student组件的实例(vc)</button>
+   </div>
+</template>
+
+<script>
+   export default {
+      name:'Student',
+      data() {
+         return {
+            name:'张三',
+            sex:'男',
+            number:0
+         }
+      },
+      methods: {
+         add(){
+            console.log('add回调被调用了')
+            this.number++
+         },
+         sendStudentlName(){
+            //触发Student组件实例身上的atguigu事件
+            this.$emit('atguigu',this.name,666,888,900)
+            // this.$emit('demo')
+            // this.$emit('click')
+         },
+         unbind(){
+            this.$off('atguigu') //解绑一个自定义事件
+            // this.$off(['atguigu','demo']) //解绑多个自定义事件
+            // this.$off() //解绑所有的自定义事件
+         },
+         death(){
+            this.$destroy() //销毁了当前Student组件的实例，销毁后所有Student实例的自定义事件全都不奏效。
+         }
+      },
+   }
+</script>
+```
+
+School.vue:利用props收到父组件的方法，向父组件传递数据
+
+```
+<template>
+   <div class="school">
+      <h2>学校名称：{{name}}</h2>
+      <h2>学校地址：{{address}}</h2>
+      <button @click="sendSchoolName">把学校名给App</button>
+   </div>
+</template>
+
+<script>
+   export default {
+      name:'School',
+      props:['getSchoolName'],
+      data() {
+         return {
+            name:'尚硅谷',
+            address:'北京',
+         }
+      },
+      methods: {
+         sendSchoolName(){
+            this.getSchoolName(this.name)
+         }
+      },
+   }
+</script>
+```
+
+### 9.全局事件总线
+
+#### 理解
+
+Vue 原型对象上包含事件处理的方法 
+
+- $on(eventName, listener): 绑定自定义事件监听 
+- $emit(eventName, data): 分发自定义事件 
+- $off(eventName): 解绑自定义事件监听 
+- $once(eventName, listener): 绑定事件监听, 但只能处理一次 
+
+所有组件实例对象的原型对象的原型对象就是 Vue 的原型对象
+
+- 所有组件对象都能看到 Vue 原型对象上的属性和方法 
+- Vue.prototype.$bus = new Vue(), 所有的组件对象都能看到$bus 这个属性对象 
+
+全局事件总线 
+
+- 包含事件处理相关方法的对象(只有一个) 
+- 所有的组件都可以得到 
+
+#### 安装全局事件总线
+
+```js
+new Vue({
+	......
+	beforeCreate() {
+		Vue.prototype.$bus = this //安装全局事件总线，$bus就是当前应用的vm
+	},
+    ......
+}) 
+```
+
+#### 使用事件总线
+
+接收数据：A组件想接收数据，则在A组件中给$bus绑定自定义事件，事件的<span style="color:red">回调留在A组件自身。</span>
+
+```js
+methods(){
+  demo(data){......}
+}
+......
+mounted() {
+  this.$bus.$on('xxxx',this.demo)
+}
+```
+
+提供数据：```this.$bus.$emit('xxxx',数据)```
+
+```
+this.$bus.$emit('xxxx',this.demo)
+```
+
+最好在beforeDestroy钩子中，用$off去解绑<span style="color:red">当前组件所用到的</span>事件。
+
+```
+this.$bus.$off('xxxx')
 ```
