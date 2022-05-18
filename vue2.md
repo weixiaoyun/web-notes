@@ -3328,3 +3328,160 @@ this.$bus.$emit('xxxx',this.demo)
 ```
 this.$bus.$off('xxxx')
 ```
+
+### 10.消息订阅与发布
+
+一种组件间通信的方式，适用于<span style="color:red">任意组件间通信</span>。
+
+#### 理解
+
+这种方式的思想与全局事件总线很相似 
+
+它包含以下操作: 
+
+- 订阅消息 --对应绑定事件监听 
+- 发布消息 --分发事件 
+- 取消消息订阅 --解绑事件监听 
+
+需要引入一个消息订阅与发布的第三方实现库: **PubSubJS**
+
+#### 使用PubSubJS
+
+- 在线文档: https://github.com/mroderick/PubSubJS 
+
+- 下载: npm install -S pubsub-js 
+
+- 相关语法 
+
+  - import PubSub from 'pubsub-js' // 引入 
+
+  - PubSub.subscribe(‘msgName’, functon(msgName, data){ }) 
+
+  - PubSub.publish(‘msgName’, data): 发布消息, 触发订阅的回调函数调用 
+
+  - PubSub.unsubscribe(token): 取消消息的订阅
+
+具体安装步骤如下：
+
+1. 安装pubsub：```npm i pubsub-js```
+
+2. 引入: ```import pubsub from 'pubsub-js'```
+
+3. 接收数据：A组件想接收数据，则在A组件中订阅消息，订阅的<span style="color:red">回调留在A组件自身。</span>
+
+   ```js
+   methods(){
+     demo(data){......}
+   }
+   ......
+   mounted() {
+     this.pid = pubsub.subscribe('xxx',this.demo) //订阅消息
+   }
+   ```
+
+4. 提供数据：```pubsub.publish('xxx',数据)```
+
+5. 最好在beforeDestroy钩子中，用```PubSub.unsubscribe(pid)```去<span style="color:red">取消订阅。</span>
+
+例子：
+
+一个组件向另一个组件传递数据
+
+School.vue:
+
+```
+<template>
+   <div class="school">
+      <h2>学校名称：{{name}}</h2>
+      <h2>学校地址：{{address}}</h2>
+   </div>
+</template>
+
+<script>
+   import pubsub from 'pubsub-js'
+   export default {
+      name:'School',
+      data() {
+         return {
+            name:'atguigu',
+            address:'北京',
+         }
+      },
+      mounted() {
+         // console.log('School',this)
+         /* this.$bus.$on('hello',(data)=>{
+            console.log('我是School组件，收到了数据',data)
+         }) */
+         this.pubId = pubsub.subscribe('hello',(msgName,data)=>{
+            console.log(this)
+            // console.log('有人发布了hello消息，hello消息的回调执行了',msgName,data)
+         })
+      },
+      beforeDestroy() {
+         // this.$bus.$off('hello')
+         pubsub.unsubscribe(this.pubId)
+      },
+   }
+</script>
+
+<style scoped>
+   .school{
+      background-color: skyblue;
+      padding: 5px;
+   }
+</style>
+```
+
+Student.vue:
+
+```
+<template>
+   <div class="student">
+      <h2>学生姓名：{{name}}</h2>
+      <h2>学生性别：{{sex}}</h2>
+      <button @click="sendStudentName">把学生名给School组件</button>
+   </div>
+</template>
+
+<script>
+   import pubsub from 'pubsub-js'
+   export default {
+      name:'Student',
+      data() {
+         return {
+            name:'张三',
+            sex:'男',
+         }
+      },
+      mounted() {
+         // console.log('Student',this.x)
+      },
+      methods: {
+         sendStudentName(){
+            // this.$bus.$emit('hello',this.name)
+            pubsub.publish('hello',666)
+         }
+      },
+   }
+</script>
+
+<style lang="less" scoped>
+   .student{
+      background-color: pink;
+      padding: 5px;
+      margin-top: 30px;
+   }
+</style>
+```
+
+### 11.nextTick
+
+- 语法：```this.$nextTick(回调函数)```
+- 作用：在下一次 DOM 更新结束后执行其指定的回调。
+- 什么时候用：当改变数据后，要基于更新后的新DOM进行某些操作时，要在nextTick所指定的回调函数中执行。
+
+```
+this.$nextTick(function(){
+   this.$refs.inputTitle.focus()
+})
+```
