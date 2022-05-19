@@ -3485,3 +3485,842 @@ this.$nextTick(function(){
    this.$refs.inputTitle.focus()
 })
 ```
+
+### 12.过度与动画
+
+**作用：**
+
+在插入、更新或移除 DOM元素时，在合适的时候给元素添加样式类名。操作 css 的 trasition 或 animation。
+
+**过渡的相关类名：**
+
+- xxx-enter-active: 指定显示的 transition 
+- xxx-leave-active: 指定隐藏的 transition 
+- xxx-enter/xxx-leave-to: 指定隐藏时的样式
+
+![过度与动画](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/%E8%BF%87%E5%BA%A6%E4%B8%8E%E5%8A%A8%E7%94%BB.png)
+
+**写法：**
+
+1. 准备好样式：
+
+   - 元素进入的样式：
+     1. v-enter：进入的起点
+     2. v-enter-active：进入过程中
+     3. v-enter-to：进入的终点
+   - 元素离开的样式：
+     1. v-leave：离开的起点
+     2. v-leave-active：离开过程中
+     3. v-leave-to：离开的终点
+
+2. 使用```<transition>```包裹要过度的元素，并配置name属性：
+
+   ```vue
+   <transition name="hello">
+   	<h1 v-show="isShow">你好啊！</h1>
+   </transition>
+   ```
+
+3. 备注：若有多个元素需要过度，则需要使用：```<transition-group>```，且每个元素都要指定```key```值。
+
+#### 动画效果
+
+Test.vue:
+
+```
+<template>
+   <div>
+      <button @click="isShow = !isShow">显示/隐藏</button>
+      <transition name="hello" appear>
+         <h1 v-show="isShow">你好啊！</h1>
+      </transition>
+   </div>
+</template>
+
+<script>
+   export default {
+      name:'Test',
+      data() {
+         return {
+            isShow:true
+         }
+      },
+   }
+</script>
+
+<style scoped>
+   h1{
+      background-color: orange;
+   }
+
+   .hello-enter-active{
+      animation: wxy 0.5s linear;
+   }
+
+   .hello-leave-active{
+      animation: wxy 0.5s linear reverse;
+   }
+
+   @keyframes wxy {
+      from{
+         transform: translateX(-100%);
+      }
+      to{
+         transform: translateX(0px);
+      }
+   }
+</style>
+```
+
+#### 过渡效果
+
+Test2.vue：
+
+```
+<template>
+   <div>
+      <button @click="isShow = !isShow">显示/隐藏</button>
+      <transition-group name="hello" appear>
+         <h1 v-show="!isShow" key="1">你好啊！</h1>
+         <h1 v-show="isShow" key="2">vue！</h1>
+      </transition-group>
+   </div>
+</template>
+
+<script>
+   export default {
+      name:'Test',
+      data() {
+         return {
+            isShow:true
+         }
+      },
+   }
+</script>
+
+<style scoped>
+   h1{
+      background-color: orange;
+   }
+   /* 进入的起点、离开的终点 */
+   .hello-enter,.hello-leave-to{
+      transform: translateX(-100%);
+   }
+   .hello-enter-active,.hello-leave-active{
+      transition: 0.5s linear;
+   }
+   /* 进入的终点、离开的起点 */
+   .hello-enter-to,.hello-leave{
+      transform: translateX(0);
+   }
+
+</style>
+```
+
+#### 集成第三方动画
+
+```
+<template>
+   <div>
+      <button @click="isShow = !isShow">显示/隐藏</button>
+      <transition-group 
+         appear
+         name="animate__animated animate__bounce" 
+         enter-active-class="animate__swing"
+         leave-active-class="animate__backOutUp"
+      >
+         <h1 v-show="!isShow" key="1">你好啊！</h1>
+         <h1 v-show="isShow" key="2">vue！</h1>
+      </transition-group>
+   </div>
+</template>
+
+<script>
+   import 'animate.css'
+   export default {
+      name:'Test',
+      data() {
+         return {
+            isShow:true
+         }
+      },
+   }
+</script>
+
+<style scoped>
+   h1{
+      background-color: orange;
+   }
+   
+
+</style>
+```
+
+### 13.vue脚手架配置代理服务器
+
+解决开发环境 Ajax 跨域问题
+
+#### 方法一
+
+​	在vue.config.js中添加如下配置：
+
+```js
+devServer:{
+  proxy:"http://localhost:5000"
+}
+```
+
+说明：
+
+1. 优点：配置简单，请求资源时直接发给前端（8080）即可。
+2. 缺点：不能配置多个代理，不能灵活的控制请求是否走代理。
+3. 工作方式：若按照上述配置代理，当请求了前端不存在的资源时，那么该请求会转发给服务器 （优先匹配前端资源）
+
+#### 方法二
+
+​	编写vue.config.js配置具体代理规则：
+
+```js
+module.exports = {
+	devServer: {
+      proxy: {
+      '/api1': {// 匹配所有以 '/api1'开头的请求路径
+        target: 'http://localhost:5000',// 代理目标的基础路径
+        changeOrigin: true,
+        pathRewrite: {'^/api1': ''}
+      },
+      '/api2': {// 匹配所有以 '/api2'开头的请求路径
+        target: 'http://localhost:5001',// 代理目标的基础路径
+        changeOrigin: true,
+        pathRewrite: {'^/api2': ''}
+      }
+    }
+  }
+}
+/*
+   changeOrigin设置为true时，服务器收到的请求头中的host为：localhost:5000
+   changeOrigin设置为false时，服务器收到的请求头中的host为：localhost:8080
+   changeOrigin默认值为true
+*/
+```
+
+说明：
+
+1. 优点：可以配置多个代理，且可以灵活的控制请求是否走代理。
+2. 缺点：配置略微繁琐，请求资源时必须加前缀。
+
+#### vue项目中常用的2个ajax库
+
+1.axios
+
+通用的 Ajax 请求库, 官方推荐，使用广泛 
+
+2.vue-resource
+
+vue 插件库, vue1.x 使用广泛，**官方已不维护**
+
+### 14.插槽
+
+父组件向子组件传递带数据的标签，当一个组件有不确定的结构时, 就需要使用 slot 技术，注意：插槽内容是在父组件中编译后, 再传递给子组件的。
+
+让父组件可以向子组件指定位置插入html结构，也是一种组件间通信的方式，适用于 <strong style="color:red">父组件 ===> 子组件</strong> 
+
+**分类**：默认插槽、具名插槽、作用域插槽
+
+**使用方式**：
+
+1. 默认插槽：
+
+   ```vue
+   父组件中：
+           <Category>
+              <div>html结构1</div>
+           </Category>
+   子组件中：
+           <template>
+               <div>
+                  <!-- 定义插槽 -->
+                  <slot>插槽默认内容...</slot>
+               </div>
+           </template>
+   ```
+
+2. 具名插槽：
+
+   ```vue
+   父组件中：
+           <Category>
+               <template slot="center">
+                 <div>html结构1</div>
+               </template>
+   
+               <template v-slot:footer>
+                  <div>html结构2</div>
+               </template>
+           </Category>
+   子组件中：
+           <template>
+               <div>
+                  <!-- 定义插槽 -->
+                  <slot name="center">插槽默认内容...</slot>
+                  <slot name="footer">插槽默认内容...</slot>
+               </div>
+           </template>
+   ```
+
+3. 作用域插槽：
+
+   理解：<span style="color:red">数据在组件的自身，但根据数据生成的结构需要组件的使用者来决定。</span>（games数据在Category组件中，但使用数据所遍历出来的结构由App组件决定）
+
+   具体编码：
+
+```vue
+父组件中：
+		<Category>
+			<template scope="scopeData">
+				<!-- 生成的是ul列表 -->
+				<ul>
+					<li v-for="g in scopeData.games" :key="g">{{g}}</li>
+				</ul>
+			</template>
+		</Category>
+
+		<Category>
+			<template slot-scope="scopeData">
+				<!-- 生成的是h4标题 -->
+				<h4 v-for="g in scopeData.games" :key="g">{{g}}</h4>
+			</template>
+		</Category>
+子组件中：
+        <template>
+            <div>
+                <slot :games="games"></slot>
+            </div>
+        </template>
+		
+        <script>
+            export default {
+                name:'Category',
+                props:['title'],
+                //数据在子组件自身
+                data() {
+                    return {
+                        games:['红色警戒','穿越火线','劲舞团','超级玛丽']
+                    }
+                },
+            }
+        </script>
+```
+
+### 14.Vuex
+
+#### 概念
+
+在Vue中实现集中式状态（数据）管理的一个Vue插件，对vue应用中多个组件的共享状态进行集中式的管理（读/写），也是一种组件间通信的方式，且适用于任意组件间通信。
+
+Github 地址: https://github.com/vuejs/vuex
+
+![vuex](https://raw.githubusercontent.com/weixiaoyun/Images/vue2/vuex.png)
+
+#### 何时使用？
+
+多个组件需要共享数据时：
+
+- 多个组件依赖于同一状态 
+- 来自不同组件的行为需要变更同一状态
+
+#### vuex 核心概念和 API 
+
+**state** 
+
+- vuex 管理的状态对象 
+- 它应该是唯一的
+
+**actions** 
+
+- 值为一个对象，包含多个响应用户动作的回调函数 
+- 通过 commit( )来触发 mutation 中函数的调用, 间接更新 state3. 如何触发 actions 中的回调？ 
+- 在组件中使用: *$store.dispatch('对应的 action 回调名')* 触发 
+- 可以包含异步代码（定时器, ajax 等等）
+
+**mutations**
+
+- 值是一个对象，包含多个直接更新 state 的方法 
+
+- 谁能调用 mutations 中的方法？如何调用？ 
+
+  在 action 中使用：*commit('对应的 mutations 方法名')* 触发 
+
+- mutations 中方法的特点：不能写异步代码、只能单纯的操作 state 
+
+**getters**
+
+- 值为一个对象，包含多个用于返回数据的函数 
+- 如何使用？—— *$store.getters.xxx*
+
+**modules**
+
+- 包含多个 module 
+- 一个 module 是一个 store 的配置对象 
+- 与一个组件（包含有共享数据）对应
+
+#### 搭建vuex环境
+
+1. 创建文件：```src/store/index.js```
+
+   ```js
+   //引入Vue核心库
+   import Vue from 'vue'
+   //引入Vuex
+   import Vuex from 'vuex'
+   //应用Vuex插件
+   Vue.use(Vuex)
+   
+   //准备actions对象——响应组件中用户的动作
+   const actions = {}
+   //准备mutations对象——修改state中的数据
+   const mutations = {}
+   //准备state对象——保存具体的数据
+   const state = {}
+   
+   //创建并暴露store
+   export default new Vuex.Store({
+   	actions,
+   	mutations,
+   	state
+   })
+   ```
+
+2. 在```main.js```中创建vm时传入```store```配置项
+
+   ```js
+   ......
+   //引入store
+   import store from './store'
+   ......
+   
+   //创建vm
+   new Vue({
+   	el:'#app',
+   	render: h => h(App),
+   	store
+   })
+   ```
+
+####    基本使用
+
+1. 初始化数据、配置```actions```、配置```mutations```，操作文件```store.js```
+
+   ```js
+   //引入Vue核心库
+   import Vue from 'vue'
+   //引入Vuex
+   import Vuex from 'vuex'
+   //引用Vuex
+   Vue.use(Vuex)
+   
+   const actions = {
+       //响应组件中加的动作
+   	jia(context,value){
+   		// console.log('actions中的jia被调用了',miniStore,value)
+   		context.commit('JIA',value)
+   	},
+   }
+   
+   const mutations = {
+       //执行加
+   	JIA(state,value){
+   		// console.log('mutations中的JIA被调用了',state,value)
+   		state.sum += value
+   	}
+   }
+   
+   //初始化数据
+   const state = {
+      sum:0
+   }
+   
+   //创建并暴露store
+   export default new Vuex.Store({
+   	actions,
+   	mutations,
+   	state,
+   })
+   ```
+
+2. 组件中读取vuex中的数据：```$store.state.sum```
+
+3. 组件中修改vuex中的数据：```$store.dispatch('action中的方法名',数据)``` 或 ```$store.commit('mutations中的方法名',数据)```
+
+   >  备注：若没有网络请求或其他业务逻辑，组件中也可以越过actions，即不写```dispatch```，直接编写```commit```
+
+#### getters的使用
+
+1. 概念：当state中的数据需要经过加工后再使用时，可以使用getters加工。
+
+2. 在```store.js```中追加```getters```配置
+
+   ```js
+   ......
+   //准备getters——用于将state中的数据进行加工
+   const getters = {
+   	bigSum(state){
+   		return state.sum * 10
+   	}
+   }
+   
+   //创建并暴露store
+   export default new Vuex.Store({
+   	......
+   	getters
+   })
+   ```
+
+3. 组件中读取数据：```$store.getters.bigSum```
+
+#### 四个map方法的使用
+
+1. <strong>mapState方法：</strong>用于帮助我们映射```state```中的数据为计算属性
+
+   ```js
+   computed: {
+       //借助mapState生成计算属性：sum、school、subject（对象写法）
+        ...mapState({sum:'sum',school:'school',subject:'subject'}),
+            
+       //借助mapState生成计算属性：sum、school、subject（数组写法）
+       ...mapState(['sum','school','subject']),
+   },
+   ```
+
+2. <strong>mapGetters方法：</strong>用于帮助我们映射```getters```中的数据为计算属性
+
+   ```js
+   computed: {
+       //借助mapGetters生成计算属性：bigSum（对象写法）
+       ...mapGetters({bigSum:'bigSum'}),
+   
+       //借助mapGetters生成计算属性：bigSum（数组写法）
+       ...mapGetters(['bigSum'])
+   },
+   ```
+
+3. <strong>mapActions方法：</strong>用于帮助我们生成与```actions```对话的方法，即：包含```$store.dispatch(xxx)```的函数
+
+   ```js
+   methods:{
+       //靠mapActions生成：incrementOdd、incrementWait（对象形式）
+       ...mapActions({incrementOdd:'jiaOdd',incrementWait:'jiaWait'})
+   
+       //靠mapActions生成：incrementOdd、incrementWait（数组形式）
+       ...mapActions(['jiaOdd','jiaWait'])
+   }
+   ```
+
+4. <strong>mapMutations方法：</strong>用于帮助我们生成与```mutations```对话的方法，即：包含```$store.commit(xxx)```的函数
+
+   ```js
+   methods:{
+       //靠mapActions生成：increment、decrement（对象形式）
+       ...mapMutations({increment:'JIA',decrement:'JIAN'}),
+       
+       //靠mapMutations生成：JIA、JIAN（对象形式）
+       ...mapMutations(['JIA','JIAN']),
+   }
+   ```
+
+> 备注：mapActions与mapMutations使用时，若需要传递参数需要：在模板中绑定事件时传递好参数，否则参数是事件对象。
+
+#### 模块化+命名空间
+
+1. 目的：让代码更好维护，让多种数据分类更加明确。
+
+2. 修改```store.js```
+
+   ```javascript
+   const countAbout = {
+     namespaced:true,//开启命名空间
+     state:{x:1},
+     mutations: { ... },
+     actions: { ... },
+     getters: {
+       bigSum(state){
+          return state.sum * 10
+       }
+     }
+   }
+   
+   const personAbout = {
+     namespaced:true,//开启命名空间
+     state:{ ... },
+     mutations: { ... },
+     actions: { ... }
+   }
+   
+   const store = new Vuex.Store({
+     modules: {
+       countAbout,
+       personAbout
+     }
+   })
+   ```
+
+3. 开启命名空间后，组件中读取state数据：
+
+   ```js
+   //方式一：自己直接读取
+   this.$store.state.personAbout.list
+   //方式二：借助mapState读取：
+   ...mapState('countAbout',['sum','school','subject']),
+   ```
+
+4. 开启命名空间后，组件中读取getters数据：
+
+   ```js
+   //方式一：自己直接读取
+   this.$store.getters['personAbout/firstPersonName']
+   //方式二：借助mapGetters读取：
+   ...mapGetters('countAbout',['bigSum'])
+   ```
+
+5. 开启命名空间后，组件中调用dispatch
+
+   ```js
+   //方式一：自己直接dispatch
+   this.$store.dispatch('personAbout/addPersonWang',person)
+   //方式二：借助mapActions：
+   ...mapActions('countAbout',{incrementOdd:'jiaOdd',incrementWait:'jiaWait'})
+   ```
+
+6. 开启命名空间后，组件中调用commit
+
+   ```js
+   //方式一：自己直接commit
+   this.$store.commit('personAbout/ADD_PERSON',person)
+   //方式二：借助mapMutations：
+   ...mapMutations('countAbout',{increment:'JIA',decrement:'JIAN'}),
+   ```
+
+具体例子如下：
+
+store文件夹下count.js:
+
+```
+//求和相关的配置
+export default {
+   namespaced:true,
+   actions:{
+      jiaOdd(context,value){
+         console.log('actions中的jiaOdd被调用了')
+         if(context.state.sum % 2){
+            context.commit('JIA',value)
+         }
+      },
+      jiaWait(context,value){
+         console.log('actions中的jiaWait被调用了')
+         setTimeout(()=>{
+            context.commit('JIA',value)
+         },500)
+      }
+   },
+   mutations:{
+      JIA(state,value){
+         console.log('mutations中的JIA被调用了')
+         state.sum += value
+      },
+      JIAN(state,value){
+         console.log('mutations中的JIAN被调用了')
+         state.sum -= value
+      },
+   },
+   state:{
+      sum:0, //当前的和
+      school:'尚硅谷',
+      subject:'前端',
+   },
+   getters:{
+      bigSum(state){
+         return state.sum*10
+      }
+   },
+}
+```
+
+store文件夹下index.js:
+
+```
+//该文件用于创建Vuex中最为核心的store
+import Vue from 'vue'
+//引入Vuex
+import Vuex from 'vuex'
+import countOptions from './count'
+import personOptions from './person'
+//应用Vuex插件
+Vue.use(Vuex)
+
+//创建并暴露store
+export default new Vuex.Store({
+   modules:{
+      countAbout:countOptions,
+      personAbout:personOptions
+   }
+})
+```
+
+store文件夹下person.js:
+
+```
+//人员管理相关的配置
+import axios from 'axios'
+import { nanoid } from 'nanoid'
+export default {
+   namespaced:true,
+   actions:{
+      addPersonWang(context,value){
+         if(value.name.indexOf('王') === 0){
+            context.commit('ADD_PERSON',value)
+         }else{
+            alert('添加的人必须姓王！')
+         }
+      },
+      addPersonServer(context){
+         axios.get('https://api.uixsj.cn/hitokoto/get?type=social').then(
+            response => {
+               context.commit('ADD_PERSON',{id:nanoid(),name:response.data})
+            },
+            error => {
+               alert(error.message)
+            }
+         )
+      }
+   },
+   mutations:{
+      ADD_PERSON(state,value){
+         console.log('mutations中的ADD_PERSON被调用了')
+         state.personList.unshift(value)
+      }
+   },
+   state:{
+      personList:[
+         {id:'001',name:'张三'}
+      ]
+   },
+   getters:{
+      firstPersonName(state){
+         return state.personList[0].name
+      }
+   },
+}
+```
+
+Count.vue
+
+```
+<template>
+   <div>
+      <h1>当前求和为：{{sum}}</h1>
+      <h3>当前求和放大10倍为：{{bigSum}}</h3>
+      <h3>我在{{school}}，学习{{subject}}</h3>
+      <h3 style="color:red">Person组件的总人数是：{{personList.length}}</h3>
+      <select v-model.number="n">
+         <option value="1">1</option>
+         <option value="2">2</option>
+         <option value="3">3</option>
+      </select>
+      <button @click="increment(n)">+</button>
+      <button @click="decrement(n)">-</button>
+      <button @click="incrementOdd(n)">当前求和为奇数再加</button>
+      <button @click="incrementWait(n)">等一等再加</button>
+   </div>
+</template>
+
+<script>
+   import {mapState,mapGetters,mapMutations,mapActions} from 'vuex'
+   export default {
+      name:'Count',
+      data() {
+         return {
+            n:1, //用户选择的数字
+         }
+      },
+      computed:{
+         //借助mapState生成计算属性，从state中读取数据。（数组写法）
+         ...mapState('countAbout',['sum','school','subject']),
+         ...mapState('personAbout',['personList']),
+         //借助mapGetters生成计算属性，从getters中读取数据。（数组写法）
+         ...mapGetters('countAbout',['bigSum'])
+      },
+      methods: {
+         //借助mapMutations生成对应的方法，方法中会调用commit去联系mutations(对象写法)
+         ...mapMutations('countAbout',{increment:'JIA',decrement:'JIAN'}),
+         //借助mapActions生成对应的方法，方法中会调用dispatch去联系actions(对象写法)
+         ...mapActions('countAbout',{incrementOdd:'jiaOdd',incrementWait:'jiaWait'})
+      },
+      mounted() {
+         console.log(this.$store)
+      },
+   }
+</script>
+
+<style lang="css">
+   button{
+      margin-left: 5px;
+   }
+</style>
+```
+
+Person.vue
+
+```
+<template>
+   <div>
+      <h1>人员列表</h1>
+      <h3 style="color:red">Count组件求和为：{{sum}}</h3>
+      <h3>列表中第一个人的名字是：{{firstPersonName}}</h3>
+      <input type="text" placeholder="请输入名字" v-model="name">
+      <button @click="add">添加</button>
+      <button @click="addWang">添加一个姓王的人</button>
+      <button @click="addPersonServer">添加一个人，名字随机</button>
+      <ul>
+         <li v-for="p in personList" :key="p.id">{{p.name}}</li>
+      </ul>
+   </div>
+</template>
+
+<script>
+   import {nanoid} from 'nanoid'
+   export default {
+      name:'Person',
+      data() {
+         return {
+            name:''
+         }
+      },
+      computed:{
+         personList(){
+            return this.$store.state.personAbout.personList
+         },
+         sum(){
+            return this.$store.state.countAbout.sum
+         },
+         firstPersonName(){
+            return this.$store.getters['personAbout/firstPersonName']
+         }
+      },
+      methods: {
+         add(){
+            const personObj = {id:nanoid(),name:this.name}
+            this.$store.commit('personAbout/ADD_PERSON',personObj)
+            this.name = ''
+         },
+         addWang(){
+            const personObj = {id:nanoid(),name:this.name}
+            this.$store.dispatch('personAbout/addPersonWang',personObj)
+            this.name = ''
+         },
+         addPersonServer(){
+            this.$store.dispatch('personAbout/addPersonServer')
+         }
+      },
+   }
+</script>
+```
