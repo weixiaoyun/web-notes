@@ -578,6 +578,32 @@ npm run dev
   - `beforeUnmount` ==>`onBeforeUnmount`
   - `unmounted` =====>`onUnmounted`
 
+## 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ## 9.自定义hook函数
 
 - 什么是hook？—— 本质是一个函数，把setup函数中使用的Composition API进行了封装。
@@ -586,7 +612,34 @@ npm run dev
 
 - 自定义hook的优势: 复用代码, 让setup中的逻辑更清楚易懂。
 
+```
+import {reactive,onMounted,onBeforeUnmount} from 'vue'
+export default function (){
+   //实现鼠标“打点”相关的数据
+   let point = reactive({
+      x:0,
+      y:0
+   })
 
+   //实现鼠标“打点”相关的方法
+   function savePoint(event){
+      point.x = event.pageX
+      point.y = event.pageY
+      console.log(event.pageX,event.pageY)
+   }
+
+   //实现鼠标“打点”相关的生命周期钩子
+   onMounted(()=>{
+      window.addEventListener('click',savePoint)
+   })
+
+   onBeforeUnmount(()=>{
+      window.removeEventListener('click',savePoint)
+   })
+
+   return point
+}
+```
 
 ## 10.toRef
 
@@ -597,6 +650,54 @@ npm run dev
 
 - 扩展：```toRefs``` 与```toRef```功能一致，但可以批量创建多个 ref 对象，语法：```toRefs(person)```
 
+```
+<template>
+   <h4>{{person}}</h4>
+   <h2>姓名：{{name}}</h2>
+   <h2>年龄：{{age}}</h2>
+   <h2>薪资：{{job.j1.salary}}K</h2>
+   <button @click="name+='~'">修改姓名</button>
+   <button @click="age++">增长年龄</button>
+   <button @click="job.j1.salary++">涨薪</button>
+</template>
+
+<script>
+   import {ref,reactive,toRef,toRefs} from 'vue'
+   export default {
+      name: 'Demo',
+      setup(){
+         //数据
+         let person = reactive({
+            name:'张三',
+            age:18,
+            job:{
+               j1:{
+                  salary:20
+               }
+            }
+         })
+
+         // const name1 = person.name
+         // console.log('%%%',name1)
+
+         // const name2 = toRef(person,'name')
+         // console.log('####',name2)
+
+         const x = toRefs(person)
+         console.log('******',x)
+
+         //返回一个对象（常用）
+         return {
+            person,
+            // name:toRef(person,'name'),
+            // age:toRef(person,'age'),
+            // salary:toRef(person.job.j1,'salary'),
+            ...toRefs(person)
+         }
+      }
+   }
+</script>
+```
 
 # 三、其它 Composition API
 
@@ -604,16 +705,95 @@ npm run dev
 
 - shallowReactive：只处理对象最外层属性的响应式（浅响应式）。
 - shallowRef：只处理基本数据类型的响应式, 不进行对象的响应式处理。
-
 - 什么时候使用?
   -  如果有一个对象数据，结构比较深, 但变化时只是外层属性变化 ===> shallowReactive。
   -  如果有一个对象数据，后续功能不会修改该对象中的属性，而是生新的对象来替换 ===> shallowRef。
+
+```
+<template>
+   <h4>当前的x.y值是：{{x.y}}</h4>
+   <button @click="x={y:888}">点我替换x</button>
+   <button @click="x.y++">点我x.y++</button>
+   <hr>
+   <h4>{{person}}</h4>
+   <h2>姓名：{{name}}</h2>
+   <h2>年龄：{{age}}</h2>
+   <h2>薪资：{{job.j1.salary}}K</h2>
+   <button @click="name+='~'">修改姓名</button>
+   <button @click="age++">增长年龄</button>
+   <button @click="job.j1.salary++">涨薪</button>
+</template>
+
+<script>
+   import {ref,reactive,toRef,toRefs,shallowReactive,shallowRef} from 'vue'
+   export default {
+      name: 'Demo',
+      setup(){
+         //数据
+         // let person = shallowReactive({ //只考虑第一层数据的响应式
+         let person = reactive({
+            name:'张三',
+            age:18,
+            job:{
+               j1:{
+                  salary:20
+               }
+            }
+         })
+         let x = shallowRef({
+            y:0
+         })
+         console.log('******',x)
+
+         //返回一个对象（常用）
+         return {
+            x,
+            person,
+            ...toRefs(person)
+         }
+      }
+   }
+</script>
+```
 
 ## 2.readonly 与 shallowReadonly
 
 - readonly: 让一个响应式数据变为只读的（深只读）。
 - shallowReadonly：让一个响应式数据变为只读的（浅只读）。
 - 应用场景: 不希望数据被修改时。
+
+```
+<script>
+   import {ref,reactive,toRefs,readonly,shallowReadonly} from 'vue'
+   export default {
+      name: 'Demo',
+      setup(){
+         //数据
+         let sum = ref(0)
+         let person = reactive({
+            name:'张三',
+            age:18,
+            job:{
+               j1:{
+                  salary:20
+               }
+            }
+         })
+
+         person = readonly(person)
+         // person = shallowReadonly(person)
+         // sum = readonly(sum)
+         // sum = shallowReadonly(sum)
+
+         //返回一个对象（常用）
+         return {
+            sum,
+            ...toRefs(person)
+         }
+      }
+   }
+</script>
+```
 
 ## 3.toRaw 与 markRaw
 
