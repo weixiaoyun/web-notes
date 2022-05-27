@@ -806,6 +806,54 @@ export default function (){
     1. 有些值不应被设置为响应式的，例如复杂的第三方类库等。
     2. 当渲染具有不可变数据源的大列表时，跳过响应式转换可以提高性能。
 
+```
+<script>
+   import {ref,reactive,toRefs,toRaw,markRaw} from 'vue'
+   export default {
+      name: 'Demo',
+      setup(){
+         //数据
+         let sum = ref(0)
+         let person = reactive({
+            name:'张三',
+            age:18,
+            job:{
+               j1:{
+                  salary:20
+               }
+            }
+         })
+
+         function showRawPerson(){
+            const p = toRaw(person)
+            p.age++
+            console.log(p)
+         }
+
+         function addCar(){
+            let car = {name:'奔驰',price:40}
+            person.car = markRaw(car)
+         }
+
+         function changePrice(){
+            person.car.price++
+            console.log(person.car.price)
+         }
+
+         //返回一个对象（常用）
+         return {
+            sum,
+            person,
+            ...toRefs(person),
+            showRawPerson,
+            addCar,
+            changePrice
+         }
+      }
+   }
+</script>
+```
+
 ## 4.customRef
 
 - 作用：创建一个自定义的 ref，并对其依赖项跟踪和更新触发进行显式控制。
@@ -922,6 +970,8 @@ export default function (){
 
 
 
+
+
 ## 2.Composition API 的优势
 
 我们可以更加优雅的组织我们的代码，函数。让相关功能的代码更加有序的组织在一起。
@@ -932,6 +982,38 @@ export default function (){
 <div style="width:430px;height:340px;overflow:hidden;float:left">
     <img src="https://p9-juejin.byteimg.com/tos-cn-i-k3u1fbpfcp/6cc55165c0e34069a75fe36f8712eb80~tplv-k3u1fbpfcp-watermark.image"style="height:360px"/>
 </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
